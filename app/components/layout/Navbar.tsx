@@ -1,43 +1,49 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
+import { useEffect, useEffectEvent, useState } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+} from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { name: 'Servicios', id: 'services' },
-  { name: 'Proyectos', id: 'portfolio' },
-  { name: 'Stack', id: 'stack' },
-  { name: 'Contacto', id: 'contact' },
+  { name: "Servicios", id: "services" },
+  { name: "Proyectos", id: "portfolio" },
+  { name: "Proceso", id: "process" },
+  { name: "Contacto", id: "contact" },
 ];
 
 export default function Navbar() {
   const { scrollY } = useScroll();
-  const [isVisible, setIsVisible] = useState(false);
-  const [activeSection, setActiveSection] = useState('services');
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // 1. Mostrar/Ocultar Navbar
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsVisible(latest > 40); 
+    setScrolled(latest > 40);
   });
 
-  // 2. Lógica de Detección de Sección (Intersection Observer)
-  useEffect(() => {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-40% 0px -40% 0px', // Detecta cuando la sección está en el centro
-      threshold: 0,
-    };
-
-    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+  const handleIntersect = useEffectEvent(
+    (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           setActiveSection(entry.target.id);
         }
       });
+    },
+  );
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-45% 0px -35% 0px",
+      threshold: 0,
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
-
     navLinks.forEach((link) => {
       const element = document.getElementById(link.id);
       if (element) observer.observe(element);
@@ -46,75 +52,179 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+
+    const closeMenu = () => setMenuOpen(false);
+    window.addEventListener("resize", closeMenu);
+
+    return () => window.removeEventListener("resize", closeMenu);
+  }, [menuOpen]);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    setMenuOpen(false);
+  };
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div 
-          className="fixed top-6 left-0 right-0 z-[100] flex justify-center px-4"
-          initial={{ y: -50, opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-          animate={{ y: 0, opacity: 1, scale: 1, filter: "blur(0px)" }}
-          exit={{ y: -20, opacity: 0, scale: 0.98, filter: "blur(5px)" }}
-          transition={{ type: "spring", stiffness: 200, damping: 22 }}
+    <>
+      <motion.div
+        className="fixed top-0 left-0 right-0 z-[100] flex justify-center px-4 pt-4 md:pt-6"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <nav
+          className={`relative flex w-full max-w-6xl items-center justify-between rounded-[1.75rem] px-4 py-3 transition-all duration-500 md:px-5 ${
+            scrolled
+              ? "border border-white/10 bg-[#020617]/85 shadow-[0_20px_50px_rgba(0,0,0,0.45)] backdrop-blur-2xl"
+              : "border border-white/0 bg-transparent"
+          }`}
         >
-          <nav className="relative flex items-center gap-6 px-6 py-3 bg-[#020617]/85 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.6)] overflow-hidden">
-            
-            {/* Brillo de escaneo sutil y lento */}
-            <motion.div 
-              className="absolute inset-0 z-0 pointer-events-none"
-              animate={{ x: ['-100%', '100%'] }}
+          {scrolled && (
+            <motion.div
+              className="pointer-events-none absolute inset-0 z-0"
+              animate={{ x: ["-100%", "100%"] }}
               transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
               style={{
-                background: 'linear-gradient(90deg, transparent, rgba(30,167,255,0.05), transparent)',
+                background:
+                  "linear-gradient(90deg, transparent, rgba(30,167,255,0.05), transparent)",
               }}
             />
+          )}
 
-            {/* LOGO */}
-            <div className="relative z-10 flex items-center gap-3 pr-5 border-r border-white/10">
-              <div className="relative w-8 h-8 flex items-center justify-center">
-                <div className="absolute inset-0 bg-[#1EA7FF] rounded-lg opacity-20 animate-pulse" />
-                <span className="text-[#1EA7FF] font-syne font-black text-xl">V</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-syne font-bold text-[13px] tracking-[0.12em] uppercase text-white leading-none">Vanttage</span>
-                <span className="text-[7px] text-[#1EA7FF] font-mono tracking-[0.2em] mt-1.5 opacity-80">CORE_v1.0</span>
-              </div>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="relative z-10 flex items-center gap-3 rounded-full pr-3 text-left transition-opacity hover:opacity-90"
+            aria-label="Ir al inicio"
+          >
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-[#1EA7FF]/20 bg-[#1EA7FF]/10">
+              <span className="font-display text-lg font-bold text-[#1EA7FF]">
+                V
+              </span>
+              <div className="absolute inset-0 rounded-2xl bg-[#1EA7FF]/20 blur-md" />
             </div>
+            <div className="hidden sm:block">
+              <span className="font-display block text-sm font-bold uppercase tracking-[0.18em] text-white">
+                Vanttage
+              </span>
+              <span className="block text-[10px] uppercase tracking-[0.24em] text-[#94A3B8]">
+                Software boutique
+              </span>
+            </div>
+          </button>
 
-            {/* MENU LINKS con Indicador Móvil Automático */}
-            <ul className="relative z-10 flex items-center gap-1">
-              {navLinks.map((link) => (
-                <li key={link.id} className="relative">
-                  <a 
-                    href={`#${link.id}`}
-                    className={`
-                      relative z-10 px-4 py-2 font-dm-sans text-[11px] font-medium uppercase tracking-[0.1em] transition-all duration-500
-                      ${activeSection === link.id ? 'text-white' : 'text-gray-400 hover:text-gray-200'}
-                    `}
-                  >
-                    {link.name}
-                  </a>
-                  
-                  {/* Este es el fondo que "persigue" a la sección activa */}
-                  {activeSection === link.id && (
-                    <motion.div 
-                      layoutId="nav-active-bg"
-                      className="absolute inset-0 bg-white/5 border-b border-[#1EA7FF] rounded-xl"
-                      transition={{ type: "spring", bounce: 0.15, duration: 0.6 }}
-                    />
-                  )}
-                </li>
-              ))}
-            </ul>
+          <ul className="relative z-10 hidden items-center gap-1 rounded-full border border-white/8 bg-white/[0.03] px-2 py-1 lg:flex">
+            {navLinks.map((link) => (
+              <li key={link.id} className="relative">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection(link.id)}
+                  className={`relative z-10 rounded-full px-4 py-2 text-[11px] font-medium uppercase tracking-[0.14em] transition-all duration-300 ${
+                    activeSection === link.id
+                      ? "text-white"
+                      : "text-[#94A3B8] hover:text-white"
+                  }`}
+                >
+                  {link.name}
+                </button>
 
-            {/* CTA */}
-            <button className="relative z-10 group overflow-hidden px-5 py-2 rounded-full border border-[#1EA7FF]/40 bg-[#1EA7FF]/5 transition-all hover:scale-105 active:scale-95">
-              <span className="relative z-10 font-syne font-bold text-[10px] uppercase tracking-wider text-white">Get Started</span>
-              <div className="absolute inset-0 bg-[#1EA7FF]/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                {activeSection === link.id && (
+                  <motion.div
+                    layoutId="nav-active-bg"
+                    className="absolute inset-0 rounded-full border border-[#1EA7FF]/30 bg-[#1EA7FF]/10"
+                    transition={{
+                      type: "spring",
+                      bounce: 0.2,
+                      duration: 0.6,
+                    }}
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <div className="relative z-10 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollToSection("contact")}
+              className="hidden rounded-full border border-[#1EA7FF]/35 bg-[#1EA7FF]/10 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:scale-[1.02] hover:border-[#1EA7FF]/55 hover:bg-[#1EA7FF]/15 md:block"
+            >
+              Hablemos
             </button>
 
-          </nav>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((value) => !value)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white transition-colors hover:border-white/20 lg:hidden"
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            >
+              {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+          </div>
+        </nav>
+      </motion.div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[90] bg-[#020617]/92 px-4 pt-28 backdrop-blur-xl lg:hidden"
+          >
+            <motion.div
+              initial={{ y: 18, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 18, opacity: 0 }}
+              transition={{ duration: 0.24 }}
+              className="mx-auto max-w-md rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+            >
+              <div className="mb-4">
+                <p className="font-display text-xl font-bold text-white">
+                  Navegación
+                </p>
+                <p className="mt-1 text-sm leading-6 text-[#94A3B8]">
+                  Accede rápido a las secciones clave de la landing.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.id}
+                    type="button"
+                    onClick={() => scrollToSection(link.id)}
+                    className="flex w-full items-center justify-between rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-4 text-left transition-colors hover:border-[#1EA7FF]/30 hover:bg-[#1EA7FF]/8"
+                  >
+                    <span className="font-display text-base font-semibold text-white">
+                      {link.name}
+                    </span>
+                    <span className="text-xs uppercase tracking-[0.18em] text-[#94A3B8]">
+                      Ir
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => scrollToSection("contact")}
+                className="mt-4 flex w-full items-center justify-center rounded-2xl bg-[#1EA7FF] px-4 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#020617]"
+              >
+                Solicitar diagnóstico
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
