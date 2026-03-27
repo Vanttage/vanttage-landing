@@ -1,101 +1,152 @@
-import Image from "next/image";
+"use client";
 
-export default function Footer() {
+import { motion } from "framer-motion";
+
+export default function Portfolio() {
+  const projects = [
+    {
+      title: "Sistema de Gestión Empresarial",
+      description:
+        "Plataforma completa para automatización de procesos internos, analítica avanzada y gestión operativa.",
+      tech: ["Next.js", "TypeScript", "PostgreSQL"],
+      image: "/projects/project-1.jpg",
+      alt: "Sistema de gestión empresarial",
+    },
+    {
+      title: "Plataforma Analítica",
+      description: "Dashboard empresarial con visualización de datos.",
+      tech: ["React", "Node.js"],
+      image: "/projects/project-2.jpg",
+      alt: "Dashboard de analítica de datos",
+    },
+    {
+      title: "Arquitectura Cloud",
+      description: "Infraestructura cloud escalable.",
+      tech: ["AWS", "Docker"],
+      image: "/projects/project-3.jpg",
+      alt: "Arquitectura cloud empresarial",
+    },
+    {
+      title: "Sistema de Facturación",
+      description: "Solución moderna para finanzas empresariales.",
+      tech: ["Next.js", "Stripe"],
+      image: "/projects/project-4.jpg",
+      alt: "Sistema de facturación empresarial",
+    },
+    {
+      title: "App Mobile Empresarial",
+      description: "Aplicación móvil para gestión remota.",
+      tech: ["React Native", "Firebase"],
+      image: "/projects/project-5.jpg",
+      alt: "Aplicación móvil empresarial",
+    },
+  ];
+
+  const mainProject = projects[0];
+  const otherProjects = projects.slice(1);
+
   return (
-    <footer className="bg-vanttage-blue-dark border-t border-white/10 mt-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Logo + descripción */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logos/logo-blue.png"
-                alt="Vanttage Logo"
-                width={40}
-                height={40}
-              />
-
-              <span className="text-xl font-semibold">Vanttage</span>
-            </div>
-
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Boutique de ingeniería de software enfocada en simplificar
-              procesos empresariales mediante tecnología eficiente.
-            </p>
-          </div>
-
-          {/* Navegación */}
-          <div>
-            <h4 className="font-semibold mb-4">Navegación</h4>
-
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <a href="#services" className="hover:text-white transition">
-                  Servicios
-                </a>
-              </li>
-
-              <li>
-                <a href="#portfolio" className="hover:text-white transition">
-                  Portafolio
-                </a>
-              </li>
-
-              <li>
-                <a href="#clients" className="hover:text-white transition">
-                  Clientes
-                </a>
-              </li>
-
-              <li>
-                <a href="#contact" className="hover:text-white transition">
-                  Contacto
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Ingeniería */}
-          <div>
-            <h4 className="font-semibold mb-4">Ingeniería</h4>
-
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>Arquitectura de Software</li>
-              <li>Modernización de Flujos</li>
-              <li>Automatización Operativa</li>
-            </ul>
-          </div>
-
-          {/* Contacto */}
-          <div>
-            <h4 className="font-semibold mb-4">Contacto</h4>
-
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>Bogotá, Colombia</li>
-              <li>contacto@vanttage.com</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom bar */}
-
-        <div className="border-t border-white/10 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400 gap-4">
-          <p>
-            © {new Date().getFullYear()} Vanttage. Todos los derechos
-            reservados.
-          </p>
-
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition">
-              LinkedIn
-            </a>
-
-            <a href="#" className="hover:text-white transition">
-              GitHub
-            </a>
-          </div>
-        </div>
+    <section id="portfolio" className="w-full py-28 px-6 relative">
+      {/* Glow background */}
+      <div className="absolute inset-0 -z-10 flex justify-center">
+        <div className="w-[600px] h-[600px] bg-blue-500/10 blur-[140px] rounded-full" />
       </div>
-    </footer>
+
+      {/* Header */}
+
+      <div className="max-w-7xl mx-auto text-center mb-20">
+        <p className="text-blue-400 text-sm tracking-[0.25em] uppercase mb-4">
+          Portafolio
+        </p>
+
+        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          Proyectos destacados
+        </h2>
+
+        <p className="text-gray-400 max-w-2xl mx-auto">
+          Creamos soluciones tecnológicas enfocadas en rendimiento,
+          escalabilidad y arquitectura moderna.
+        </p>
+      </div>
+
+      {/* GRID RESPONSIVE */}
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-2 gap-6">
+        {/* PROYECTO PRINCIPAL */}
+
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="group relative lg:col-span-2 lg:row-span-2 rounded-2xl overflow-hidden border border-white/10 bg-[#0F172A]/60 backdrop-blur p-10"
+        >
+          {/* Placeholder imagen */}
+
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 opacity-70" />
+
+          {/* contenido */}
+
+          <div className="relative z-10">
+            <h3 className="text-2xl md:text-3xl font-semibold mb-6">
+              {mainProject.title}
+            </h3>
+
+            <p className="text-gray-300 max-w-xl mb-6">
+              {mainProject.description}
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {mainProject.tech.map((tech, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs px-3 py-1 rounded-full border border-white/10 bg-white/5"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* PROYECTOS PEQUEÑOS */}
+
+        {otherProjects.map((project, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            viewport={{ once: true }}
+            className="group relative rounded-2xl overflow-hidden border border-white/10 bg-[#0F172A]/60 backdrop-blur p-6"
+          >
+            {/* Placeholder imagen */}
+
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 opacity-70" />
+
+            {/* contenido */}
+
+            <div className="relative z-10">
+              <h3 className="text-lg font-semibold mb-2">{project.title}</h3>
+
+              <p className="text-sm text-gray-300 mb-4">
+                {project.description}
+              </p>
+
+              <div className="flex flex-wrap gap-2">
+                {project.tech.map((tech, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs px-2 py-1 rounded-full border border-white/10 bg-white/5"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   );
 }
