@@ -2,111 +2,97 @@
 
 import { motion } from "framer-motion";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const sectors = [
-  {
-    title: "Retail",
-    description: "Operaciones con múltiples puntos, reportes y seguimiento diario.",
-  },
-  {
-    title: "Salud",
-    description: "Procesos sensibles donde la trazabilidad y el orden importan.",
-  },
-  {
-    title: "Logística",
-    description: "Flujos distribuidos que necesitan coordinación y visibilidad.",
-  },
-  {
-    title: "Finanzas",
-    description: "Procesos donde automatizar reduce errores y tiempo operativo.",
-  },
-  {
-    title: "Construcción",
-    description: "Equipos, aprobaciones y avance de proyectos con múltiples actores.",
-  },
-  {
-    title: "Servicios B2B",
-    description: "Empresas que crecieron y ahora necesitan estructura tecnológica.",
-  },
+  { title: "Retail", description: "E-commerce, catálogos y sitios institucionales con performance y SEO sólidos." },
+  { title: "Salud", description: "Portales de clínicas y consultorios con accesibilidad y confianza en cada pantalla." },
+  { title: "Logística", description: "Webs y paneles para equipos distribuidos que necesitan coordinación." },
+  { title: "Finanzas", description: "Landings donde la confianza se mide en segundos y el diseño no puede fallar." },
+  { title: "Construcción", description: "Portafolios visuales de proyectos con gestión de contenido simple." },
+  { title: "Servicios B2B", description: "Empresas que crecieron y necesitan una imagen digital a la altura." },
 ];
 
 const stats = [
-  { value: "+20", label: "Proyectos entregados" },
-  { value: "6", label: "Tipos de operación atendidos" },
-  { value: "100%", label: "Foco en software útil para negocio" },
-  { value: "<48h", label: "Para diagnosticar oportunidad inicial" },
+  { value: "+20", label: "Proyectos" },
+  { value: "6", label: "Industrias" },
+  { value: "95+", label: "Lighthouse" },
+  { value: "<48h", label: "Diagnóstico" },
 ];
 
 export default function Clients() {
   return (
-    <section
-      id="clients"
-      className="section-shell scroll-mt-28 overflow-hidden bg-[#020617]"
-    >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
-      <div className="absolute bottom-0 left-1/2 -z-10 h-[18rem] w-[40rem] -translate-x-1/2 rounded-full bg-[#1EA7FF]/6 blur-[120px]" />
+    <section id="clients" className="section-shell scroll-mt-24 overflow-hidden bg-[#0A2540]">
+      <div className="divider-top" />
+      <div className="gold-glow left-0 bottom-0 h-[24rem] w-[24rem] opacity-35" />
 
       <div className="section-inner">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 26 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7, ease: EASE }}
           viewport={{ once: true }}
-          className="mx-auto mb-14 max-w-3xl text-center"
+          className="mx-auto mb-16 max-w-3xl text-center"
         >
-          <p className="section-kicker">Confianza</p>
-          <h2 className="section-title text-white">
-            Experiencia en operaciones
-            <br />
-            <span className="text-[#94A3B8]">
-              con retos distintos, patrones similares.
+          <p className="section-kicker justify-center mb-5">Industrias</p>
+          <h2 className="section-title">
+            Retos distintos,{" "}
+            <span
+              className="text-transparent"
+              style={{
+                background: "linear-gradient(90deg, #1EA7FF, #D4AF37)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              criterio constante.
             </span>
           </h2>
-          <p className="section-copy mx-auto mt-5 max-w-2xl">
-            La industria cambia, pero la fricción suele repetirse: procesos
-            manuales, poca visibilidad y sistemas que no acompañan el ritmo del
-            negocio.
+          <p className="section-copy mx-auto mt-6 max-w-2xl">
+            La industria cambia, pero los patrones del software bien hecho se
+            repiten: velocidad, claridad y decisiones técnicas sólidas.
           </p>
         </motion.div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {sectors.map((sector, index) => (
+          {sectors.map((s, i) => (
             <motion.article
-              key={sector.title}
+              key={s.title}
               initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.06 }}
+              transition={{ duration: 0.55, delay: i * 0.06, ease: EASE }}
               viewport={{ once: true }}
-              className="surface-panel rounded-[1.65rem] p-6"
+              className="glass-card rounded-2xl p-7"
             >
-              <p className="text-[10px] uppercase tracking-[0.24em] text-[#64748B]">
-                Sector
-              </p>
-              <h3 className="font-display mt-3 text-2xl font-bold text-white">
-                {sector.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-[#94A3B8]">
-                {sector.description}
-              </p>
+              <p className="text-[10px] uppercase tracking-[0.24em] text-[#475569]">Sector</p>
+              <h3 className="font-display mt-3 text-2xl font-bold text-white">{s.title}</h3>
+              <div className="mt-3 h-px w-8 bg-[#1EA7FF]/40" />
+              <p className="mt-4 text-[15px] leading-7 text-[#94A3B8]">{s.description}</p>
             </motion.article>
           ))}
         </div>
 
+        {/* Stats row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.12 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
           viewport={{ once: true }}
-          className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+          className="mt-12 grid grid-cols-2 gap-0 divide-x divide-y divide-white/8 overflow-hidden rounded-2xl border border-white/8 xl:grid-cols-4 xl:divide-y-0"
         >
           {stats.map(({ value, label }) => (
-            <div
-              key={label}
-              className="rounded-[1.65rem] border border-white/8 bg-white/[0.03] px-5 py-6 text-center"
-            >
-              <p className="font-display text-3xl font-bold text-white">{value}</p>
-              <p className="mt-2 text-xs leading-6 text-[#94A3B8] uppercase tracking-[0.16em]">
-                {label}
+            <div key={label} className="bg-white/[0.02] px-6 py-8 text-center">
+              <p
+                className="font-display text-4xl font-extrabold text-transparent"
+                style={{
+                  background: "linear-gradient(135deg, #1EA7FF, #D4AF37)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {value}
               </p>
+              <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-[#94A3B8]">{label}</p>
             </div>
           ))}
         </motion.div>

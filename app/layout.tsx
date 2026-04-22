@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Syne } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/app/components/layout/Navbar";
@@ -13,14 +13,14 @@ const syne = Syne({
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["300", "400", "500", "700"],
   variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
-  title: "Vanttage",
+  title: "Vanttage — Ingeniería web de alto nivel",
   description:
-    "Vanttage diseña sistemas, automatizaciones y plataformas a medida para empresas que necesitan escalar su operación con software.",
+    "Desarrollamos sitios y plataformas web profesionales, migramos proyectos legacy a stacks modernos y mantenemos la tecnología de empresas que quieren escalar.",
 };
 
 export default function RootLayout({
@@ -30,11 +30,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${syne.variable} ${dmSans.variable}`}>
-      <body className="bg-black text-white antialiased">
+      <body className="bg-[#061729] text-[#F8FAFC] antialiased">
         <Navbar />
-
         {children}
-
         <Footer />
       </body>
     </html>
