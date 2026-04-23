@@ -1,166 +1,353 @@
 "use client";
 
-import type { FormEvent } from "react";
-import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  RotateCcw,
+} from "lucide-react";
+import emailjs from "@emailjs/browser";
+
+/* ── Config — rellena con tus keys de EmailJS ── */
+const EJS_SERVICE = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
+const EJS_TEMPLATE = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
+const EJS_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? "";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+type Status = "idle" | "loading" | "success" | "error";
+
+/* ── Data ── */
 const contactDetails = [
-  { icon: Phone, title: "Teléfono", lines: ["+57 322 670 6385", "+57 310 508 0356"] },
+  {
+    icon: Phone,
+    title: "Teléfono",
+    lines: ["+57 322 670 6385", "+57 310 508 0356"],
+  },
   { icon: Mail, title: "Correo", lines: ["vanttagectg@gmail.com"] },
   { icon: MapPin, title: "Ubicación", lines: ["Cartagena · Colombia"] },
 ];
 
 const expectations = [
-  "Te respondemos con contexto, no con plantilla genérica.",
-  "Podemos aterrizar el alcance aunque todavía esté difuso.",
-  "Si no somos la mejor ruta, también te lo decimos.",
+  "Respuesta real en menos de 24h.",
+  "Te ayudamos a aterrizar la idea.",
+  "Si no somos fit, te lo decimos claro.",
 ];
 
-export default function Contact() {
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const name = fd.get("name")?.toString().trim() ?? "";
-    const company = fd.get("company")?.toString().trim() ?? "";
-    const email = fd.get("email")?.toString().trim() ?? "";
-    const project = fd.get("project")?.toString().trim() ?? "";
+const fields = [
+  { name: "name", label: "Nombre", placeholder: "Tu nombre completo" },
+  { name: "company", label: "Empresa", placeholder: "Nombre de tu empresa" },
+  {
+    name: "email",
+    label: "Correo",
+    placeholder: "tu@correo.com",
+    full: true,
+    type: "email",
+  },
+];
 
-    const subject = encodeURIComponent(`Consulta Vanttage${company ? ` · ${company}` : ""}`);
-    const body = encodeURIComponent(
-      [`Nombre: ${name || "No especificado"}`, `Empresa: ${company || "No especificada"}`,
-       `Correo: ${email || "No especificado"}`, "", "Contexto:", project || "Sin detalles."].join("\n"),
-    );
-    window.location.href = `mailto:vanttagectg@gmail.com?subject=${subject}&body=${body}`;
+/* ── Success screen ── */
+function SuccessScreen({ onReset }: { onReset: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: EASE }}
+      className="flex min-h-[480px] flex-col items-center justify-center gap-6 text-center"
+    >
+      {/* Circle check */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 14 }}
+        className="relative flex h-20 w-20 items-center justify-center"
+      >
+        <div className="absolute inset-0 rounded-full bg-violet-100" />
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-violet-400"
+          initial={{ scale: 1, opacity: 0.8 }}
+          animate={{ scale: 2, opacity: 0 }}
+          transition={{ repeat: Infinity, duration: 1.6, delay: 0.4 }}
+        />
+        <CheckCircle2 size={38} className="relative text-violet-500" />
+      </motion.div>
+
+      <div>
+        <h3 className="text-2xl font-semibold text-[#0A2540]">
+          ¡Mensaje enviado!
+        </h3>
+        <p className="mt-2 text-[#64748B]">
+          Recibimos tu mensaje. Te respondemos en menos de 24h.
+        </p>
+      </div>
+
+      <button
+        onClick={onReset}
+        className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm text-[#64748B] transition hover:bg-gray-50"
+      >
+        <RotateCcw size={13} />
+        Enviar otro mensaje
+      </button>
+    </motion.div>
+  );
+}
+
+/* ── Error banner ── */
+function ErrorBanner({ onRetry }: { onRetry: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-5 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+    >
+      <AlertCircle size={16} className="shrink-0" />
+      <span>Algo salió mal. Intenta de nuevo o escríbenos directamente.</span>
+      <button
+        onClick={onRetry}
+        className="ml-auto shrink-0 font-medium underline"
+      >
+        Reintentar
+      </button>
+    </motion.div>
+  );
+}
+
+/* ── Component ── */
+export default function Contact() {
+  const [status, setStatus] = useState<Status>("idle");
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    const fd = new FormData(e.currentTarget);
+
+    const payload = {
+      title:   "Nuevo Proyecto desde Vanttage.com",
+      name:    fd.get("name")    as string,
+      company: fd.get("company") as string,
+      email:   fd.get("email")   as string,
+      message: fd.get("message") as string,
+    };
+
+    console.log("📧 EmailJS config:", {
+      service:  EJS_SERVICE  || "⚠️ VACÍO",
+      template: EJS_TEMPLATE || "⚠️ VACÍO",
+      key:      EJS_KEY ? "✅ set" : "⚠️ VACÍO",
+    });
+
+    try {
+      const res = await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, payload, {
+        publicKey: EJS_KEY,
+      });
+      console.log("✅ EmailJS ok:", res.status, res.text);
+      setStatus("success");
+      (e.target as HTMLFormElement).reset();
+    } catch (err: unknown) {
+      const ej = err as { status?: number; text?: string };
+      console.error("❌ EmailJS — status:", ej?.status, "| text:", ej?.text);
+      setStatus("error");
+    }
   };
 
   return (
-    <section id="contact" className="section-shell scroll-mt-24 overflow-hidden bg-[#061729]">
-      <div className="divider-top" />
-      <div className="elec-glow right-0 top-1/2 h-[30rem] w-[28rem] -translate-y-1/2 opacity-25" />
+    <section
+      id="contact"
+      className="relative overflow-hidden bg-[#F8FAFC] py-32 px-6"
+    >
+      {/* Glows */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-[10%] top-[20%] h-[420px] w-[420px] rounded-full bg-violet-400/20 blur-[140px]" />
+        <div className="absolute -right-[10%] bottom-[10%] h-[420px] w-[420px] rounded-full bg-blue-400/20 blur-[140px]" />
+        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-300/10 blur-[160px]" />
+      </div>
 
-      <div className="section-inner">
+      <div className="relative z-10 mx-auto max-w-6xl">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
           viewport={{ once: true }}
-          className="mx-auto mb-16 max-w-3xl text-center"
+          transition={{ duration: 0.7, ease: EASE }}
+          className="mx-auto max-w-3xl text-center"
         >
-          <p className="section-kicker justify-center mb-5">Contacto</p>
-          <h2 className="section-title">
-            Hablemos del proyecto
-            <br />
-            <span
-              className="text-transparent"
-              style={{
-                background: "linear-gradient(90deg, #1EA7FF, #4FC3FF)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              que tienes en mente.
-            </span>
+          <p className="mb-5 text-[11px] uppercase tracking-[0.3em] text-violet-500">
+            Contacto
+          </p>
+          <h2 className="text-5xl font-semibold leading-tight text-[#0A2540] md:text-6xl">
+            Cuéntanos lo que quieres construir
           </h2>
-          <p className="section-copy mx-auto mt-6 max-w-2xl">
-            Si ya sabes qué quieres construir, avanzamos rápido. Si todavía
-            estás ordenando el problema, también podemos ayudarte.
+          <p className="mt-6 text-lg text-[#475569]">
+            Nosotros nos encargamos de convertirlo en un producto real.
           </p>
         </motion.div>
 
-        <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          {/* Left */}
+        {/* Grid */}
+        <div className="mt-20 grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* LEFT — info */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
             viewport={{ once: true }}
-            className="glass-card rounded-3xl p-7 md:p-9"
+            transition={{ duration: 0.6, ease: EASE }}
+            className="space-y-4"
           >
-            <p className="text-[11px] uppercase tracking-[0.24em] text-[#475569]">Lo que puedes esperar</p>
-            <div className="mt-5 h-px w-8 bg-[#1EA7FF]/40" />
-            <div className="mt-6 space-y-3">
-              {expectations.map((item) => (
-                <div key={item} className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 text-[14.5px] leading-7 text-[#94A3B8]">
-                  {item}
-                </div>
-              ))}
-            </div>
+            {expectations.map((text, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: 0.1 + i * 0.08,
+                  duration: 0.5,
+                  ease: EASE,
+                }}
+                className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm"
+              >
+                <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-violet-400" />
+                <span className="text-sm text-[#475569]">{text}</span>
+              </motion.div>
+            ))}
 
-            <div className="mt-8 space-y-3">
-              {contactDetails.map(({ icon: Icon, title, lines }) => (
-                <div key={title} className="rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#1EA7FF]/15 bg-[#1EA7FF]/10 text-[#1EA7FF]">
-                      <Icon size={16} />
+            <div className="space-y-3 pt-4">
+              {contactDetails.map(({ icon: Icon, title, lines }, i) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    delay: 0.35 + i * 0.08,
+                    duration: 0.5,
+                    ease: EASE,
+                  }}
+                  className="group rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm transition-shadow hover:shadow-md"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500 transition-transform duration-300 group-hover:scale-110">
+                      <Icon size={18} />
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-[#475569]">{title}</p>
-                      {lines.map((line) => (
-                        <p key={line} className="mt-1 text-[14px] leading-6 text-white">{line}</p>
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8]">
+                        {title}
+                      </p>
+                      {lines.map((l) => (
+                        <p key={l} className="mt-1 text-sm text-[#0A2540]">
+                          {l}
+                        </p>
                       ))}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Form */}
-          <motion.form
-            initial={{ opacity: 0, x: 24 }}
+          {/* RIGHT — form */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
             viewport={{ once: true }}
-            onSubmit={handleSubmit}
-            className="glass-card rounded-3xl p-7 md:p-9"
+            transition={{ duration: 0.6, ease: EASE }}
+            className="relative rounded-3xl border border-gray-200 bg-white p-8 shadow-xl"
           >
-            <div className="grid gap-5 md:grid-cols-2">
-              {[
-                { name: "name", label: "Nombre", placeholder: "Tu nombre", full: false },
-                { name: "company", label: "Empresa", placeholder: "Nombre de tu empresa", full: false },
-                { name: "email", label: "Correo electrónico", placeholder: "tu@empresa.com", full: true },
-              ].map(({ name, label, placeholder, full }) => (
-                <label key={name} className={`block ${full ? "md:col-span-2" : ""}`}>
-                  <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-[#475569]">
-                    {label}
-                  </span>
-                  <input
-                    type={name === "email" ? "email" : "text"}
-                    name={name}
-                    placeholder={placeholder}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none transition-colors placeholder:text-[#334155] focus:border-[#1EA7FF]/45 focus:bg-[#1EA7FF]/5"
-                  />
-                </label>
-              ))}
+            <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/5 to-transparent" />
 
-              <label className="block md:col-span-2">
-                <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-[#475569]">
-                  Cuéntanos el contexto
-                </span>
-                <textarea
-                  rows={6}
-                  name="project"
-                  placeholder="Qué quieres lograr, qué tienes hoy, qué mejorar..."
-                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none transition-colors placeholder:text-[#334155] focus:border-[#1EA7FF]/45 focus:bg-[#1EA7FF]/5"
+            <AnimatePresence mode="wait">
+              {status === "success" ? (
+                <SuccessScreen
+                  key="success"
+                  onReset={() => setStatus("idle")}
                 />
-              </label>
-            </div>
+              ) : (
+                <motion.div
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {status === "error" && (
+                    <ErrorBanner onRetry={() => setStatus("idle")} />
+                  )}
 
-            <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="max-w-md text-[13px] leading-6 text-[#475569]">
-                Abre tu cliente de correo con el mensaje listo para enviar.
-              </p>
-              <button
-                type="submit"
-                className="btn-electric inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-white"
-              >
-                <span className="relative z-10">Enviar mensaje</span>
-                <Send size={14} className="relative z-10" />
-              </button>
-            </div>
-          </motion.form>
+                  <form
+                    onSubmit={handleSubmit}
+                    className="relative z-10 grid gap-5 md:grid-cols-2"
+                  >
+                    {/* Campo oculto — llena {{title}} en el subject del template */}
+                    {fields.map(({ name, label, placeholder, full, type }) => (
+                      <label key={name} className={full ? "md:col-span-2" : ""}>
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8]">
+                          {label}
+                        </span>
+                        <input
+                          name={name}
+                          type={type ?? "text"}
+                          placeholder={placeholder}
+                          required
+                          className="mt-2 w-full rounded-xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-gray-300 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
+                        />
+                      </label>
+                    ))}
+
+                    <label className="md:col-span-2">
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8]">
+                        Proyecto
+                      </span>
+                      <textarea
+                        name="message"
+                        rows={5}
+                        required
+                        placeholder="Cuéntanos qué estás intentando construir…"
+                        className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-gray-300 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
+                      />
+                    </label>
+
+                    <div className="flex flex-wrap items-center justify-between gap-4 md:col-span-2">
+                      <p className="text-xs text-[#94A3B8]">
+                        Te respondemos personalmente.
+                      </p>
+
+                      <button
+                        type="submit"
+                        disabled={status === "loading"}
+                        className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-violet-500/25 transition-all hover:scale-[1.04] active:scale-[0.98] disabled:opacity-60"
+                      >
+                        {status === "loading" ? (
+                          <>
+                            <motion.span
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                repeat: Infinity,
+                                duration: 0.8,
+                                ease: "linear",
+                              }}
+                              className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white"
+                            />
+                            Enviando…
+                          </>
+                        ) : (
+                          <>
+                            Enviar
+                            <Send
+                              size={13}
+                              className="transition-transform group-hover:translate-x-0.5"
+                            />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </div>
     </section>

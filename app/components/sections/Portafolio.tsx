@@ -3,207 +3,261 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+interface Project {
+  number: string;
+  tag: string;
+  title: string;
+  description: string;
+  detail?: string;
+  metric: string;
+  metricLabel: string;
+  secondary?: string;
+  tech: string[];
+  accent: string;
+  large?: boolean;
+}
 
-const projects = [
+const projects: Project[] = [
   {
-    title: "Plataforma corporativa — migración Next.js",
-    description: "Rediseño completo desde WordPress legacy. Velocidad 4× mayor, CMS propio y SEO técnico sólido.",
-    tag: "Rediseño + Migración",
-    year: "2025",
-    bg: "from-[#0A2540] to-[#061729]",
-    accentColor: "#1EA7FF",
-    scope: ["Next.js", "Sanity CMS", "SEO", "CI/CD"],
-    outcome: "95+ Lighthouse · +40% tiempo en sitio",
+    number: "01",
+    tag: "Migración",
+    title: "4× más velocidad sin perder SEO",
+    description:
+      "Migración completa desde WordPress legacy a Next.js con SSR, optimización de imágenes y caching estratégico.",
+    detail:
+      "Ocho años de contenido migrado en tres semanas — cero downtime, rankings intactos.",
+    metric: "1.4s",
+    metricLabel: "tiempo de carga",
+    secondary: "+40% retención",
+    tech: ["Next.js", "Vercel", "Contentful"],
+    accent: "#7c3aed",
     large: true,
   },
   {
-    title: "Landing premium B2B",
-    description: "Sitio para firma de servicios financieros. Diseño editorial y estrategia de conversión.",
-    tag: "Landing Page",
-    year: "2025",
-    bg: "from-[#061729] to-[#0F172A]",
-    accentColor: "#4FC3FF",
-    scope: ["React", "Tailwind", "GA4"],
-    outcome: "+3× leads cualificados",
+    number: "02",
+    tag: "Conversión",
+    title: "Landing que convierte tráfico en clientes",
+    description:
+      "Rediseño con enfoque en intención de usuario, CRO y arquitectura de conversión probada.",
+    metric: "3×",
+    metricLabel: "leads cualificados",
+    tech: ["React", "Framer Motion"],
+    accent: "#1EA7FF",
   },
   {
-    title: "Panel operativo interno",
-    description: "Dashboard que reemplazó hojas de cálculo dispersas. Roles, reportes en tiempo real.",
+    number: "03",
     tag: "Sistema interno",
-    year: "2024",
-    bg: "from-[#0F172A] to-[#0A2540]",
-    accentColor: "#D4AF37",
-    scope: ["Next.js", "Prisma", "PostgreSQL"],
-    outcome: "−15 h/semana al equipo",
-  },
-  {
-    title: "E-commerce especializado",
-    description: "Tienda online con checkout optimizado, pagos integrados e inventario en tiempo real.",
-    tag: "E-commerce",
-    year: "2024",
-    bg: "from-[#061729] to-[#0A2540]",
-    accentColor: "#F2D77B",
-    scope: ["Shopify", "Stripe"],
-    outcome: "Checkout 2.3s · Conversión +28%",
-  },
-  {
-    title: "Portal institucional renovado",
-    description: "Migración desde PHP 2016. Accesibilidad WCAG AA, multi-idioma, diseño moderno.",
-    tag: "Modernización",
-    year: "2025",
-    bg: "from-[#0F172A] to-[#061729]",
-    accentColor: "#1EA7FF",
-    scope: ["Next.js", "i18n", "WCAG AA"],
-    outcome: "0 errores en auditoría",
+    title: "Dashboard que elimina procesos manuales",
+    description:
+      "Panel de control con datos en tiempo real, roles granulares y automatización operativa.",
+    metric: "−15h",
+    metricLabel: "por semana",
+    tech: ["Next.js", "Supabase"],
+    accent: "#22c55e",
   },
 ];
 
-function ProjectCard({
-  title, description, tag, year, bg, accentColor, scope, outcome, large = false, index,
-}: (typeof projects)[number] & { index: number }) {
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
-      viewport={{ once: true }}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-br ${bg} border border-white/8 transition-all duration-300 hover:border-white/15 hover:shadow-[0_20px_60px_rgba(2,6,23,0.5)] ${
-        large ? "p-8 md:p-10 lg:col-span-2 lg:min-h-[28rem]" : "p-6 md:p-7"
-      }`}
-    >
-      {/* Hover glow */}
-      <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(circle at 20% 20%, ${accentColor}10, transparent 55%)`,
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 flex h-full flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <span
-              className="inline-block rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em]"
-              style={{
-                borderColor: `${accentColor}30`,
-                background: `${accentColor}12`,
-                color: accentColor,
-              }}
-            >
-              {tag}
-            </span>
-            <span className="text-[11px] uppercase tracking-[0.2em] text-[#475569]">{year}</span>
-          </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-[#64748B] transition-all group-hover:border-white/25 group-hover:text-white">
-            <ArrowUpRight size={15} />
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className={`${large ? "mt-12" : "mt-8"} flex-1`}>
-          <h3
-            className={`font-display font-bold leading-tight text-white ${
-              large ? "text-3xl md:text-[2.2rem]" : "text-xl"
-            }`}
-          >
-            {title}
-          </h3>
-          <p className={`mt-4 leading-7 text-[#94A3B8] ${large ? "max-w-2xl text-base" : "text-[14px]"}`}>
-            {description}
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {scope.map((item) => (
-              <span
-                key={item}
-                className="rounded-lg border border-white/8 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-[#64748B]"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Outcome */}
-        <div
-          className="mt-8 rounded-xl border-l-2 px-4 py-3"
-          style={{
-            borderColor: accentColor,
-            background: `${accentColor}08`,
-          }}
-        >
-          <p className="text-[10px] uppercase tracking-[0.22em]" style={{ color: accentColor }}>
-            Resultado
-          </p>
-          <p className="mt-1 text-[14px] font-semibold text-white">{outcome}</p>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function Portfolio() {
   return (
-    <section id="portfolio" className="section-shell scroll-mt-24 overflow-hidden bg-[#020617]">
-      <div className="divider-top" />
-      <div className="elec-glow left-1/2 top-0 h-[24rem] w-[52rem] -translate-x-1/2 opacity-40" />
+    <section
+      id="portfolio"
+      className="relative overflow-hidden bg-[#020617] py-28 px-6 text-white"
+    >
+      {/* Background glows */}
+      <motion.div
+        animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-1/2 top-[45%] h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 bg-violet-500/15 blur-[160px]"
+      />
+      <motion.div
+        animate={{ y: [0, 20, 0], x: [0, -20, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -left-[10%] -top-[10%] h-[400px] w-[400px] bg-indigo-500/15 blur-[140px]"
+      />
+      <motion.div
+        animate={{ y: [0, -20, 0], x: [0, 20, 0] }}
+        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -right-[10%] -bottom-[10%] h-[400px] w-[400px] bg-purple-500/15 blur-[140px]"
+      />
 
-      <div className="section-inner">
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          viewport={{ once: true }}
-          className="mb-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end"
-        >
-          <div>
-            <p className="section-kicker mb-5">Proyectos</p>
-            <h2 className="section-title">
-              Trabajo que
-              <br />
-              <span
-                className="text-transparent"
-                style={{
-                  background: "linear-gradient(90deg, #1EA7FF, #4FC3FF)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                habla por sí solo.
-              </span>
-            </h2>
-          </div>
-          <p className="section-copy max-w-xl">
-            Una muestra del tipo de retos que resolvemos. Cada proyecto tiene
-            una historia de problema → decisión técnica → resultado medible.
-          </p>
-        </motion.div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p, i) => (
-            <ProjectCard key={p.title} index={i} {...p} />
-          ))}
-        </div>
-
+      <div className="relative z-10 mx-auto max-w-[1200px]">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
           viewport={{ once: true }}
-          className="mt-12 flex justify-center"
+          transition={{ duration: 0.7, ease: EASE }}
+          className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
         >
-          <a
-            href="#contact"
-            className="btn-ghost group inline-flex items-center gap-2 rounded-full px-6 py-3 text-[13px] font-medium uppercase tracking-[0.14em]"
-          >
-            Conversemos sobre tu caso
-            <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+          <div>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-white/30">
+              Proyectos
+            </p>
+            <h2 className="text-4xl font-semibold leading-tight text-white md:text-6xl">
+              Resultados que
+              <br />
+              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+                generan impacto real
+              </span>
+            </h2>
+          </div>
+          <p className="max-w-xs text-sm leading-relaxed text-white/40">
+            Cada proyecto tiene un objetivo claro: más velocidad, más conversión
+            y sistemas que escalan contigo.
+          </p>
         </motion.div>
+
+        {/* Grid */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {projects.map((p, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
+              whileHover={{ y: -4 }}
+              className={`group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl ${
+                p.large ? "md:col-span-2" : ""
+              }`}
+            >
+              {/* Accent top border */}
+              <div
+                className="absolute inset-x-0 top-0 h-[2px]"
+                style={{
+                  background: `linear-gradient(90deg, ${p.accent}, transparent)`,
+                }}
+              />
+
+              {/* Hover glow */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                style={{
+                  background: `radial-gradient(circle at 30% 30%, ${p.accent}18, transparent 65%)`,
+                }}
+              />
+
+              <div
+                className={`relative z-10 p-7 md:p-9 ${
+                  p.large
+                    ? "lg:grid lg:grid-cols-2 lg:items-center lg:gap-12"
+                    : ""
+                }`}
+              >
+                {/* Main content */}
+                <div>
+                  {/* Tag + number */}
+                  <div className="mb-5 flex items-center gap-3">
+                    <span
+                      className="rounded-full border px-3 py-1 text-[10px] font-medium uppercase tracking-[0.22em]"
+                      style={{
+                        color: p.accent,
+                        borderColor: `${p.accent}40`,
+                        background: `${p.accent}12`,
+                      }}
+                    >
+                      {p.tag}
+                    </span>
+                    <span className="text-xs tracking-widest text-white/15">
+                      {p.number}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="mb-4 text-2xl font-semibold leading-snug text-white md:text-3xl">
+                    {p.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="max-w-lg text-[15px] leading-relaxed text-white/50">
+                    {p.description}
+                  </p>
+
+                  {"detail" in p && (
+                    <p className="mt-2 max-w-lg text-sm leading-relaxed text-white/25">
+                      {p.detail}
+                    </p>
+                  )}
+
+                  {/* Tech chips */}
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {p.tech.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-white/10 px-3 py-1 text-[11px] tracking-wide text-white/35"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <div className="mt-6 flex items-center gap-1.5 text-sm text-white/35 transition-colors duration-300 group-hover:text-white">
+                    Ver caso
+                    <ArrowUpRight
+                      size={15}
+                      className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    />
+                  </div>
+                </div>
+
+                {/* Metric */}
+                <div
+                  className={
+                    p.large
+                      ? "mt-8 flex items-center justify-center lg:mt-0"
+                      : "mt-6 flex items-end gap-4 border-t border-white/[0.06] pt-6"
+                  }
+                >
+                  <div className={p.large ? "text-center" : ""}>
+                    <div
+                      className={`font-semibold leading-none tracking-tight ${
+                        p.large ? "text-[80px] md:text-[100px]" : "text-[52px]"
+                      }`}
+                      style={{ color: p.accent }}
+                    >
+                      {p.metric}
+                    </div>
+                    <p className="mt-1 text-sm text-white/30">
+                      {p.metricLabel}
+                    </p>
+                  </div>
+
+                  {"secondary" in p && (
+                    <div className="mb-2">
+                      <div className="text-lg font-semibold text-white/40">
+                        {p.secondary}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-12 text-center text-sm text-white/30"
+        >
+          ¿Listo para ser el próximo caso de éxito?{" "}
+          <button
+            onClick={() =>
+              document
+                .getElementById("contact")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+            className="text-violet-400 underline underline-offset-2 transition-colors hover:text-violet-300"
+          >
+            Hablemos
+          </button>
+        </motion.p>
       </div>
     </section>
   );

@@ -1,166 +1,174 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle } from "lucide-react";
+import Image from "next/image";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const links = [
-  { label: "Servicios", href: "#services" },
-  { label: "Stack", href: "#stack" },
-  { label: "Proceso", href: "#process" },
-  { label: "Proyectos", href: "#portfolio" },
-  { label: "Nosotros", href: "#about" },
-  { label: "Contacto", href: "#contact" },
+const navLinks = [
+  { label: "Inicio",     href: "#hero" },
+  { label: "Servicios",  href: "#services" },
+  { label: "Proyectos",  href: "#portfolio" },
+  { label: "Nosotros",   href: "#about" },
+  { label: "Contacto",   href: "#contact" },
 ];
 
 const contacts = [
-  {
-    icon: Mail,
-    label: "Correo",
-    value: "vanttagectg@gmail.com",
-    href: "mailto:vanttagectg@gmail.com",
-  },
-  {
-    icon: Phone,
-    label: "Teléfono",
-    value: "+57 322 670 6385",
-    href: "tel:+573226706385",
-  },
-  {
-    icon: MapPin,
-    label: "Ubicación",
-    value: "Cartagena · Colombia",
-    href: "#contact",
-  },
+  { icon: Mail,   label: "Correo",    value: "vanttagectg@gmail.com", href: "mailto:vanttagectg@gmail.com" },
+  { icon: Phone,  label: "Teléfono",  value: "+57 322 670 6385",      href: "tel:+573226706385" },
+  { icon: MapPin, label: "Ubicación", value: "Cartagena · Colombia",  href: "#contact" },
 ];
+
+const socials = [
+  { icon: Instagram,      label: "Instagram", href: "https://instagram.com/vanttage" },
+  { icon: Linkedin,       label: "LinkedIn",  href: "https://linkedin.com/company/vanttage" },
+  { icon: MessageCircle,  label: "WhatsApp",  href: "https://wa.me/573226706385" },
+];
+
+function scrollTo(href: string) {
+  const id = href.replace("#", "");
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
 
 export default function Footer() {
   return (
-    <footer className="section-shell overflow-hidden border-t border-white/6 bg-[#020617] pb-10">
-      <div className="elec-glow left-1/2 top-0 h-48 w-[36rem] -translate-x-1/2 opacity-25" />
+    <footer className="relative overflow-hidden bg-[#F1F5F9] px-6 pb-10 pt-24">
+
+      {/* Glow top */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-1/2 top-0 h-[300px] w-[700px] -translate-x-1/2 bg-violet-400/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 h-[200px] w-[400px] bg-indigo-300/10 blur-[100px]" />
+      </div>
+
+      {/* Texto decorativo de fondo */}
+      <div
+        className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 select-none whitespace-nowrap text-[clamp(5rem,16vw,14rem)] font-black tracking-[-0.04em] text-[#0A2540]/[0.04]"
+        aria-hidden
+      >
+        Vanttage.
+      </div>
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE }}
         viewport={{ once: true }}
-        className="section-inner"
+        transition={{ duration: 0.7, ease: EASE }}
+        className="relative mx-auto max-w-6xl"
       >
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_0.8fr_0.9fr]">
-          {/* Brand */}
-          <div>
-            <div className="mb-6 flex items-center gap-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-xl border border-[#1EA7FF]/20 bg-[#1EA7FF]/10">
-                <span className="font-display text-xl font-bold text-[#1EA7FF]">
-                  V
-                </span>
-                <div className="absolute inset-0 rounded-xl bg-[#1EA7FF]/15 blur-md" />
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.7fr_1fr]">
+
+          {/* ── Brand ── */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="relative h-11 w-11 shrink-0">
+                <Image src="/logo/logo.svg" alt="Vanttage logo" fill className="object-contain" priority />
               </div>
               <div>
-                <p className="font-display text-xl font-bold text-white">
-                  Vanttage
-                </p>
-                <p className="mt-0.5 text-[11px] uppercase tracking-[0.26em] text-[#475569]">
-                  Ingeniería web · Cartagena
-                </p>
+                <p className="text-[18px] font-semibold leading-none text-[#0A2540]">Vanttage.</p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#94A3B8]">Software Boutique</p>
               </div>
             </div>
 
-            <p className="max-w-md text-[15px] leading-[1.8] text-[#64748B]">
-              Diseñamos, construimos y migramos sitios web profesionales. Un
-              estudio técnico con estándares altos, enfocado en empresas que
-              quieren una presencia digital a la altura de lo que ofrecen.
+            <p className="max-w-sm text-[15px] leading-[1.8] text-[#475569]">
+              Diseñamos y construimos productos digitales con estándares altos.
+              Para empresas que entienden que su web es parte del negocio, no un accesorio.
             </p>
 
+            {/* CTAs */}
             <div className="mt-7 flex flex-wrap gap-3">
               <a
                 href="#contact"
-                className="btn-electric inline-flex items-center gap-2 rounded-full px-5 py-3 text-[12px] font-bold uppercase tracking-[0.14em] text-white"
+                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white shadow-md transition hover:scale-[1.04]"
               >
-                <span className="relative z-10">Agendar diagnóstico</span>
-                <ArrowUpRight size={14} className="relative z-10" />
+                Empezar proyecto
+                <ArrowUpRight size={13} />
               </a>
               <a
                 href="mailto:vanttagectg@gmail.com"
-                className="btn-ghost inline-flex items-center gap-2 rounded-full px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em]"
+                className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#0A2540] transition hover:bg-gray-50"
               >
                 Escribir correo
               </a>
             </div>
+
+            {/* Social links */}
+            <div className="mt-6 flex items-center gap-2">
+              {socials.map(({ icon: Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-[#64748B] shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600"
+                >
+                  <Icon size={15} />
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Nav */}
+          {/* ── Navegación ── */}
           <div>
-            <p className="font-display mb-4 text-base font-bold text-white">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#94A3B8]">
               Navegación
             </p>
-            <div className="mb-5 h-px w-8 bg-[#1EA7FF]/40" />
-            <nav className="grid grid-cols-2 gap-x-4 gap-y-3 text-[13px]">
-              {links.map((l) => (
-                <Link
+            <nav className="flex flex-col gap-3">
+              {navLinks.map((l) => (
+                <a
                   key={l.href}
                   href={l.href}
-                  className="group flex items-center gap-2 text-[#64748B] transition-colors hover:text-white"
+                  onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}
+                  className="group flex items-center gap-1.5 text-[14px] text-[#64748B] transition-colors duration-200 hover:text-[#0A2540]"
                 >
-                  <span className="h-px w-3 bg-[#334155] transition-all group-hover:w-5 group-hover:bg-[#1EA7FF]" />
+                  <span className="h-[1px] w-0 bg-violet-500 transition-all duration-300 group-hover:w-3" />
                   {l.label}
-                </Link>
+                </a>
               ))}
             </nav>
           </div>
 
-          {/* Contact */}
+          {/* ── Contacto ── */}
           <div>
-            <p className="font-display mb-4 text-base font-bold text-white">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#94A3B8]">
               Contacto
             </p>
-            <div className="mb-5 h-px w-8 bg-[#D4AF37]/50" />
             <div className="space-y-3">
               {contacts.map(({ icon: Icon, label, value, href }) => (
                 <a
                   key={label}
                   href={href}
-                  className="flex items-start gap-3 rounded-xl border border-white/6 bg-white/[0.02] px-4 py-3 transition-colors hover:border-white/12"
+                  className="group flex items-start gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition hover:border-violet-200 hover:shadow-md"
                 >
-                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#1EA7FF]/15 bg-[#1EA7FF]/8 text-[#1EA7FF]">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500 transition group-hover:bg-violet-500 group-hover:text-white">
                     <Icon size={14} />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#334155]">
-                      {label}
-                    </p>
-                    <p className="mt-0.5 text-[13px] leading-5 text-[#94A3B8]">
-                      {value}
-                    </p>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#94A3B8]">{label}</p>
+                    <p className="mt-0.5 text-[13px] text-[#0A2540]">{value}</p>
                   </div>
                 </a>
               ))}
             </div>
           </div>
+
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/6 pt-7 text-[13px] text-[#334155] md:flex-row md:items-center md:justify-between">
-          <p className="flex items-center gap-2">
-            <span className="pulse-dot" />© {new Date().getFullYear()} Vanttage
-            · Ingeniería web boutique, Cartagena.
-          </p>
-          <p
-            className="font-display text-transparent"
-            style={{
-              background: "linear-gradient(90deg, #1EA7FF, #D4AF37)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Vanttage.
-          </p>
+        {/* ── Bottom bar ── */}
+        <div className="mt-16 flex flex-col items-center gap-3 border-t border-gray-200 pt-6 text-[12px] text-[#94A3B8] sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} Vanttage. Todos los derechos reservados.</p>
+
+          <div className="flex items-center gap-4">
+            <span className="text-[#0A2540] font-medium tracking-tight">
+              Construido con precisión.
+            </span>
+            <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" />
+            <span>Cartagena · Colombia</span>
+          </div>
         </div>
+
       </motion.div>
     </footer>
   );

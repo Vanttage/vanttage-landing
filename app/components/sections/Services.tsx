@@ -1,188 +1,276 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Globe2, RefreshCw, Wrench, Rocket, Search, Database, ArrowUpRight } from "lucide-react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+} from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import {
+  Globe2,
+  RefreshCw,
+  Wrench,
+  Rocket,
+  Search,
+  Database,
+  ArrowRight,
+  MoveRight,
+} from "lucide-react";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+/* ================= DATA ================= */
 
 const services = [
   {
     icon: Globe2,
     tag: "01",
+    color: "#1EA7FF",
     title: "Desarrollo Web a medida",
     description:
-      "Sitios institucionales, landings y plataformas construidas con Next.js y React. Performance, SEO técnico y diseño exclusivo desde el día uno.",
-    highlights: ["Next.js · TypeScript", "Performance 90+ Lighthouse", "SEO técnico"],
-    featured: true,
+      "Sitios construidos con precisión. Performance extremo y diseño que convierte.",
+    detail:
+      "Cada proyecto arranca desde cero — sin templates. Arquitectura moderna, carga ultrarrápida y experiencia diseñada para que cada visita cuente.",
   },
   {
     icon: RefreshCw,
     tag: "02",
+    color: "#22c55e",
     title: "Migración de stack legacy",
-    description:
-      "WordPress, PHP viejo o HTML estático modernizado sin perder contenido, SEO ni historial de dominio.",
-    highlights: ["Sin downtime", "SEO preservado", "Stack moderno"],
+    description: "Modernizamos tu web sin perder SEO ni autoridad de dominio.",
+    detail:
+      "Auditamos tu stack actual, trazamos la ruta de migración y ejecutamos el cambio sin downtime. Tu posicionamiento intacto, tu tecnología al día.",
   },
   {
     icon: Wrench,
     tag: "03",
+    color: "#f59e0b",
     title: "Mantenimiento mensual",
-    description:
-      "Actualizaciones, seguridad, respaldos y cambios menores. Tu web siempre al día sin que tengas que preocuparte.",
-    highlights: ["Uptime 99.9%", "Soporte prioritario", "Reportes"],
+    description: "Seguridad, updates y estabilidad continua para tu producto.",
+    detail:
+      "Monitoreo proactivo, parches de seguridad, backups automáticos y soporte prioritario. Tu plataforma siempre operativa, sin sorpresas.",
   },
   {
     icon: Rocket,
     tag: "04",
-    title: "Sitios de alto rendimiento",
-    description:
-      "E-commerce, portales y plataformas donde cada milisegundo y cada conversión cuentan. Optimización profunda.",
-    highlights: ["Core Web Vitals", "CDN global", "Cache estratégica"],
+    color: "#a855f7",
+    title: "Alto rendimiento",
+    description: "Optimización profunda para proyectos de misión crítica.",
+    detail:
+      "Core Web Vitals en verde, tiempo de carga bajo 1s y arquitectura preparada para picos de tráfico. Velocidad que se traduce en conversión.",
   },
   {
     icon: Search,
     tag: "05",
-    title: "SEO & posicionamiento técnico",
-    description:
-      "Auditorías, schema markup, sitemaps, optimización on-page. Aparecer donde tus clientes buscan.",
-    highlights: ["Auditoría técnica", "Schema.org", "GA4"],
+    color: "#ec4899",
+    title: "SEO técnico",
+    description: "Estructura optimizada para dominar los motores de búsqueda.",
+    detail:
+      "Auditoría técnica completa, schema markup, sitemap, canonical tags y rendimiento de rastreo. Más visibilidad orgánica, menos dependencia de pauta.",
   },
   {
     icon: Database,
     tag: "06",
-    title: "Sistemas & paneles internos",
-    description:
-      "CRMs, dashboards y herramientas a medida para empresas que ya superaron las hojas de cálculo.",
-    highlights: ["Roles & permisos", "APIs", "Tiempo real"],
+    color: "#06b6d4",
+    title: "Sistemas internos",
+    description: "Herramientas internas que escalan tus operaciones.",
+    detail:
+      "CRMs, dashboards, automatizaciones y portales personalizados. Menos procesos manuales, más tiempo para lo que realmente importa.",
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07 } },
-};
+/* ================= SCOPED CURSOR ================= */
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
-};
+function ScopedCursor({ active }: { active: boolean }) {
+  const x = useMotionValue(-100);
+  const y = useMotionValue(-100);
+
+  useEffect(() => {
+    const move = (e: MouseEvent) => {
+      x.set(e.clientX - 10);
+      y.set(e.clientY - 10);
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
+
+  return (
+    <motion.div
+      style={{ x, y }}
+      animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.5 }}
+      transition={{ duration: 0.2 }}
+      className="pointer-events-none fixed top-0 left-0 z-[9999] h-5 w-5 rounded-full bg-white/80 mix-blend-difference"
+    />
+  );
+}
+
+/* ================= COMPONENT ================= */
 
 export default function Services() {
+  const ref = useRef<HTMLElement>(null);
+  const [hovering, setHovering] = useState(false);
+
+  const { scrollYProgress } = useScroll({ target: ref });
+
+  const smooth = useSpring(scrollYProgress, { stiffness: 80, damping: 20 });
+
+  const x = useTransform(smooth, [0, 1], ["0%", "-83.3%"]);
+
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const unsub = smooth.on("change", (v) => {
+      setActive(Math.round(v * (services.length - 1)));
+    });
+    return () => unsub();
+  }, [smooth]);
+
   return (
-    <section id="services" className="section-shell scroll-mt-24 overflow-hidden bg-[#020617]">
-      <div className="divider-top" />
-      <div className="gold-glow -right-24 top-1/3 h-[30rem] w-[30rem] opacity-40" />
+    <>
+      <ScopedCursor active={hovering} />
 
-      <div className="section-inner">
-        <div className="mb-16 grid gap-10 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
+      <section
+        id="services"
+        ref={ref}
+        className="relative h-[600vh] bg-[#020617]"
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      >
+        <div className="sticky top-0 h-screen overflow-hidden">
+
+          {/* Progress indicator */}
+          <div className="absolute top-8 right-10 z-20 flex items-center gap-3">
+            {/* Dots */}
+            <div className="flex gap-2">
+              {services.map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{
+                    width: i === active ? 20 : 6,
+                    opacity: i === active ? 1 : 0.3,
+                    backgroundColor: i === active ? services[i].color : "#fff",
+                  }}
+                  transition={{ duration: 0.4 }}
+                  className="h-[6px] rounded-full"
+                />
+              ))}
+            </div>
+            {/* Counter */}
+            <span className="text-xs tracking-[0.2em] text-white/30">
+              {String(active + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
+            </span>
+          </div>
+
+          {/* Scroll hint — solo en primer slide */}
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            viewport={{ once: true }}
+            animate={{ opacity: active === 0 ? 1 : 0 }}
+            transition={{ duration: 0.4 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 text-white/30 text-xs tracking-[0.2em] uppercase pointer-events-none"
           >
-            <p className="section-kicker mb-5">Servicios</p>
-            <h2 className="section-title">
-              Todo lo que tu presencia
-              <br />
-              <span
-                className="text-transparent"
-                style={{
-                  background: "linear-gradient(90deg, #1EA7FF, #4FC3FF)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                web necesita.
-              </span>
-            </h2>
+            <motion.span
+              animate={{ x: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.8 }}
+            >
+              <MoveRight size={14} />
+            </motion.span>
+            Scroll para explorar
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-            viewport={{ once: true }}
-            className="glass-card rounded-2xl p-6"
-          >
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[#64748B]">Ideal para</p>
-            <ul className="mt-4 space-y-3 text-[15px] leading-7 text-[#94A3B8]">
-              <li className="flex gap-2"><span className="text-[#1EA7FF] shrink-0">—</span>Empresas con web vieja que necesita rediseño.</li>
-              <li className="flex gap-2"><span className="text-[#1EA7FF] shrink-0">—</span>Proyectos que ya no caben en WordPress o Wix.</li>
-              <li className="flex gap-2"><span className="text-[#D4AF37] shrink-0">—</span>Operaciones que necesitan software interno.</li>
-            </ul>
-          </motion.div>
-        </div>
+          {/* Slides */}
+          <motion.div style={{ x }} className="flex h-full w-[600vw]">
+            {services.map((s, i) => {
+              const Icon = s.icon;
+              const isActive = i === active;
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {services.map((s) => {
-            const Icon = s.icon;
-            const featured = s.featured;
-            return (
-              <motion.article
-                key={s.tag}
-                variants={cardVariants}
-                className={`group relative flex flex-col overflow-hidden rounded-2xl p-7 transition-all duration-300 ${
-                  featured
-                    ? "border border-[#1EA7FF]/20 bg-gradient-to-br from-[#0A2540] to-[#061729] hover:border-[#1EA7FF]/40 hover:shadow-[0_20px_60px_rgba(30,167,255,0.15)]"
-                    : "glass-card"
-                }`}
-              >
-                {/* Numbered ghost */}
-                <span className="font-display absolute right-4 top-3 text-[4.5rem] font-black leading-none text-white/[0.04]">
-                  {s.tag}
-                </span>
+              return (
+                <motion.div
+                  key={i}
+                  className="relative flex h-screen w-screen items-center justify-center px-10"
+                  animate={{
+                    opacity: isActive ? 1 : 0.25,
+                    scale: isActive ? 1 : 0.92,
+                  }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {/* Glow dinámico */}
+                  <motion.div
+                    className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
+                    animate={{
+                      background: `${s.color}28`,
+                      scale: isActive ? 1.2 : 0.8,
+                    }}
+                    transition={{ duration: 0.6 }}
+                  />
 
-                {/* Hover glow */}
-                <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(30,167,255,0.08),transparent_55%)]" />
-                </div>
+                  {/* Content */}
+                  <div className="relative z-10 w-full max-w-6xl grid lg:grid-cols-2 gap-20 items-center">
 
-                <div className="relative z-10 flex flex-1 flex-col">
-                  <div
-                    className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl border ${
-                      featured
-                        ? "border-[#1EA7FF]/25 bg-[#1EA7FF]/15 text-[#1EA7FF]"
-                        : "border-[#1EA7FF]/12 bg-[#1EA7FF]/8 text-[#1EA7FF]"
-                    }`}
-                  >
-                    <Icon size={20} />
+                    {/* LEFT */}
+                    <div>
+                      <p className="text-sm tracking-[0.35em] mb-4" style={{ color: s.color }}>
+                        {s.tag}
+                      </p>
+
+                      <h2 className="text-5xl md:text-6xl font-semibold text-white leading-tight">
+                        {s.title}
+                      </h2>
+
+                      <p className="mt-5 text-lg text-[#94A3B8] leading-relaxed max-w-xl">
+                        {s.description}
+                      </p>
+
+                      <p className="mt-3 text-sm text-[#64748B] leading-relaxed max-w-xl">
+                        {s.detail}
+                      </p>
+
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white"
+                        style={{
+                          backgroundColor: s.color,
+                          boxShadow: `0 10px 40px ${s.color}40`,
+                        }}
+                      >
+                        Explorar
+                        <ArrowRight size={16} />
+                      </motion.button>
+                    </div>
+
+                    {/* RIGHT */}
+                    <div className="relative flex items-center justify-center">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
+                        className="absolute h-[260px] w-[260px] rounded-full border"
+                        style={{ borderColor: `${s.color}30` }}
+                      />
+                      <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ repeat: Infinity, duration: 28, ease: "linear" }}
+                        className="absolute h-[200px] w-[200px] rounded-full border border-dashed"
+                        style={{ borderColor: `${s.color}20` }}
+                      />
+                      <motion.div
+                        animate={{ scale: isActive ? 1.15 : 0.9 }}
+                        className="flex h-28 w-28 items-center justify-center rounded-2xl backdrop-blur"
+                        style={{ background: `${s.color}20`, color: s.color }}
+                      >
+                        <Icon size={42} />
+                      </motion.div>
+                    </div>
                   </div>
 
-                  <h3 className="font-display text-xl font-bold text-white">{s.title}</h3>
-                  <p className="mt-3 flex-1 text-[15px] leading-7 text-[#94A3B8]">{s.description}</p>
-
-                  <ul className="mt-5 space-y-1.5">
-                    {s.highlights.map((h) => (
-                      <li key={h} className="flex items-center gap-2 text-[12px] text-[#64748B]">
-                        <span className="h-px w-4 bg-[#1EA7FF]/50" />
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {featured && (
-                    <div className="mt-5 pt-4 border-t border-[#1EA7FF]/15">
-                      <a
-                        href="#contact"
-                        className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#1EA7FF] transition-colors hover:text-[#4FC3FF]"
-                      >
-                        Nuestro servicio estrella <ArrowUpRight size={12} />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </motion.article>
-            );
-          })}
-        </motion.div>
-      </div>
-    </section>
+                  {/* Ghost number */}
+                  <span className="absolute bottom-10 right-10 text-[220px] font-black text-white/[0.03] select-none leading-none">
+                    {s.tag}
+                  </span>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+    </>
   );
 }

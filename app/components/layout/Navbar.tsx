@@ -1,272 +1,250 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "framer-motion";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Menu } from "lucide-react";
 
-const pageLinks = [{ name: "Servicios", href: "/servicios", isPage: true }];
-
-const sectionLinks = [
-  { name: "Proyectos", id: "portfolio" },
-  { name: "Proceso", id: "process" },
-  { name: "Nosotros", id: "about" },
+const links = [
+  { label: "Inicio",     href: "#hero" },
+  { label: "Servicios",  href: "#services" },
+  { label: "Proyectos",  href: "#portfolio" },
+  { label: "Proceso",    href: "#problem" },
+  { label: "Nosotros",   href: "#about" },
 ];
 
-const allMobileLinks = [
-  { name: "Servicios", href: "/servicios", isPage: true },
-  { name: "Proyectos", id: "portfolio", isPage: false },
-  { name: "Proceso", id: "process", isPage: false },
-  { name: "Nosotros", id: "about", isPage: false },
-];
+const SECTIONS = ["hero", "services", "portfolio", "problem", "about", "contact"];
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function scrollTo(href: string) {
+  const id = href.replace("#", "");
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
 
 export default function Navbar() {
-  const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState("");
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const isHome = pathname === "/";
+  const [scrolled, setScrolled]   = useState(false);
+  const [active, setActive]       = useState("hero");
+  const [menuOpen, setMenuOpen]   = useState(false);
 
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 50));
-
+  /* ── Scroll state ── */
   useEffect(() => {
-    if (!isHome) return;
-    const obs = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
-    sectionLinks.forEach(({ id }) => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  /* ── Active section via IntersectionObserver ── */
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+
+    SECTIONS.forEach((id) => {
       const el = document.getElementById(id);
-      if (el) obs.observe(el);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
+        { rootMargin: "-40% 0px -55% 0px" }
+      );
+      obs.observe(el);
+      observers.push(obs);
     });
-    return () => obs.disconnect();
-  }, [isHome]);
 
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
+
+  /* ── Lock body scroll when mobile menu open ── */
   useEffect(() => {
-    if (!open) return;
-    const close = () => setOpen(false);
-    window.addEventListener("resize", close);
-    return () => window.removeEventListener("resize", close);
-  }, [open]);
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
-  const scrollTo = (id: string) => {
-    if (!isHome) {
-      window.location.href = `/#${id}`;
-      return;
-    }
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setOpen(false);
-  };
+  const textColor    = scrolled ? "text-[#0A2540]" : "text-white";
+  const subTextColor = scrolled ? "text-[#64748B]" : "text-white/70";
 
   return (
     <>
-      <motion.div
-        className="fixed inset-x-0 top-0 z-[100] flex justify-center px-4 pt-4 md:pt-5"
-        initial={{ y: -24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      <nav
+        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/80 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.06)] backdrop-blur-xl"
+            : "py-5"
+        }`}
       >
-        <nav
-          className={`relative flex w-full max-w-6xl items-center justify-between rounded-2xl px-4 py-3 transition-all duration-500 md:px-5 ${
-            scrolled
-              ? "border border-white/10 bg-[#061729]/90 shadow-[0_16px_48px_rgba(2,6,23,0.6)] backdrop-blur-2xl"
-              : "border border-transparent bg-transparent"
-          }`}
-        >
-          {scrolled && (
-            <motion.div
-              className="pointer-events-none absolute inset-0 rounded-2xl"
-              animate={{ x: ["-100%", "100%"] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(30,167,255,0.04), transparent)",
-              }}
-            />
-          )}
+        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 md:px-8">
 
-          {/* Logo */}
-          <Link
-            href="/"
-            className="relative z-10 flex items-center gap-3 transition-opacity hover:opacity-85"
+          {/* ── Brand ── */}
+          <a
+            href="#hero"
+            onClick={(e) => { e.preventDefault(); scrollTo("#hero"); }}
+            className={`flex items-center gap-3 ${textColor}`}
           >
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#1EA7FF]/20 bg-[#1EA7FF]/10">
-              <span className="font-display text-lg font-bold text-[#1EA7FF]">
-                V
-              </span>
-              <div className="absolute inset-0 rounded-xl bg-[#1EA7FF]/15 blur-md" />
+            <div className="relative h-11 w-11 shrink-0">
+              <Image
+                src="/logo/logo.svg"
+                alt="Vanttage logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
-            <div className="hidden sm:block">
-              <span className="font-display block text-[15px] font-bold uppercase tracking-[0.16em] text-white">
-                <p
-                  className="font-display text-transparent"
-                  style={{
-                    background: "linear-gradient(90deg, #1EA7FF, #D4AF37)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    fontSize: "0.85rem",
-                    fontWeight: 600,
-                    letterSpacing: "-0.02em",
-                  }}
-                >
-                  Vanttage.
-                </p>
-              </span>
-              <span className="block text-[10px] uppercase tracking-[0.26em] text-[#94A3B8]">
-                Ingeniería web
-              </span>
-            </div>
-          </Link>
+            <span className="text-[17px] font-semibold tracking-wide">
+              Vanttage.
+            </span>
+          </a>
 
-          {/* Desktop links */}
-          <ul className="relative z-10 hidden items-center gap-0.5 lg:flex">
-            {/* Servicios → página */}
-            <li className="relative">
-              <Link
-                href="/servicios"
-                className={`relative rounded-full px-4 py-2 text-[12px] font-medium uppercase tracking-[0.12em] transition-colors duration-200 ${
-                  pathname === "/servicios"
-                    ? "text-white"
-                    : "text-[#94A3B8] hover:text-white"
-                }`}
-              >
-                Servicios
-                {pathname === "/servicios" && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.55 }}
-                  />
-                )}
-              </Link>
-            </li>
-
-            {/* Sections scroll */}
-            {sectionLinks.map(({ name, id }) => (
-              <li key={id} className="relative">
-                <button
-                  type="button"
-                  onClick={() => scrollTo(id)}
-                  className={`relative rounded-full px-4 py-2 text-[12px] font-medium uppercase tracking-[0.12em] transition-colors duration-200 ${
-                    active === id
-                      ? "text-white"
-                      : "text-[#94A3B8] hover:text-white"
+          {/* ── Desktop links ── */}
+          <div className={`hidden items-center gap-7 text-[14px] md:flex ${subTextColor}`}>
+            {links.map((l) => {
+              const isActive = active === l.href.replace("#", "");
+              return (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}
+                  className={`relative py-1 transition-colors duration-200 ${
+                    scrolled
+                      ? isActive ? "text-[#0A2540]" : "text-[#64748B] hover:text-[#0A2540]"
+                      : isActive ? "text-white"    : "text-white/60 hover:text-white"
                   }`}
                 >
-                  {name}
-                  {active === id && (
-                    <motion.div
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full border border-[#1EA7FF]/25 bg-[#1EA7FF]/10"
-                      transition={{
-                        type: "spring",
-                        bounce: 0.2,
-                        duration: 0.55,
-                      }}
-                    />
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
+                  {l.label}
 
-          {/* CTA */}
-          <div className="relative z-10 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => scrollTo("contact")}
-              className="btn-electric hidden items-center gap-2 rounded-full px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white md:inline-flex"
-            >
-              <span className="relative z-10">Hablemos</span>
-              <ArrowUpRight size={13} className="relative z-10" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              className="btn-ghost inline-flex h-10 w-10 items-center justify-center rounded-xl lg:hidden"
-              aria-expanded={open}
-            >
-              {open ? <X size={17} /> : <Menu size={17} />}
-            </button>
+                  {/* Underline animado */}
+                  <motion.span
+                    className="absolute inset-x-0 -bottom-0.5 h-[1.5px] rounded-full bg-violet-500"
+                    initial={false}
+                    animate={{ scaleX: isActive ? 1 : 0, opacity: isActive ? 1 : 0 }}
+                    transition={{ duration: 0.25, ease: EASE }}
+                    style={{ originX: 0 }}
+                  />
+                </a>
+              );
+            })}
           </div>
-        </nav>
-      </motion.div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[90] bg-[#020617]/95 px-4 pt-24 backdrop-blur-xl lg:hidden"
-          >
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              transition={{ duration: 0.22 }}
-              className="mx-auto max-w-md rounded-3xl border border-white/8 bg-[#0A2540]/80 p-5 shadow-[0_32px_80px_rgba(2,6,23,0.6)]"
+          {/* ── Desktop CTA ── */}
+          <div className="hidden items-center gap-3 md:flex">
+            <a
+              href="#contact"
+              onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+              className={`text-[14px] transition-colors duration-200 ${
+                scrolled
+                  ? "text-[#475569] hover:text-[#0A2540]"
+                  : "text-white/70 hover:text-white"
+              }`}
             >
-              <p className="font-display mb-4 text-xl font-bold text-white">
-                Navegación
-              </p>
-              <div className="space-y-2">
-                {allMobileLinks.map((link) =>
-                  link.isPage ? (
-                    <Link
-                      key={link.href}
-                      href={link.href!}
-                      onClick={() => setOpen(false)}
-                      className="flex w-full items-center justify-between rounded-xl border border-[#D4AF37]/20 bg-[#D4AF37]/6 px-4 py-4"
-                    >
-                      <span className="font-display text-base font-semibold text-white">
-                        {link.name}
-                      </span>
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#D4AF37]">
-                        Página
-                      </span>
-                    </Link>
-                  ) : (
-                    <button
-                      key={link.id}
-                      type="button"
-                      onClick={() => {
-                        scrollTo(link.id!);
-                        setOpen(false);
-                      }}
-                      className="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-4 transition-colors hover:border-[#1EA7FF]/30"
-                    >
-                      <span className="font-display text-base font-semibold text-white">
-                        {link.name}
-                      </span>
-                      <ArrowUpRight size={14} className="text-[#94A3B8]" />
-                    </button>
-                  ),
-                )}
+              Contacto
+            </a>
+            <a
+              href="#contact"
+              onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
+              className="inline-flex items-center rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-white shadow-md transition hover:scale-[1.04] hover:shadow-violet-500/30"
+            >
+              Empezar
+            </a>
+          </div>
+
+          {/* ── Mobile hamburger ── */}
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors duration-200 md:hidden ${
+              scrolled
+                ? "border-gray-200 text-[#0A2540] hover:bg-gray-50"
+                : "border-white/20 text-white hover:bg-white/10"
+            }`}
+            aria-label="Menú"
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+
+        </div>
+      </nav>
+
+      {/* ── Mobile menu overlay ── */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+            />
+
+            {/* Panel */}
+            <motion.div
+              key="panel"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.35, ease: EASE }}
+              className="fixed right-0 top-0 z-50 flex h-full w-[280px] flex-col bg-white shadow-2xl"
+            >
+              {/* Panel header */}
+              <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
+                <span className="text-[16px] font-semibold text-[#0A2540]">Vanttage.</span>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+                >
+                  <X size={18} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  scrollTo("contact");
-                  setOpen(false);
-                }}
-                className="btn-electric mt-4 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-sm font-bold uppercase tracking-[0.14em] text-white"
-              >
-                <span className="relative z-10">Agendar diagnóstico</span>
-                <ArrowUpRight size={15} className="relative z-10" />
-              </button>
+
+              {/* Nav links */}
+              <div className="flex flex-col gap-1 px-4 py-6">
+                {links.map((l, i) => {
+                  const isActive = active === l.href.replace("#", "");
+                  return (
+                    <motion.a
+                      key={l.href}
+                      href={l.href}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05, duration: 0.3, ease: EASE }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollTo(l.href);
+                        setMenuOpen(false);
+                      }}
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors duration-150 ${
+                        isActive
+                          ? "bg-violet-50 text-violet-600"
+                          : "text-[#475569] hover:bg-gray-50 hover:text-[#0A2540]"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                      )}
+                      {l.label}
+                    </motion.a>
+                  );
+                })}
+              </div>
+
+              {/* Mobile CTA */}
+              <div className="mt-auto border-t border-gray-100 px-6 py-6">
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo("#contact");
+                    setMenuOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 py-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-violet-500/25"
+                >
+                  Empezar proyecto
+                </a>
+                <p className="mt-4 text-center text-xs text-gray-400">
+                  Respuesta en menos de 24h
+                </p>
+              </div>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
