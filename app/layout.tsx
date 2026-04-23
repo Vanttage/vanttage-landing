@@ -103,7 +103,7 @@ export const metadata: Metadata = {
   category: "technology",
 
   /* Verificación Google Search Console — pega tu código cuando lo tengas */
-  // verification: { google: "TU_CODIGO_AQUI" },
+  verification: { google: "oDFmxUPYD8bwklybjgtr1TNINNHVSlkaIlfz0LiVbuE" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
