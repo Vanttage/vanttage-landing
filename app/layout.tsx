@@ -23,7 +23,7 @@ const dmSans = DM_Sans({
 /* ─────────────────────────────────────────
    META — cambia el dominio cuando lo tengas
 ───────────────────────────────────────── */
-const DOMAIN = "https://vanttage.com";
+const DOMAIN = "https://vanttagetech.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),

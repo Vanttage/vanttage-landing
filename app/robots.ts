@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/_next/"],
       },
     ],
-    sitemap: "https://vanttage.com/sitemap.xml",
-    host:    "https://vanttage.com",
+    sitemap: "https://vanttagetech.com/sitemap.xml",
+    host:    "https://vanttagetech.com",
   };
 }

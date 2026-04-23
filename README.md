@@ -167,6 +167,6 @@ Ver [LICENSE](LICENSE) para más detalles.
 
 <div align="center">
 
-**[vanttage.com](https://vanttage.com)** · Cartagena, Colombia
+**[vanttagetech.com](https://vanttagetech.com)** · Cartagena, Colombia
 
 </div>

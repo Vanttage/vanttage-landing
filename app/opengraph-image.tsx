@@ -197,7 +197,7 @@ export default function OGImage() {
               letterSpacing: "-0.3px",
             }}
           >
-            vanttage.com
+            vanttagetech.com
           </div>
         </div>
       </div>

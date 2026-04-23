@@ -1,4 +1,4 @@
-const DOMAIN = "https://vanttage.com";
+const DOMAIN = "https://vanttagetech.com";
 
 const organization = {
   "@context": "https://schema.org",

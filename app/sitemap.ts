@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const DOMAIN = "https://vanttage.com";
+const DOMAIN = "https://vanttagetech.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
