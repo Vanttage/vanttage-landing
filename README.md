@@ -1,186 +1,172 @@
 <div align="center">
 
-# Vanttage Landing
+<br />
 
-Landing page oficial de **Vanttage**, una boutique de ingeniería de software enfocada en simplificar procesos empresariales mediante arquitectura tecnológica, automatización y transformación digital.
+<img src="public/logo/logo.svg" alt="Vanttage" width="64" />
 
-**Ingeniería de software para simplificar negocios**
+<h1>Vanttage — Landing Page</h1>
+
+<p>Software boutique en Cartagena, Colombia.<br />Código limpio · Diseño premium · Resultados medibles.</p>
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/License-Proprietary-violet)](LICENSE)
+
+<br />
 
 </div>
 
 ---
 
-# Sobre el Proyecto
+## Stack
 
-Este repositorio contiene el desarrollo de la **landing page institucional de Vanttage**.
-
-La landing tiene como objetivo presentar nuestra visión de ingeniería, nuestros servicios y nuestra filosofía de trabajo para ayudar a empresas a mejorar su operación mediante tecnología.
-
-Desde Vanttage entendemos que la tecnología debe **reducir complejidad**, no aumentarla.
-
-Por eso desarrollamos soluciones enfocadas en:
-
-- simplificar procesos empresariales
-- automatizar tareas repetitivas
-- optimizar flujos operativos
-- modernizar infraestructura tecnológica
-- construir sistemas escalables
-
-Nuestra filosofía de ingeniería se resume en una sola regla:
-
-> **Si no simplifica, no se construye.**
+| Capa | Tecnología |
+|------|-----------|
+| Framework | Next.js 16 App Router |
+| UI | React 19 + TypeScript |
+| Estilos | Tailwind CSS v4 |
+| Animaciones | Framer Motion |
+| 3D / WebGL | Three.js · @react-three/fiber · @react-three/drei |
+| Formulario | EmailJS v4 |
+| Tipografía | Syne + DM Sans (Google Fonts) |
+| Deploy | Vercel + Hostinger DNS |
 
 ---
 
-# Filosofía de Ingeniería
+## Secciones
 
-En **Vanttage** entendemos el software como una herramienta de alivio operativo.
-
-No buscamos crear sistemas complejos que generen más carga administrativa, sino soluciones que permitan a las empresas enfocarse en lo que realmente importa: su crecimiento.
-
-Nuestro enfoque de ingeniería se basa en cuatro pilares:
-
-### Precisión a Escala
-
-Diseñamos sistemas robustos capaces de crecer sin romperse.
-
-### Artesanía Técnica
-
-Código limpio, mantenible y pensado para evolucionar.
-
-### Compromiso de Autor
-
-Trabajo directo con ingenieros, sin intermediarios innecesarios.
-
-### Ingeniería de Alivio
-
-El software debe trabajar para la empresa, no la empresa para el software.
+| Sección | Descripción |
+|---------|-------------|
+| `Hero` | Headline principal + partículas Three.js |
+| `Marquee` | Banda de logos de clientes |
+| `Problem` | Agitación del problema con métricas |
+| `Services` | Carrusel horizontal de 6 servicios |
+| `Portfolio` | Proyectos con métricas reales |
+| `About` | Filosofía + animaciones únicas por pilar |
+| `CTAFinal` | Llamada a la acción con stats |
+| `Contact` | Formulario con EmailJS + 3 estados |
 
 ---
 
-# Stack Tecnológico
-
-Esta landing está construida utilizando tecnologías modernas orientadas a rendimiento y escalabilidad.
-
-- **Next.js**
-- **React**
-- **TypeScript**
-- **Tailwind CSS**
-- **Node.js**
-
-Pensada para ser desplegada en infraestructura moderna como:
-
-- **Vercel**
-- **Netlify**
-- **Cloud Platforms**
-
----
-
-# Instalación del Proyecto
-
-Clonar el repositorio:
+## Setup local
 
 ```bash
-git clone https://github.com/vanttage/landing-vanttage.git
-```
+# 1. Clonar
+git clone https://github.com/Vanttage/Landing-Vanttage.git
+cd Landing-Vanttage
 
-Entrar al directorio del proyecto:
-
-```bash
-cd landing-vanttage
-```
-
-Instalar dependencias:
-
-```bash
+# 2. Instalar dependencias
 npm install
-```
 
----
+# 3. Variables de entorno
+cp .env.example .env.local
+# Editar .env.local con tus credenciales de EmailJS
 
-# Ejecutar en entorno de desarrollo
-
-Iniciar servidor local:
-
-```bash
+# 4. Dev server
 npm run dev
-```
-
-Abrir en el navegador:
-
-```
-http://localhost:3000
+# → http://localhost:3000
 ```
 
 ---
 
-# Estructura del Proyecto
+## Variables de entorno
 
+Crea `.env.local` en la raíz con:
+
+```env
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_xxxxxxx
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_xxxxxxx
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxxxxxxx
 ```
-landing-vanttage
-│
-├── public
-│
-├── src
-│   ├── app
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   │
-│   ├── components
-│   │   ├── Navbar
-│   │   ├── Hero
-│   │   ├── Services
-│   │   ├── About
-│   │   └── Footer
-│   │
-│   ├── styles
-│
-├── package.json
-├── next.config.js
-└── README.md
-```
+
+Obtén las credenciales en [dashboard.emailjs.com](https://dashboard.emailjs.com).
 
 ---
 
-# Objetivo de la Landing
-
-La landing tiene como propósito comunicar claramente:
-
-- quiénes somos
-- cómo trabajamos
-- qué tipo de soluciones desarrollamos
-- cómo ayudamos a las empresas a optimizar su operación
-
-Más que vender tecnología, buscamos mostrar **cómo la ingeniería puede simplificar negocios reales**.
-
----
-
-# Deploy
-
-El proyecto puede desplegarse fácilmente usando plataformas modernas.
-
-Deploy recomendado con **Vercel**:
+## Scripts
 
 ```bash
-npx vercel
+npm run dev      # Servidor de desarrollo (Turbopack)
+npm run build    # Build de producción
+npm run start    # Servidor de producción local
+npm run lint     # ESLint
 ```
-
-O conectar el repositorio directamente desde la plataforma.
 
 ---
 
-# Licencia
+## Estructura
 
-Este proyecto pertenece a **Vanttage**.
+```
+Landing-Vanttage/
+├── app/
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── Navbar.tsx
+│   │   │   └── Footer.tsx
+│   │   ├── sections/
+│   │   │   ├── Hero.tsx
+│   │   │   ├── HeroScene.tsx       ← Three.js particle constellation
+│   │   │   ├── Marquee.tsx
+│   │   │   ├── Problem.tsx
+│   │   │   ├── Services.tsx
+│   │   │   ├── Portafolio.tsx
+│   │   │   ├── About.tsx
+│   │   │   ├── CTAFinal.tsx
+│   │   │   └── Contact.tsx
+│   │   └── JsonLd.tsx              ← Structured data (Organization, LocalBusiness, WebSite)
+│   ├── opengraph-image.tsx         ← OG image dinámico (Edge Runtime)
+│   ├── twitter-image.tsx
+│   ├── robots.ts
+│   ├── sitemap.ts
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── public/
+│   └── logo/
+├── next.config.ts                  ← Security headers + image optimization
+├── .env.local                      ← No incluido en git
+└── .env.example
+```
 
-Uso institucional y desarrollo interno.
+---
+
+## SEO
+
+- Metadata API de Next.js (OG + Twitter cards dinámicos)
+- JSON-LD: `Organization`, `ProfessionalService`, `WebSite` con `SearchAction`
+- `robots.txt` y `sitemap.xml` generados automáticamente
+- Headers de seguridad (`X-Frame-Options`, `X-Content-Type-Options`, etc.)
+- Geo tags `CO-BOL` / Cartagena
+- Imágenes en formato AVIF + WebP
+- Fuentes con `display: swap`
+
+---
+
+## Deploy
+
+**Vercel** (recomendado):
+
+1. Conectar el repo en [vercel.com](https://vercel.com)
+2. Agregar las variables de entorno en Settings → Environment Variables
+3. Vercel detecta Next.js automáticamente
+
+**DNS (Hostinger):**
+
+Agrega los registros que Vercel te entrega en el panel de Hostinger → Dominio → DNS.
+
+---
+
+## Licencia
+
+Copyright © 2024–2025 Vanttage. Todos los derechos reservados.  
+Ver [LICENSE](LICENSE) para más detalles.
 
 ---
 
 <div align="center">
 
-**Vanttage**
-
-Ingeniería de software para simplificar negocios.
+**[vanttage.com](https://vanttage.com)** · Cartagena, Colombia
 
 </div>
