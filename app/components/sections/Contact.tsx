@@ -180,10 +180,10 @@ export default function Contact() {
             Contacto
           </p>
           <h2 className="text-5xl font-semibold leading-tight text-[#0A2540] md:text-6xl">
-            Cuéntanos lo que quieres construir
+            Hablemos de tu página web
           </h2>
           <p className="mt-6 text-lg text-[#475569]">
-            Nosotros nos encargamos de convertirlo en un producto real.
+            Cuéntanos qué necesita tu negocio y te respondemos con una propuesta clara.
           </p>
         </motion.div>
 
@@ -283,7 +283,7 @@ export default function Contact() {
                     {/* Campo oculto — llena {{title}} en el subject del template */}
                     {fields.map(({ name, label, placeholder, full, type }) => (
                       <label key={name} className={full ? "md:col-span-2" : ""}>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8]">
+                        <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#64748B]">
                           {label}
                         </span>
                         <input
@@ -291,21 +291,21 @@ export default function Contact() {
                           type={type ?? "text"}
                           placeholder={placeholder}
                           required
-                          className="mt-2 w-full rounded-xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-gray-300 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
+                          className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-slate-400 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
                         />
                       </label>
                     ))}
 
                     <label className="md:col-span-2">
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#94A3B8]">
-                        Proyecto
+                      <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#64748B]">
+                        Cuéntanos tu proyecto
                       </span>
                       <textarea
                         name="message"
                         rows={5}
                         required
-                        placeholder="Cuéntanos qué estás intentando construir…"
-                        className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-gray-300 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
+                        placeholder="Ej: Necesito una página web para mi restaurante con menú y formulario de contacto…"
+                        className="mt-2 w-full resize-none rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-[#0A2540] outline-none placeholder:text-slate-400 transition-all duration-200 focus:border-violet-400 focus:bg-white focus:ring-2 focus:ring-violet-400/20"
                       />
                     </label>
 

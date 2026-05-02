@@ -93,7 +93,7 @@ export default function CTAFinal() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" />
           </span>
-          Disponible · 2026
+          Aceptando proyectos · 2026
         </motion.div>
 
         {/* Title */}
@@ -104,7 +104,7 @@ export default function CTAFinal() {
           transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
           className="text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-[#0A2540] md:text-6xl"
         >
-          ¿Listo para escalar
+          ¿Listo para que tu negocio
           <br />
           <motion.span
             className="bg-clip-text text-transparent"
@@ -115,7 +115,7 @@ export default function CTAFinal() {
               backgroundSize: "200% 200%",
             }}
           >
-            sin fricción técnica?
+            brille en internet?
           </motion.span>
         </motion.h2>
 
@@ -127,8 +127,8 @@ export default function CTAFinal() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500"
         >
-          Cuéntame qué estás construyendo y te propongo una solución clara,
-          escalable y alineada a tu negocio.
+          Cuéntanos qué necesitas y te decimos exactamente cómo podemos
+          ayudarte. Sin compromisos, sin tecnicismos.
         </motion.p>
 
         {/* Stats */}
@@ -164,7 +164,7 @@ export default function CTAFinal() {
             style={{ x: magnetX, y: magnetY }}
             className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-8 py-4 text-sm font-medium text-white shadow-xl shadow-violet-500/30"
           >
-            <span className="relative z-10">Iniciar proyecto</span>
+            <span className="relative z-10">Quiero mi página web</span>
             <ArrowRight
               size={16}
               className="relative z-10 transition-transform duration-300 group-hover:translate-x-1"

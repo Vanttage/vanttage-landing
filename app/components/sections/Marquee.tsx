@@ -3,8 +3,11 @@
 import { motion } from "framer-motion";
 
 const items = [
-  "Northwind", "Helix", "Parallax", "Atlas CRM", "Cadence",
-  "Luminary", "Blueprint", "Monolith", "Vector", "Axiom",
+  "R&R Kelab SAS",
+  "Andreas Adventures",
+  "ALZAK",
+  "EcoTruck",
+  "LCS Lopez Combat System",
 ];
 
 function Sep() {

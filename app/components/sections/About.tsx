@@ -7,10 +7,10 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 /* ── Animación 1: Terminal de código (card grande) ── */
 const TerminalAnim = () => {
   const lines = [
-    { text: "> proyecto iniciado...", color: "#94a3b8" },
-    { text: "> arquitectura definida ✓", color: "#7c3aed" },
-    { text: "> componentes creados  ✓", color: "#7c3aed" },
-    { text: "> deploy exitoso       ✓", color: "#22c55e" },
+    { text: "> analizamos tu negocio...", color: "#94a3b8" },
+    { text: "> diseñamos tu identidad  ✓", color: "#7c3aed" },
+    { text: "> desarrollamos tu web    ✓", color: "#7c3aed" },
+    { text: "> lanzamos con éxito      ✓", color: "#22c55e" },
   ];
   return (
     <div className="rounded-xl bg-[#0f0f1a] px-4 py-3 font-mono text-xs leading-7">
@@ -76,9 +76,9 @@ const BarAnim = () => {
   );
 };
 
-/* ── Animación 4: Nodos de automatización ── */
+/* ── Animación 4: Nodos de proceso ── */
 const FlowAnim = () => {
-  const nodes = ["Proceso", "IA", "Listo"];
+  const nodes = ["Diseño", "Desarrollo", "Listo"];
   return (
     <div className="flex h-16 items-center justify-between">
       {nodes.map((label, i) => (
@@ -138,34 +138,34 @@ const HeartbeatAnim = () => (
 /* ── Data ── */
 const cards = [
   {
-    title: "Boutique, no agencia masiva",
-    desc: "Somos un equipo pequeño y enfocado. Cada proyecto es trabajado por desarrolladores senior — sin delegarlo a juniors ni perderse en burocracia. Atención directa, sin intermediarios.",
-    result: "Trato directo garantizado",
+    title: "Trato directo, sin intermediarios",
+    desc: "Somos un equipo pequeño y enfocado. Cada proyecto lo trabajamos nosotros mismos — sin subcontratar ni perder tiempo en burocracia. Hablas directamente con quienes construyen tu web.",
+    result: "Atención personalizada siempre",
     visual: <TerminalAnim />,
     large: true,
   },
   {
-    title: "Código limpio, sin atajos",
-    desc: "Nada de templates ni soluciones genéricas. Cada línea es intencional, mantenible y construida sobre arquitectura moderna.",
-    result: "Cero deuda técnica",
+    title: "Diseño único para tu negocio",
+    desc: "Nada de plantillas genéricas. Cada página web la diseñamos desde cero, adaptada a tu marca, tu industria y tus clientes.",
+    result: "Tu identidad, no una copia",
     visual: <OrbitAnim />,
   },
   {
-    title: "Diseño que convierte",
-    desc: "No solo se ve bien — está diseñado para guiar al usuario hacia la acción. CRO integrado desde el primer wireframe.",
-    result: "+3× conversión promedio",
+    title: "Páginas que venden de verdad",
+    desc: "No solo se ve bien — cada elemento está pensado para guiar a tu visitante hacia la acción: llamarte, escribirte o comprarte.",
+    result: "Más clientes, no solo visitas",
     visual: <BarAnim />,
   },
   {
-    title: "Automatizamos lo repetitivo",
-    desc: "Identificamos los procesos manuales que frenan tu operación y los convertimos en flujos automáticos que corren solos.",
-    result: "−15h/semana en promedio",
+    title: "Un proceso claro de principio a fin",
+    desc: "Diseño, desarrollo y lanzamiento sin sorpresas. Te explicamos cada paso en lenguaje sencillo para que siempre sepas en qué punto vamos.",
+    result: "Sin enredos ni tecnicismos",
     visual: <FlowAnim />,
   },
   {
-    title: "No desaparecemos al lanzar",
-    desc: "Después del launch somos tu equipo técnico. Mantenimiento, iteraciones y soporte continuo para que tu producto siga evolucionando.",
-    result: "Soporte post-lanzamiento",
+    title: "No desaparecemos después del lanzamiento",
+    desc: "Una vez que tu página está lista, seguimos contigo. Actualizaciones, soporte y mejoras continuas para que tu presencia digital siga creciendo.",
+    result: "Soporte continuo garantizado",
     visual: <HeartbeatAnim />,
   },
 ];
@@ -188,15 +188,15 @@ export default function About() {
             Sobre nosotros
           </p>
           <h2 className="text-4xl font-semibold leading-tight text-[#0A2540] md:text-5xl">
-            Un equipo pequeño
+            Por qué elegirnos
             <br />
             <span className="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">
-              con resultados grandes
+              y no a cualquiera
             </span>
           </h2>
           <p className="mt-5 text-lg text-[#475569]">
-            Construimos software, automatizamos procesos y diseñamos experiencias
-            digitales que convierten — con precisión boutique.
+            Somos Vanttage, un equipo de Cartagena especializado en crear páginas web
+            profesionales que realmente funcionan para tu negocio.
           </p>
         </motion.div>
 

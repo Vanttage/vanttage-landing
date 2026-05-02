@@ -48,7 +48,7 @@ export default function Hero() {
           >
             <span className="h-2 w-2 rounded-full bg-violet-400 animate-pulse" />
             <span className="text-[11px] uppercase tracking-[0.25em] text-zinc-400">
-              Software Boutique · Colombia
+              Diseño Web Profesional · Colombia
             </span>
           </motion.div>
 
@@ -56,12 +56,12 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: EASE }}
-            className="text-5xl font-semibold leading-[1] tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.5rem]"
+            className="text-5xl font-semibold leading-[1.05] tracking-[-0.04em] text-white sm:text-6xl lg:text-[4.5rem]"
           >
-            Deja de perseguir leads.
+            Tu página web,
             <br />
             <span className="bg-gradient-to-r from-violet-300 via-violet-400 to-violet-600 bg-clip-text text-transparent">
-              Empieza a cerrar.
+              tu mejor vendedor.
             </span>
           </motion.h1>
 
@@ -71,9 +71,9 @@ export default function Hero() {
             transition={{ delay: 0.2 }}
             className="mt-6 max-w-xl text-[16px] leading-relaxed text-zinc-400"
           >
-            Construimos plataformas digitales a medida — desde automatizaciones
-            hasta interfaces de alto impacto — diseñadas para convertir
-            visitantes en clientes reales.
+            Creamos páginas web profesionales que muestran tu negocio,
+            generan confianza en tus clientes y trabajan por ti
+            las&nbsp;24&nbsp;horas del día — todos los días.
           </motion.p>
 
           {/* CTA */}
@@ -87,7 +87,7 @@ export default function Hero() {
               onClick={() => scrollTo("contact")}
               className="group flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-medium text-black shadow-lg shadow-violet-500/20 transition-all hover:scale-[1.03]"
             >
-              Hablemos
+              Quiero mi página web
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-violet-700 text-white shadow-lg">
                 <ArrowRight size={14} />
               </span>
@@ -97,7 +97,7 @@ export default function Hero() {
               onClick={() => scrollTo("portfolio")}
               className="rounded-full border border-white/10 px-6 py-3 text-sm text-zinc-300 backdrop-blur hover:bg-white/5"
             >
-              Ver proyectos
+              Ver ejemplos
             </button>
           </motion.div>
         </div>
@@ -129,7 +129,7 @@ export default function Hero() {
             transition={{ delay: 0.8 }}
             className="absolute right-[-30px] top-10 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
           >
-            Automatización IA
+            ✦ Diseño a tu medida
           </motion.div>
 
           <motion.div
@@ -138,7 +138,7 @@ export default function Hero() {
             transition={{ delay: 1 }}
             className="absolute left-[-40px] top-40 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
           >
-            Alta Conversión
+            ✦ Rápida y segura
           </motion.div>
 
           <motion.div
@@ -147,7 +147,7 @@ export default function Hero() {
             transition={{ delay: 1.2 }}
             className="absolute bottom-[-20px] left-10 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
           >
-            Sistemas Escalables
+            ✦ Lista en días
           </motion.div>
         </motion.div>
       </div>

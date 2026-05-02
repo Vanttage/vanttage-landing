@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Vanttage — Software Boutique · Cartagena, Colombia";
+export const alt = "Vanttage — Páginas Web Profesionales · Cartagena, Colombia";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -12,189 +12,235 @@ export default function OGImage() {
         style={{
           width: "1200px",
           height: "630px",
-          background: "linear-gradient(135deg, #06060C 0%, #061729 40%, #0a1f3d 100%)",
+          background: "linear-gradient(135deg, #061729 0%, #0A2540 55%, #0f172a 100%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "space-between",
-          padding: "72px 80px",
-          fontFamily: "system-ui, sans-serif",
+          padding: "68px 80px",
+          fontFamily: "system-ui, -apple-system, sans-serif",
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Background accent dots */}
-        <div
-          style={{
-            position: "absolute",
-            top: "0",
-            right: "0",
-            width: "600px",
-            height: "600px",
-            background: "radial-gradient(circle at 80% 20%, rgba(99,102,241,0.18) 0%, transparent 60%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            bottom: "0",
-            left: "0",
-            width: "400px",
-            height: "400px",
-            background: "radial-gradient(circle at 20% 80%, rgba(139,92,246,0.12) 0%, transparent 60%)",
-          }}
-        />
-
-        {/* Grid lines subtle */}
+        {/* Grid sutil de fondo */}
         <div
           style={{
             position: "absolute",
             inset: "0",
             backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+              "linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px)",
+            backgroundSize: "62px 62px",
           }}
         />
 
-        {/* Top — Logo + badge */}
-        <div style={{ display: "flex", alignItems: "center", gap: "20px", zIndex: 1 }}>
+        {/* Glow violeta — arriba izquierda */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-130px",
+            left: "-100px",
+            width: "580px",
+            height: "580px",
+            background: "radial-gradient(circle, rgba(124,58,237,0.28) 0%, transparent 65%)",
+          }}
+        />
+
+        {/* Glow índigo — abajo derecha */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "-100px",
+            right: "-80px",
+            width: "440px",
+            height: "440px",
+            background: "radial-gradient(circle, rgba(99,102,241,0.20) 0%, transparent 65%)",
+          }}
+        />
+
+        {/* ── SECCIÓN SUPERIOR: logo + badge ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "20px",
+            zIndex: 1,
+          }}
+        >
           {/* Logo mark */}
           <div
             style={{
-              width: "52px",
-              height: "52px",
-              background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-              borderRadius: "12px",
+              width: "54px",
+              height: "54px",
+              background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)",
+              borderRadius: "14px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              boxShadow: "0 0 28px rgba(124,58,237,0.45)",
+            }}
+          >
+            <span style={{ fontSize: "26px", fontWeight: 800, color: "#fff" }}>V</span>
+          </div>
+
+          {/* Nombre */}
+          <span
+            style={{
+              fontSize: "28px",
+              fontWeight: 700,
+              color: "#F8FAFC",
+              letterSpacing: "-0.4px",
+            }}
+          >
+            Vanttage.
+          </span>
+
+          {/* Divider */}
+          <div
+            style={{
+              width: "1px",
+              height: "28px",
+              background: "rgba(255,255,255,0.15)",
+              marginLeft: "8px",
+            }}
+          />
+
+          {/* Badge localización */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 18px",
+              background: "rgba(124,58,237,0.15)",
+              border: "1px solid rgba(167,139,250,0.30)",
+              borderRadius: "100px",
+              fontSize: "13px",
+              color: "#a78bfa",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
             }}
           >
             <div
               style={{
-                fontSize: "26px",
-                fontWeight: 800,
-                color: "#ffffff",
-                letterSpacing: "-1px",
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: "#a78bfa",
               }}
-            >
-              V
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span
-              style={{
-                fontSize: "24px",
-                fontWeight: 700,
-                color: "#F8FAFC",
-                letterSpacing: "-0.5px",
-              }}
-            >
-              Vanttage
-            </span>
-            <span style={{ fontSize: "13px", color: "#94a3b8", letterSpacing: "0.5px" }}>
-              SOFTWARE BOUTIQUE
-            </span>
-          </div>
-
-          <div
-            style={{
-              marginLeft: "24px",
-              padding: "6px 16px",
-              background: "rgba(99,102,241,0.15)",
-              border: "1px solid rgba(99,102,241,0.35)",
-              borderRadius: "100px",
-              fontSize: "13px",
-              color: "#a5b4fc",
-              letterSpacing: "0.3px",
-            }}
-          >
-            Cartagena, Colombia
+            />
+            Cartagena · Colombia
           </div>
         </div>
 
-        {/* Main headline */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px", zIndex: 1 }}>
+        {/* ── SECCIÓN CENTRAL: headline ── */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "18px",
+            zIndex: 1,
+          }}
+        >
           <div
             style={{
-              fontSize: "68px",
-              fontWeight: 800,
+              fontSize: "70px",
+              fontWeight: 700,
               color: "#F8FAFC",
-              lineHeight: 1.05,
-              letterSpacing: "-2px",
-              maxWidth: "800px",
+              lineHeight: 1.04,
+              letterSpacing: "-2.5px",
+              maxWidth: "820px",
             }}
           >
-            Deja de perseguir leads.
+            Tu página web,
             <br />
             <span
               style={{
-                background: "linear-gradient(90deg, #6366f1 0%, #a78bfa 100%)",
+                background: "linear-gradient(90deg, #a78bfa 0%, #818cf8 100%)",
                 WebkitBackgroundClip: "text",
                 color: "transparent",
               }}
             >
-              Empieza a cerrar.
+              tu mejor vendedor.
             </span>
           </div>
 
           <p
             style={{
               fontSize: "22px",
-              color: "#94a3b8",
-              maxWidth: "700px",
+              color: "rgba(255,255,255,0.55)",
+              maxWidth: "680px",
               lineHeight: 1.5,
               margin: 0,
             }}
           >
-            Desarrollo web, software a medida y automatizaciones que convierten
-            visitas en clientes reales.
+            Diseño único, código limpio y resultados reales para tu negocio en internet.
           </p>
         </div>
 
-        {/* Bottom row — stats */}
+        {/* ── SECCIÓN INFERIOR: stats + URL ── */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "48px",
-            zIndex: 1,
             width: "100%",
+            zIndex: 1,
           }}
         >
-          {[
-            { value: "+12", label: "Proyectos" },
-            { value: "100%", label: "Satisfacción" },
-            { value: "<24h", label: "Respuesta" },
-          ].map((stat) => (
-            <div key={stat.label} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span
+          {/* Stats */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0px" }}>
+            {[
+              { value: "+12", label: "Proyectos" },
+              { value: "100%", label: "Satisfacción" },
+              { value: "< 24h", label: "Respuesta" },
+            ].map((stat, i) => (
+              <div
+                key={stat.label}
                 style={{
-                  fontSize: "36px",
-                  fontWeight: 800,
-                  color: "#F8FAFC",
-                  letterSpacing: "-1px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "3px",
+                  paddingRight: "48px",
+                  paddingLeft: i === 0 ? "0" : "48px",
+                  borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.10)",
                 }}
               >
-                {stat.value}
-              </span>
-              <span style={{ fontSize: "14px", color: "#64748b", letterSpacing: "0.5px" }}>
-                {stat.label.toUpperCase()}
-              </span>
-            </div>
-          ))}
+                <span
+                  style={{
+                    fontSize: "34px",
+                    fontWeight: 700,
+                    color: "#F8FAFC",
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  {stat.value}
+                </span>
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "#64748b",
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {stat.label}
+                </span>
+              </div>
+            ))}
+          </div>
 
+          {/* URL pill */}
           <div
             style={{
               marginLeft: "auto",
               padding: "14px 32px",
-              background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+              background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 100%)",
               borderRadius: "12px",
               fontSize: "18px",
-              fontWeight: 700,
+              fontWeight: 600,
               color: "#ffffff",
-              letterSpacing: "-0.3px",
+              letterSpacing: "0.02em",
+              boxShadow: "0 0 24px rgba(124,58,237,0.35)",
             }}
           >
             vanttagetech.com
@@ -202,8 +248,6 @@ export default function OGImage() {
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }

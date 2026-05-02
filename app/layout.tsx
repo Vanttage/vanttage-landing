@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-import Navbar  from "@/app/components/layout/Navbar";
-import Footer  from "@/app/components/layout/Footer";
-import JsonLd  from "@/app/components/JsonLd";
+import Navbar from "@/app/components/layout/Navbar";
+import Footer from "@/app/components/layout/Footer";
+import JsonLd from "@/app/components/JsonLd";
+import ChatWidget from "@/app/components/ChatWidget";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -29,71 +30,83 @@ export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),
 
   title: {
-    default: "Vanttage — Desarrollo Web & Software a Medida · Colombia",
+    default: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
     template: "%s | Vanttage",
   },
 
   description:
-    "Agencia de software boutique en Cartagena, Colombia. Desarrollamos sitios web, aplicaciones a medida y automatizaciones que convierten visitas en clientes reales. Código limpio, diseño premium, resultados medibles.",
+    "Creamos páginas web profesionales en Cartagena, Colombia. Diseño único, rápido y optimizado para Google que genera confianza y trae más clientes a tu negocio. Cotización gratis en menos de 24h.",
 
   keywords: [
-    // Intención principal
-    "desarrollo web Colombia",
+    // Alta intención — búsquedas de compra
+    "páginas web profesionales Cartagena",
+    "diseño web Cartagena Colombia",
+    "hacer página web para negocio Colombia",
     "agencia web Cartagena",
-    "software a medida Colombia",
-    "software boutique Colombia",
-    "desarrollo web profesional Colombia",
-    // Servicios
-    "diseño web empresarial Colombia",
-    "migración web Next.js",
-    "SEO técnico Colombia",
-    "automatización procesos digitales",
-    "landing page profesional Colombia",
-    "mantenimiento web Colombia",
-    "sistemas internos empresas",
-    // Local
-    "agencia digital Cartagena Colombia",
     "desarrollo web Cartagena",
-    "empresa software Cartagena",
-    // Long-tail
-    "páginas web que convierten Colombia",
-    "Next.js desarrollo Colombia",
+    // Servicios específicos
+    "tienda virtual Colombia",
+    "rediseño página web Colombia",
+    "mantenimiento web Colombia",
+    "posicionamiento Google Colombia",
+    "SEO para negocios Colombia",
+    "landing page profesional Colombia",
     "aplicaciones web a medida Colombia",
-    "rediseño web Colombia",
-    "optimización web velocidad Colombia",
+    // Long-tail con intención
+    "cuánto cuesta una página web en Colombia",
+    "empresa para hacer página web Cartagena",
+    "agencia diseño web profesional Colombia",
+    "página web para empresa pequeña Colombia",
+    "crear tienda online Colombia",
+    // Local + servicios
+    "agencia digital Cartagena Bolívar",
+    "desarrollo web profesional Colombia",
+    "diseño web para restaurantes Colombia",
+    "página web para hoteles Cartagena",
   ],
 
-  authors:   [{ name: "Vanttage", url: DOMAIN }],
-  creator:   "Vanttage",
+  authors: [{ name: "Vanttage", url: DOMAIN }],
+  creator: "Vanttage",
   publisher: "Vanttage",
 
   robots: {
-    index:     true,
-    follow:    true,
+    index: true,
+    follow: true,
     googleBot: {
-      index:              true,
-      follow:             true,
+      index: true,
+      follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",
-      "max-snippet":       -1,
+      "max-snippet": -1,
     },
   },
 
   openGraph: {
-    type:        "website",
-    locale:      "es_CO",
-    url:         DOMAIN,
-    siteName:    "Vanttage",
-    title:       "Vanttage — Desarrollo Web & Software a Medida · Colombia",
-    description: "Software boutique en Cartagena, Colombia. Desarrollamos productos digitales de alto nivel que convierten visitantes en clientes reales.",
+    type: "website",
+    locale: "es_CO",
+    url: DOMAIN,
+    siteName: "Vanttage",
+    title: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+    description:
+      "Creamos páginas web profesionales con diseño único que generan confianza y traen más clientes a tu negocio. Cotización gratis en menos de 24h.",
+    images: [
+      {
+        url: `${DOMAIN}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+      },
+    ],
   },
 
   twitter: {
-    card:        "summary_large_image",
-    site:        "@vanttage",
-    creator:     "@vanttage",
-    title:       "Vanttage — Desarrollo Web & Software a Medida · Colombia",
-    description: "Software boutique en Cartagena, Colombia. Código limpio, diseño premium, resultados medibles.",
+    card: "summary_large_image",
+    site: "@vanttage",
+    creator: "@vanttage",
+    title: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+    description:
+      "Diseño único, código limpio y resultados reales para tu negocio en internet. Cartagena, Colombia.",
+    images: [`${DOMAIN}/opengraph-image`],
   },
 
   alternates: {
@@ -106,22 +119,27 @@ export const metadata: Metadata = {
   verification: { google: "oDFmxUPYD8bwklybjgtr1TNINNHVSlkaIlfz0LiVbuE" },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="es" className={`${syne.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="icon"             href="/favicon.ico" sizes="any" />
-        <link rel="icon"             href="/icon.svg"    type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color"     content="#06060C" />
-        <meta name="geo.region"      content="CO-BOL" />
-        <meta name="geo.placename"   content="Cartagena, Colombia" />
+        <meta name="theme-color" content="#06060C" />
+        <meta name="geo.region" content="CO-BOL" />
+        <meta name="geo.placename" content="Cartagena, Colombia" />
         <JsonLd />
       </head>
       <body className="bg-[#061729] text-[#F8FAFC] antialiased">
         <Navbar />
         {children}
         <Footer />
+        <ChatWidget />
       </body>
     </html>
   );

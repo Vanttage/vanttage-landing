@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(npm install *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(curl -s https://vanttagetech.com/robots.txt)",
+      "WebFetch(domain:vanttagetech.com)",
+      "WebFetch(domain:www.vanttagetech.com)"
     ]
   }
 }
