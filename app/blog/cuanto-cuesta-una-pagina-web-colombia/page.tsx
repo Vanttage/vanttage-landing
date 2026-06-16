@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, TrendingUp } from "lucide-react";
+import { breadcrumbSchema } from "@/app/lib/schema";
 
 export const metadata: Metadata = {
   title: "¿Cuánto cuesta una página web en Colombia en 2025?",
@@ -89,6 +90,18 @@ export default function Post() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbSchema([
+              { name: "Inicio", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: "¿Cuánto cuesta una página web en Colombia?", path: "/blog/cuanto-cuesta-una-pagina-web-colombia" },
+            ]),
+          ),
+        }}
       />
       <main className="min-h-screen bg-[#F8FAFC]">
 

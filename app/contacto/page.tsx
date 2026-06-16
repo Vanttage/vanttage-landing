@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ContactoContent from "./ContactoContent";
+import { faqs } from "./faqs";
+import { faqPageSchema, breadcrumbSchema } from "@/app/lib/schema";
 
 export const metadata: Metadata = {
   title: "Contacto — Vanttage · Hablemos de tu Proyecto",
@@ -14,6 +16,25 @@ export const metadata: Metadata = {
   },
 };
 
+const schemas = [
+  faqPageSchema(faqs),
+  breadcrumbSchema([
+    { name: "Inicio", path: "/" },
+    { name: "Contacto", path: "/contacto" },
+  ]),
+];
+
 export default function Page() {
-  return <ContactoContent />;
+  return (
+    <>
+      {schemas.map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
+      <ContactoContent />
+    </>
+  );
 }
