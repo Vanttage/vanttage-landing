@@ -62,7 +62,7 @@ export default function Footer() {
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="mb-5 flex items-center gap-3">
               <div className="relative h-11 w-11 shrink-0">
-                <Image src="/logo/logo.svg" alt="Vanttage logo" fill className="object-contain" priority />
+                <Image src="/logo/logo.png" alt="Vanttage logo" fill sizes="44px" className="object-contain" priority />
               </div>
               <div>
                 <p className="text-[18px] font-semibold leading-none text-[#0A2540]">Vanttage.</p>

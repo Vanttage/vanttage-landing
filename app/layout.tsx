@@ -129,7 +129,7 @@ export default function RootLayout({
     <html lang="es" className={`${syne.variable} ${dmSans.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#06060C" />
         <meta name="geo.region" content="CO-BOL" />

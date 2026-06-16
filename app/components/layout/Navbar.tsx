@@ -97,9 +97,10 @@ export default function Navbar() {
           >
             <div className="relative h-11 w-11 shrink-0">
               <Image
-                src="/logo/logo.svg"
+                src="/logo/logo.png"
                 alt="Vanttage logo"
                 fill
+                sizes="44px"
                 className="object-contain"
                 priority
               />

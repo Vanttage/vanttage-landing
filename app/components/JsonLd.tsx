@@ -9,9 +9,9 @@ const organization = {
   url: DOMAIN,
   logo: {
     "@type": "ImageObject",
-    url: `${DOMAIN}/logo/logo.svg`,
-    width: 200,
-    height: 200,
+    url: `${DOMAIN}/logo/logo.png`,
+    width: 256,
+    height: 256,
   },
   description:
     "Agencia de software boutique en Cartagena, Colombia. Desarrollamos sitios web, aplicaciones a medida y automatizaciones que convierten visitas en clientes reales.",

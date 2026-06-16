@@ -1,10 +1,10 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import * as THREE from "three";
 
-const COUNT = 150;
+const COUNT = 110;
 const W = 14, H = 8, D = 4;
 const LINK_D2 = 2.8 * 2.8;
 const MAX_SEGS = 600;
@@ -101,12 +101,47 @@ function Net() {
 }
 
 export default function HeroScene() {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  // 'always' mientras el hero es visible; 'never' cuando sale de pantalla o
+  // la pestaña pasa a segundo plano. Evita gastar CPU/batería sin necesidad.
+  const [frameloop, setFrameloop] = useState<"always" | "never">("never");
+  // Si el usuario pidió menos movimiento, no montamos el canvas.
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onMq = () => setReduced(mq.matches);
+    mq.addEventListener("change", onMq);
+
+    const el = wrapRef.current;
+    let visible = false;
+    const update = () =>
+      setFrameloop(visible && !document.hidden ? "always" : "never");
+
+    const io = new IntersectionObserver(
+      ([entry]) => { visible = entry.isIntersecting; update(); },
+      { threshold: 0.01 },
+    );
+    if (el) io.observe(el);
+    document.addEventListener("visibilitychange", update);
+
+    return () => {
+      mq.removeEventListener("change", onMq);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
+
+  if (reduced) return null;
+
   return (
-    <div className="absolute inset-0">
+    <div ref={wrapRef} className="absolute inset-0">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 65 }}
         dpr={[1, 1.5]}
         gl={{ antialias: false, alpha: true }}
+        frameloop={frameloop}
       >
         <Net />
       </Canvas>

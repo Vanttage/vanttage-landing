@@ -3,7 +3,12 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import HeroScene from "./HeroScene";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+/* Three.js es pesado y solo es decoración de fondo:
+   se carga en el cliente, sin bloquear el render inicial. */
+const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -112,10 +117,13 @@ export default function Hero() {
           {/* Imagen */}
           <div className="relative overflow-hidden rounded-3xl border border-white/10 shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
             <div className="relative aspect-[4/5] w-full">
-              <img
-                src="/founders/founders.png"
+              <Image
+                src="/founders/founders.webp"
                 alt="Equipo"
-                className="h-full w-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 460px"
+                className="object-cover"
+                priority
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
