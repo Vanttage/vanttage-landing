@@ -5,12 +5,12 @@ import { ArrowLeft, ArrowRight, CheckCircle2, AlertTriangle, TrendingUp } from "
 export const metadata: Metadata = {
   title: "¿Cuánto cuesta una página web en Colombia en 2025?",
   description:
-    "Guía con precios reales del mercado colombiano 2025: páginas institucionales, tiendas virtuales, rediseños y apps. Qué incluye cada una y cómo no caer en manos equivocadas.",
+    "Guía 2025: qué determina el precio de una página web en Colombia, qué incluye cada tipo de proyecto (institucional, tienda virtual, rediseño y apps) y cómo no caer en manos equivocadas.",
   alternates: { canonical: "https://vanttagetech.com/blog/cuanto-cuesta-una-pagina-web-colombia" },
   openGraph: {
     title: "¿Cuánto cuesta una página web en Colombia en 2025?",
     description:
-      "Precios reales, qué incluye cada tipo de proyecto y señales de alerta al contratar. Guía honesta para dueños de negocios colombianos.",
+      "Qué determina el precio, qué incluye cada tipo de proyecto y señales de alerta al contratar. Guía honesta para dueños de negocios colombianos.",
     url: "https://vanttagetech.com/blog/cuanto-cuesta-una-pagina-web-colombia",
   },
 };
@@ -19,7 +19,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: "¿Cuánto cuesta una página web en Colombia en 2025?",
-  description: "Guía con precios reales del mercado colombiano 2025.",
+  description: "Qué determina el precio de una página web en Colombia y qué incluye cada tipo de proyecto. Guía 2025.",
   author: { "@type": "Organization", name: "Vanttage", url: "https://vanttagetech.com" },
   publisher: { "@type": "Organization", name: "Vanttage", url: "https://vanttagetech.com" },
   datePublished: "2025-05-01",
@@ -30,7 +30,6 @@ const jsonLd = {
 const priceCards = [
   {
     type: "Página web institucional / landing page",
-    range: "$1.200.000 – $3.500.000 COP",
     includes: [
       "Diseño 100% adaptado a tu marca",
       "Hasta 6–8 secciones de contenido",
@@ -42,7 +41,6 @@ const priceCards = [
   },
   {
     type: "Tienda virtual (e-commerce)",
-    range: "$2.500.000 – $8.000.000 COP",
     includes: [
       "Catálogo de productos con filtros",
       "Pagos online (PSE, Nequi, tarjetas)",
@@ -54,7 +52,6 @@ const priceCards = [
   },
   {
     type: "Rediseño de sitio existente",
-    range: "$1.200.000 – $4.000.000 COP",
     includes: [
       "Diseño nuevo desde cero",
       "Migración del contenido actual",
@@ -66,7 +63,6 @@ const priceCards = [
   },
   {
     type: "Aplicación web a medida",
-    range: "$4.000.000 – $20.000.000+ COP",
     includes: [
       "Reservas, CRM, portal de clientes",
       "Base de datos y lógica propia",
@@ -113,7 +109,7 @@ export default function Post() {
               ¿Cuánto cuesta una página web en Colombia en 2025?
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-white/60">
-              La guía honesta que nadie te da: rangos reales del mercado, qué incluye cada tipo de proyecto y cómo no caer en manos equivocadas.
+              La guía honesta que nadie te da: qué determina el precio, qué incluye cada tipo de proyecto y cómo no caer en manos equivocadas.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/35">
               <span>Mayo 2025</span>
@@ -133,7 +129,7 @@ export default function Post() {
             <div className="space-y-4 text-lg leading-relaxed text-[#475569]">
               <p>
                 Es la pregunta que casi todos hacen antes de contactar a una agencia:{" "}
-                <strong className="text-[#0A2540]">¿cuánto me va a costar?</strong> Y tiene todo el sentido preguntarla. El problema es que en internet encuentras respuestas que van de $200.000 COP a $50.000.000 COP — y ninguna te explica el porqué.
+                <strong className="text-[#0A2540]">¿cuánto me va a costar?</strong> Y tiene todo el sentido preguntarla. El problema es que en internet encuentras respuestas que varían muchísimo de un lado a otro — y ninguna te explica el porqué.
               </p>
               <p>
                 Dato que pocos mencionan: según cifras de 2024, <strong className="text-[#0A2540]">solo el 17% de las PYMEs en Colombia tiene sitio web propio</strong>. El 83% que no tiene — o tiene algo que no funciona — está regalando clientes a sus competidores que sí invierten en presencia digital.
@@ -181,8 +177,8 @@ export default function Post() {
 
             {/* Sección 2 — Precios */}
             <div className="space-y-5">
-              <h2 className="text-2xl font-semibold text-[#0A2540]">Rangos de precio según el tipo de proyecto</h2>
-              <p className="leading-relaxed text-[#475569]">Estos son los rangos reales que maneja el mercado colombiano en 2025 para proyectos profesionales — no plantillas ni productos genéricos:</p>
+              <h2 className="text-2xl font-semibold text-[#0A2540]">Qué incluye cada tipo de proyecto</h2>
+              <p className="leading-relaxed text-[#475569]">Cada proyecto se cotiza a la medida según su alcance — por eso no manejamos precios fijos. Esto es lo que normalmente incluye cada tipo de proyecto profesional (no plantillas ni productos genéricos):</p>
 
               <div className="space-y-4">
                 {priceCards.map((card) => (
@@ -192,7 +188,7 @@ export default function Post() {
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <h3 className="font-semibold text-[#0A2540]">{card.type}</h3>
                         <span className="shrink-0 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-1 text-sm font-semibold text-white">
-                          {card.range}
+                          Cotización a la medida
                         </span>
                       </div>
                       <ul className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -216,7 +212,7 @@ export default function Post() {
 
             {/* Sección 3 */}
             <div className="space-y-5">
-              <h2 className="text-2xl font-semibold text-[#0A2540]">¿Por qué encuentro páginas web desde $200.000 COP?</h2>
+              <h2 className="text-2xl font-semibold text-[#0A2540]">¿Por qué encuentro páginas web tan baratas?</h2>
               <p className="leading-relaxed text-[#475569]">Buena pregunta. Existen básicamente tres situaciones:</p>
 
               <div className="space-y-4">

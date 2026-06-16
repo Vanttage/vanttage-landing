@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle } from "lucide-react";
 import Image from "next/image";
+import { notifyTeam } from "@/app/lib/notify";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -87,6 +88,7 @@ export default function Footer() {
               </a>
               <a
                 href="mailto:vanttagectg@gmail.com"
+                onClick={() => notifyTeam({ source: "Correo (footer)", once: "mail-footer" })}
                 className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#0A2540] transition hover:bg-gray-50"
               >
                 Escribir correo
@@ -102,6 +104,10 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
+                  onClick={() =>
+                    label === "WhatsApp" &&
+                    notifyTeam({ source: "WhatsApp (footer)", once: "wa-footer" })
+                  }
                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-[#64748B] shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600"
                 >
                   <Icon size={15} />

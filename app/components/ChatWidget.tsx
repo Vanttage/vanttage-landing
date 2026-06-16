@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, ArrowUpRight } from "lucide-react";
+import { notifyTeam, MOISES_WHATSAPP } from "@/app/lib/notify";
 
 /* ─────────── TYPES ─────────── */
 
@@ -11,23 +12,53 @@ interface Message {
   content: string;
 }
 
+interface Lead {
+  nombre: string;
+  whatsapp: string;
+  necesidad: string;
+}
+
 /* ─────────── CONFIG ─────────── */
 
-const WHATSAPP =
-  "https://wa.me/573226706385?text=Hola%20Vanttage%2C%20me%20interesa%20una%20p%C3%A1gina%20web%20para%20mi%20negocio";
+const WHATSAPP = `https://wa.me/${MOISES_WHATSAPP}?text=Hola%20Vanttage%2C%20me%20interesa%20una%20p%C3%A1gina%20web%20para%20mi%20negocio`;
 
 const QUICK_REPLIES = [
-  { label: "💰 ¿Cuánto cuesta?", text: "¿Cuánto cuesta una página web?" },
-  { label: "⏱ ¿Cuánto tarda?", text: "¿Cuánto tiempo tarda hacer una página web?" },
-  { label: "📦 ¿Qué incluye?", text: "¿Qué incluyen sus servicios y qué garantizan?" },
-  { label: "🛒 Quiero una tienda", text: "¿Cuánto cuesta una tienda virtual y qué incluye?" },
+  { label: "📝 Quiero una cotización", text: "Quiero una cotización para mi proyecto" },
+  { label: "🌐 Una página web", text: "Necesito una página web profesional para mi negocio" },
+  { label: "🛒 Una tienda online", text: "Quiero una tienda virtual para vender online" },
+  { label: "⚙️ Una app a la medida", text: "Necesito una aplicación web a la medida" },
 ];
 
 const WELCOME: Message = {
   role: "assistant",
   content:
-    "¡Hola! 👋 Soy el asistente de **Vanttage**. Puedo ayudarte con precios, tiempos y todo lo que necesitas saber sobre tu página web. ¿En qué te puedo ayudar?",
+    "¡Hola! 👋 Soy el asistente de **Vanttage**. Cuéntame qué necesitas para tu negocio y con gusto te ayudo. ¿Quieres que un asesor te prepare una **cotización sin costo**?",
 };
+
+/* Detecta y extrae la marca interna [LEAD] ... [/LEAD] que emite el asistente */
+const LEAD_RE = /\[LEAD\]([\s\S]*?)\[\/LEAD\]/i;
+
+function parseLead(text: string): Lead | null {
+  const m = text.match(LEAD_RE);
+  if (!m) return null;
+  const body = m[1];
+  const get = (k: string) =>
+    (body.match(new RegExp(`${k}\\s*=\\s*([^;\\]]*)`, "i"))?.[1] ?? "").trim();
+  const nombre = get("nombre");
+  const whatsapp = get("whatsapp");
+  const necesidad = get("necesidad");
+  if (!nombre && !whatsapp && !necesidad) return null;
+  return { nombre, whatsapp, necesidad };
+}
+
+/* Quita la marca [LEAD]...[/LEAD] del texto visible. También oculta un
+   fragmento "[LEAD] ..." todavía sin cerrar mientras el mensaje va llegando. */
+function stripLead(text: string): string {
+  let t = text.replace(LEAD_RE, "");
+  const open = t.search(/\[LEAD\]/i);
+  if (open !== -1) t = t.slice(0, open);
+  return t.replace(/\n{3,}/g, "\n\n").trim();
+}
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -97,13 +128,39 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasNotif, setHasNotif] = useState(true);
+  const [leadWa, setLeadWa] = useState<string | null>(null);
+  const leadSentRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  /* Cuando el asistente completa los 3 datos: avisa por correo a AMBOS socios
+     y prepara el enlace de WhatsApp (a Moisés) que abrirá el visitante. */
+  async function handleLead(lead: Lead) {
+    if (leadSentRef.current) return;
+    leadSentRef.current = true;
+
+    /* 1) Notifica a los 3 correos del equipo con los datos del lead */
+    notifyTeam({
+      source: "Chat (lead)",
+      name: lead.nombre,
+      whatsapp: lead.whatsapp,
+      message: lead.necesidad,
+    });
+
+    /* 2) Enlace de WhatsApp hacia Moisés con los datos prellenados */
+    const texto =
+      `Hola Vanttage 👋, soy *${lead.nombre}*.\n` +
+      `WhatsApp: ${lead.whatsapp}\n` +
+      `Necesito: ${lead.necesidad}`;
+    setLeadWa(
+      `https://wa.me/${MOISES_WHATSAPP}?text=${encodeURIComponent(texto)}`,
+    );
+  }
 
   /* Auto-scroll al último mensaje */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, leadWa]);
 
   /* Focus input al abrir */
   useEffect(() => {
@@ -162,7 +219,7 @@ export default function ChatWidget() {
               const updated = [...prev];
               updated[updated.length - 1] = {
                 role: "assistant",
-                content: assistantText,
+                content: stripLead(assistantText),
               };
               return updated;
             });
@@ -171,6 +228,10 @@ export default function ChatWidget() {
           }
         }
       }
+
+      /* Al terminar el stream: si el asistente capturó el lead, dispara avisos */
+      const lead = parseLead(assistantText);
+      if (lead) handleLead(lead);
     } catch {
       setLoading(false);
       setMessages((prev) => [
@@ -238,6 +299,26 @@ export default function ChatWidget() {
                   </div>
                 </div>
               )}
+
+              {/* Botón de WhatsApp tras capturar el lead: el visitante abre su
+                  WhatsApp con los datos prellenados hacia Moisés */}
+              {leadWa && (
+                <motion.a
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  href={leadWa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-green-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-green-500/30 transition hover:bg-green-600"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 fill-white">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347" />
+                  </svg>
+                  Enviar mis datos por WhatsApp
+                  <ArrowUpRight size={14} />
+                </motion.a>
+              )}
+
               <div ref={bottomRef} />
             </div>
 
@@ -281,6 +362,7 @@ export default function ChatWidget() {
                 href={WHATSAPP}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => notifyTeam({ source: "WhatsApp (chat)", once: "wa-chat" })}
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-green-200 bg-green-50 py-2.5 text-[12px] font-medium text-green-700 transition hover:bg-green-100"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4 fill-green-600">

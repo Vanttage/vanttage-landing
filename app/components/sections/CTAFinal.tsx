@@ -3,6 +3,7 @@
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
 import { useRef } from "react";
+import { notifyTeam } from "@/app/lib/notify";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -175,6 +176,7 @@ export default function CTAFinal() {
           {/* Secundario */}
           <a
             href="mailto:vanttagectg@gmail.com"
+            onClick={() => notifyTeam({ source: "Correo (CTA final)", once: "mail-cta" })}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-8 py-4 text-sm text-slate-600 shadow-sm transition-colors duration-200 hover:bg-slate-50"
           >
             <Mail size={14} />

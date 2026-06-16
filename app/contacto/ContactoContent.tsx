@@ -8,6 +8,7 @@ import {
   CheckCircle2, AlertCircle, RotateCcw, ChevronDown, MessageCircle,
 } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { TEAM_EMAILS, notifyTeam } from "@/app/lib/notify";
 
 const EJS_SERVICE  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  ?? "";
 const EJS_TEMPLATE = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
@@ -29,7 +30,7 @@ const contactDetails = [
 const faqs = [
   {
     q: "¿Cuánto cuesta una página web?",
-    a: "El precio depende del tipo de proyecto. Una página web profesional parte desde $1.500.000 COP, una tienda virtual desde $2.500.000 COP. Te damos un presupuesto exacto según lo que necesitas.",
+    a: "Cada proyecto se cotiza a la medida según su alcance, por eso no manejamos precios fijos. Escríbenos directamente y te preparamos una cotización personalizada sin costo, adaptada a lo que tu negocio necesita.",
   },
   {
     q: "¿Cuánto tiempo toma hacer mi página?",
@@ -41,7 +42,7 @@ const faqs = [
   },
   {
     q: "¿Qué pasa después de que se lanza mi página?",
-    a: "No desaparecemos. Ofrecemos soporte y acompañamiento post-lanzamiento. También tenemos planes de mantenimiento mensual desde $300.000 COP/mes.",
+    a: "No desaparecemos. Ofrecemos soporte y acompañamiento post-lanzamiento, además de planes de mantenimiento mensual. Cuéntanos tu caso y te armamos un plan a la medida.",
   },
   {
     q: "¿Trabajan con negocios de toda Colombia?",
@@ -128,11 +129,12 @@ export default function ContactoContent() {
     setStatus("loading");
     const fd = new FormData(e.currentTarget);
     const payload = {
-      title:   "Nuevo Proyecto desde Vanttage.com/contacto",
-      name:    fd.get("name")    as string,
-      company: fd.get("company") as string,
-      email:   fd.get("email")   as string,
-      message: fd.get("message") as string,
+      title:    "Nuevo Proyecto desde Vanttage.com/contacto",
+      name:     fd.get("name")    as string,
+      company:  fd.get("company") as string,
+      email:    fd.get("email")   as string,
+      message:  fd.get("message") as string,
+      to_email: TEAM_EMAILS,
     };
     try {
       await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, payload, { publicKey: EJS_KEY });
@@ -246,6 +248,7 @@ export default function ContactoContent() {
                 href={WHATSAPP}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => notifyTeam({ source: "WhatsApp (contacto)", once: "wa-contacto" })}
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

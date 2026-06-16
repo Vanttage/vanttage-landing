@@ -11,7 +11,7 @@ export const posts = [
     slug: "cuanto-cuesta-una-pagina-web-colombia",
     title: "¿Cuánto cuesta una página web en Colombia en 2025?",
     excerpt:
-      "La pregunta que todos hacen. Te explicamos los rangos reales, qué incluye cada tipo de proyecto y cómo no caer en manos equivocadas.",
+      "La pregunta que todos hacen. Te explicamos qué determina el precio, qué incluye cada tipo de proyecto y cómo no caer en manos equivocadas.",
     category: "Precios & Presupuesto",
     date: "Mayo 2025",
     readTime: "6 min",

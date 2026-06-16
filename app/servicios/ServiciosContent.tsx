@@ -112,8 +112,8 @@ const services = [
 
 const faqs = [
   {
-    q: "¿Los precios son negociables?",
-    a: "Los precios indicados son el punto de partida. El costo final depende del alcance específico de tu proyecto. Siempre te damos un presupuesto exacto antes de empezar — sin sorpresas.",
+    q: "¿Cómo manejan los precios?",
+    a: "Cada proyecto se cotiza a la medida según su alcance, así que no manejamos precios fijos. Escríbenos y te preparamos un presupuesto exacto y personalizado antes de empezar — sin sorpresas y sin costo.",
   },
   {
     q: "¿Qué necesito tener listo para empezar?",
@@ -205,8 +205,8 @@ export default function ServiciosContent() {
             transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
             className="mt-6 max-w-2xl text-lg leading-relaxed text-white/60"
           >
-            Precios claros, procesos definidos y entregables reales. Sin promesas vagas,
-            sin presupuestos sorpresa.
+            Cotizaciones a la medida, procesos definidos y entregables reales. Sin promesas
+            vagas, sin presupuestos sorpresa.
           </motion.p>
 
           {/* Stats strip */}

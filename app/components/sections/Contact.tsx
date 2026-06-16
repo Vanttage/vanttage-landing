@@ -12,6 +12,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { TEAM_EMAILS } from "@/app/lib/notify";
 
 /* ── Config — rellena con tus keys de EmailJS ── */
 const EJS_SERVICE = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
@@ -128,11 +129,12 @@ export default function Contact() {
     const fd = new FormData(e.currentTarget);
 
     const payload = {
-      title:   "Nuevo Proyecto desde Vanttage.com",
-      name:    fd.get("name")    as string,
-      company: fd.get("company") as string,
-      email:   fd.get("email")   as string,
-      message: fd.get("message") as string,
+      title:    "Nuevo Proyecto desde Vanttage.com",
+      name:     fd.get("name")    as string,
+      company:  fd.get("company") as string,
+      email:    fd.get("email")   as string,
+      message:  fd.get("message") as string,
+      to_email: TEAM_EMAILS,
     };
 
     console.log("📧 EmailJS config:", {

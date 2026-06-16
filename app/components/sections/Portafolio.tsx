@@ -104,6 +104,19 @@ export const allProjects: Project[] = [
     mockupGradient: "from-cyan-900 via-teal-800 to-sky-900",
     mockupHeaderColor: "#0891b2",
   },
+  {
+    id: "07",
+    category: "Aplicación Web",
+    title: "PlaticApp",
+    description:
+      "Aplicación web responsive hecha a la medida para control financiero personal: registra gastos, ingresos e inversiones hablándole a un bot de Telegram (texto, audio o foto) y visualízalo todo en un dashboard en tiempo real — patrimonio, gráficos y presupuestos.",
+    url: "https://platicapp-web.vercel.app",
+    tags: ["App a la medida", "Bot de Telegram", "Dashboard", "Tiempo real"],
+    accent: "#0a84ff",
+    year: "2025",
+    mockupGradient: "from-blue-900 via-indigo-800 to-sky-900",
+    mockupHeaderColor: "#0a84ff",
+  },
 ];
 
 /* ─────────── LIVE BROWSER PREVIEW ─────────── */
