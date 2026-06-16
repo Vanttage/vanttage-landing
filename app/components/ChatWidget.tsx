@@ -170,6 +170,8 @@ export default function ChatWidget() {
     }
   }, [open]);
 
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
   async function sendMessage(text: string) {
     if (!text.trim() || loading) return;
 
@@ -179,69 +181,105 @@ export default function ChatWidget() {
     setInput("");
     setLoading(true);
 
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: history.map((m) => ({ role: m.role, content: m.content })),
-        }),
-      });
+    const payload = JSON.stringify({
+      messages: history.map((m) => ({ role: m.role, content: m.content })),
+    });
 
-      if (!res.ok || !res.body) throw new Error("API error");
+    /* Hasta 3 intentos ante fallos transitorios (red, 429, 5xx) */
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+        });
 
-      /* Leer el stream SSE */
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = "";
-
-      setLoading(false);
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") break;
-
-          try {
-            const json = JSON.parse(data);
-            const delta = json.choices?.[0]?.delta?.content ?? "";
-            assistantText += delta;
-
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = {
-                role: "assistant",
-                content: stripLead(assistantText),
-              };
-              return updated;
-            });
-          } catch {
-            /* chunk incompleto, ignorar */
+        /* Error transitorio recuperable → reintenta con backoff */
+        if (res.status === 429 || res.status >= 500) {
+          if (attempt < 2) {
+            await sleep(700 * (attempt + 1));
+            continue;
           }
+          throw new Error(`status ${res.status}`);
         }
-      }
+        if (!res.ok || !res.body) throw new Error("API error");
 
-      /* Al terminar el stream: si el asistente capturó el lead, dispara avisos */
-      const lead = parseLead(assistantText);
-      if (lead) handleLead(lead);
-    } catch {
-      setLoading(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Ocurrió un error al conectarme. Por favor escríbenos directamente por WhatsApp 👇",
-        },
-      ]);
+        /* Stream SSE con buffer: las líneas pueden partirse entre lecturas */
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let assistantText = "";
+
+        setLoading(false);
+        setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+        let streamErr = false;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() ?? ""; // la última línea puede estar incompleta
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              const data = line.slice(6).trim();
+              if (!data || data === "[DONE]") continue;
+
+              try {
+                const json = JSON.parse(data);
+                const delta = json.choices?.[0]?.delta?.content ?? "";
+                if (!delta) continue;
+                assistantText += delta;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = {
+                    role: "assistant",
+                    content: stripLead(assistantText),
+                  };
+                  return updated;
+                });
+              } catch {
+                /* fragmento JSON incompleto: lo recupera el siguiente chunk */
+              }
+            }
+          }
+        } catch {
+          streamErr = true; // el stream se cortó a mitad: conservamos lo recibido
+        }
+
+        /* Si capturó el lead, dispara avisos al equipo */
+        const lead = parseLead(assistantText);
+        if (lead) handleLead(lead);
+
+        /* Si no llegó nada de texto y el stream falló, deja que reintente */
+        if (!assistantText && streamErr) {
+          if (attempt < 2) {
+            setMessages(history); // quita la burbuja vacía antes de reintentar
+            setLoading(true);
+            await sleep(600);
+            continue;
+          }
+          throw new Error("stream vacío");
+        }
+        return; // éxito
+      } catch {
+        if (attempt < 2) {
+          await sleep(700 * (attempt + 1));
+          continue;
+        }
+        setLoading(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "Tuve un problemita para responder 😅. Inténtalo de nuevo o escríbenos por WhatsApp 👇",
+          },
+        ]);
+      }
     }
   }
 

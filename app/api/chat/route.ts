@@ -50,25 +50,39 @@ export async function POST(req: NextRequest) {
 
   const { messages } = await req.json();
 
-  const res = await fetch(GROQ_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-      stream: true,
-      max_tokens: 400,
-      temperature: 0.6,
-    }),
+  const body = JSON.stringify({
+    model: MODEL,
+    messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+    stream: true,
+    max_tokens: 400,
+    temperature: 0.6,
   });
 
-  if (!res.ok) {
-    const err = await res.text();
+  /* Reintenta ante errores transitorios de Groq (429 / 5xx) */
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    res = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body,
+    });
+    if (res.ok) break;
+    if (res.status === 429 || res.status >= 500) {
+      if (attempt < 2) {
+        await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+        continue;
+      }
+    }
+    break;
+  }
+
+  if (!res || !res.ok) {
+    const err = res ? await res.text() : "sin respuesta del proveedor";
     return new Response(JSON.stringify({ error: err }), {
-      status: res.status,
+      status: res?.status ?? 502,
       headers: { "Content-Type": "application/json" },
     });
   }
