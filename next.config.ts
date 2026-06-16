@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
 
   images: {
     formats: ["image/avif", "image/webp"],
+    // Cachear las imágenes ya optimizadas en el edge (31 días) para que no se
+    // regeneren en cada visita. Sin esto el optimizador responde MISS/max-age=0
+    // y vuelve a generar la imagen del hero (LCP) en cada carga.
+    minimumCacheTTL: 2678400,
   },
 };
 
