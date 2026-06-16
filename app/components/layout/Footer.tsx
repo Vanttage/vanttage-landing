@@ -18,7 +18,7 @@ const navLinks = [
 const contacts = [
   { icon: Mail,   label: "Correo",    value: "vanttagectg@gmail.com", href: "mailto:vanttagectg@gmail.com" },
   { icon: Phone,  label: "Teléfono",  value: "+57 322 670 6385",      href: "tel:+573226706385" },
-  { icon: MapPin, label: "Ubicación", value: "Cartagena · Colombia",  href: "#contact" },
+  { icon: MapPin, label: "Ubicación", value: "Edificio Territorio Mío, Torre 3 · Sector Providencia, Cartagena de Indias, Bolívar, Colombia", href: "https://maps.google.com/?q=Edificio+Territorio+M%C3%ADo+Sector+Providencia+Cartagena" },
 ];
 
 const socials = [

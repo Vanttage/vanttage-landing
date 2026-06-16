@@ -27,8 +27,10 @@ const organization = {
   ],
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Cartagena",
+    streetAddress: "Edificio Territorio Mío, Torre 3, Apto 1635, Sector Providencia",
+    addressLocality: "Cartagena de Indias",
     addressRegion: "Bolívar",
+    postalCode: "130001",
     addressCountry: "CO",
   },
   contactPoint: {
@@ -57,7 +59,8 @@ const localBusiness = {
   priceRange: "$$",
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Cartagena",
+    streetAddress: "Edificio Territorio Mío, Torre 3, Apto 1635, Sector Providencia",
+    addressLocality: "Cartagena de Indias",
     addressRegion: "Bolívar",
     postalCode: "130001",
     addressCountry: "CO",

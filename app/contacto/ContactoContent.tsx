@@ -24,7 +24,7 @@ type Status = "idle" | "loading" | "success" | "error";
 const contactDetails = [
   { icon: Phone,  title: "Teléfono",   lines: ["+57 322 670 6385", "+57 310 508 0356"] },
   { icon: Mail,   title: "Correo",     lines: ["vanttagectg@gmail.com"] },
-  { icon: MapPin, title: "Ubicación",  lines: ["Cartagena · Colombia"] },
+  { icon: MapPin, title: "Ubicación",  lines: ["Edificio Territorio Mío, Torre 3, Apto 1635", "Sector Providencia · Cartagena de Indias, Bolívar"] },
 ];
 
 import { faqs } from "./faqs";
