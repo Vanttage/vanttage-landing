@@ -38,8 +38,8 @@ export default function Footer() {
 
       {/* Glow top */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[300px] w-[700px] -translate-x-1/2 bg-violet-400/10 blur-[120px]" />
-        <div className="absolute bottom-0 right-0 h-[200px] w-[400px] bg-indigo-300/10 blur-[100px]" />
+        <div className="absolute left-1/2 top-0 h-[300px] w-[700px] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(closest-side, rgba(167,139,250,0.12), transparent)" }} />
+        <div className="absolute bottom-0 right-0 h-[200px] w-[400px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(165,180,252,0.12), transparent)" }} />
       </div>
 
       {/* Texto decorativo de fondo */}

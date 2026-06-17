@@ -58,7 +58,10 @@ export default function Problem() {
       className="relative bg-[#F8FAFC] py-20 px-6 md:py-32"
     >
       {/* Glow estático */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-200 blur-[160px] opacity-40" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(233,213,255,0.5), transparent)" }}
+      />
 
       <div className="relative mx-auto max-w-6xl">
 

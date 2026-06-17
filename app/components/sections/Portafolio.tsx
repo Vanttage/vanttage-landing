@@ -54,16 +54,16 @@ export const allProjects: Project[] = [
   },
   {
     id: "03",
-    category: "Página Web",
-    title: "GIS Migration",
+    category: "Aplicación Web",
+    title: "PlaticApp",
     description:
-      "Sitio web desarrollado desde cero para firma de asesoría migratoria en EE.UU. Diseño profesional, multilenguaje, formulario de contacto y gestión de pagos internacionales.",
-    url: "https://www.losgestores.com/",
-    tags: ["Desarrollo desde cero", "Multilenguaje", "Formularios"],
-    accent: "#1EA7FF",
+      "Aplicación web responsive hecha a la medida para control financiero personal: registra gastos, ingresos e inversiones hablándole a un bot de Telegram (texto, audio o foto) y visualízalo todo en un dashboard en tiempo real — patrimonio, gráficos y presupuestos.",
+    url: "https://platicapp-web.vercel.app",
+    tags: ["App a la medida", "Bot de Telegram", "Dashboard", "Tiempo real"],
+    accent: "#0a84ff",
     year: "2025",
-    mockupGradient: "from-sky-900 via-blue-800 to-indigo-900",
-    mockupHeaderColor: "#0284c7",
+    mockupGradient: "from-blue-900 via-indigo-800 to-sky-900",
+    mockupHeaderColor: "#0a84ff",
   },
   {
     id: "04",
@@ -106,16 +106,16 @@ export const allProjects: Project[] = [
   },
   {
     id: "07",
-    category: "Aplicación Web",
-    title: "PlaticApp",
+    category: "Página Web",
+    title: "GIS Migration",
     description:
-      "Aplicación web responsive hecha a la medida para control financiero personal: registra gastos, ingresos e inversiones hablándole a un bot de Telegram (texto, audio o foto) y visualízalo todo en un dashboard en tiempo real — patrimonio, gráficos y presupuestos.",
-    url: "https://platicapp-web.vercel.app",
-    tags: ["App a la medida", "Bot de Telegram", "Dashboard", "Tiempo real"],
-    accent: "#0a84ff",
+      "Sitio web desarrollado desde cero para firma de asesoría migratoria en EE.UU. Diseño profesional, multilenguaje, formulario de contacto y gestión de pagos internacionales.",
+    url: "https://www.losgestores.com/",
+    tags: ["Desarrollo desde cero", "Multilenguaje", "Formularios"],
+    accent: "#1EA7FF",
     year: "2025",
-    mockupGradient: "from-blue-900 via-indigo-800 to-sky-900",
-    mockupHeaderColor: "#0a84ff",
+    mockupGradient: "from-sky-900 via-blue-800 to-indigo-900",
+    mockupHeaderColor: "#0284c7",
   },
 ];
 
@@ -392,8 +392,14 @@ export default function Portfolio() {
       className="relative overflow-hidden bg-[#020617] py-28 px-6 text-white"
     >
       {/* Background glows — CSS only, no Framer animate loop */}
-      <div className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-[160px]" />
-      <div className="pointer-events-none absolute -left-[10%] -top-[10%] h-[400px] w-[400px] rounded-full bg-indigo-500/10 blur-[140px]" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[45%] h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(139,92,246,0.12), transparent)" }}
+      />
+      <div
+        className="pointer-events-none absolute -left-[10%] -top-[10%] h-[400px] w-[400px] rounded-full"
+        style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.12), transparent)" }}
+      />
 
       <div className="relative z-10 mx-auto max-w-[1200px]">
         {/* Header */}

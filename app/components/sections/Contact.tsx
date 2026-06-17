@@ -145,9 +145,9 @@ export default function Contact() {
     >
       {/* Glows */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-[10%] top-[20%] h-[420px] w-[420px] rounded-full bg-violet-400/20 blur-[140px]" />
-        <div className="absolute -right-[10%] bottom-[10%] h-[420px] w-[420px] rounded-full bg-blue-400/20 blur-[140px]" />
-        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-300/10 blur-[160px]" />
+        <div className="absolute -left-[10%] top-[20%] h-[420px] w-[420px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(167,139,250,0.22), transparent)" }} />
+        <div className="absolute -right-[10%] bottom-[10%] h-[420px] w-[420px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(96,165,250,0.22), transparent)" }} />
+        <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ background: "radial-gradient(closest-side, rgba(216,180,254,0.12), transparent)" }} />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl">

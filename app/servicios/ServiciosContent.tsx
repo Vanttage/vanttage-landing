@@ -144,8 +144,8 @@ export default function ServiciosContent() {
       {/* ── Header oscuro ── */}
       <section className="relative overflow-hidden bg-[#061729] px-6 pb-24 pt-32">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-[10%] top-[10%] h-[420px] w-[420px] rounded-full bg-violet-500/15 blur-[140px]" />
-          <div className="absolute -right-[5%] bottom-0 h-[300px] w-[300px] rounded-full bg-indigo-500/10 blur-[120px]" />
+          <div className="absolute -left-[10%] top-[10%] h-[420px] w-[420px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(139,92,246,0.16), transparent)" }} />
+          <div className="absolute -right-[5%] bottom-0 h-[300px] w-[300px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.12), transparent)" }} />
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl">
@@ -364,7 +364,7 @@ export default function ServiciosContent() {
           >
             {/* Glow interior */}
             <div className="pointer-events-none absolute inset-0">
-              <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-white/10 blur-[80px]" />
+              <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.12), transparent)" }} />
             </div>
 
             <div className="relative z-10">

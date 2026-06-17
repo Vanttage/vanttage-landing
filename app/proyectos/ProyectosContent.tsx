@@ -214,8 +214,8 @@ export default function ProyectosPage() {
     <main className="min-h-screen bg-[#020617] text-white">
 
       {/* Background glows */}
-      <div className="pointer-events-none fixed left-1/4 top-0 h-[600px] w-[600px] rounded-full bg-violet-600/8 blur-[180px]" />
-      <div className="pointer-events-none fixed right-0 top-1/2 h-[400px] w-[400px] rounded-full bg-indigo-600/8 blur-[150px]" />
+      <div className="pointer-events-none fixed left-1/4 top-0 h-[600px] w-[600px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(124,58,237,0.10), transparent)" }} />
+      <div className="pointer-events-none fixed right-0 top-1/2 h-[400px] w-[400px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(79,70,229,0.10), transparent)" }} />
 
       <div className="relative z-10 mx-auto max-w-[1200px] px-6 pb-32 pt-36">
 

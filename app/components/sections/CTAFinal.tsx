@@ -72,13 +72,13 @@ export default function CTAFinal() {
 
       {/* Glow que sigue el cursor */}
       <motion.div
-        className="pointer-events-none absolute h-[400px] w-[400px] rounded-full bg-violet-500/20 blur-[120px]"
-        style={{ left: smoothX, top: smoothY, translateX: "-50%", translateY: "-50%" }}
+        className="pointer-events-none absolute h-[400px] w-[400px] rounded-full"
+        style={{ left: smoothX, top: smoothY, translateX: "-50%", translateY: "-50%", background: "radial-gradient(closest-side, rgba(139,92,246,0.22), transparent)" }}
       />
 
       {/* Glows fijos de esquina */}
-      <div className="absolute -left-40 -top-40 h-[400px] w-[400px] rounded-full bg-indigo-400/15 blur-[120px]" />
-      <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full bg-blue-400/15 blur-[120px]" />
+      <div className="absolute -left-40 -top-40 h-[400px] w-[400px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(129,140,248,0.16), transparent)" }} />
+      <div className="absolute -bottom-40 -right-40 h-[400px] w-[400px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(96,165,250,0.16), transparent)" }} />
 
       <div className="relative z-10 mx-auto max-w-[1100px] text-center">
 

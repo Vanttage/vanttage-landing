@@ -238,10 +238,10 @@ export default function Services() {
               >
                 {/* Static glow — no animate, driven by opacity via CSS */}
                 <div
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px] transition-opacity duration-700"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
                   style={{
-                    background: s.color,
-                    opacity: isActive ? 0.14 : 0,
+                    background: `radial-gradient(closest-side, ${s.color}, transparent)`,
+                    opacity: isActive ? 0.16 : 0,
                   }}
                 />
 
