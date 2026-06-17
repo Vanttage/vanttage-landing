@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
@@ -164,6 +164,9 @@ function GradientMockup({ project }: { project: Project }) {
 
 function BrowserPreview({ project }: { project: Project }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  /* El iframe (sitio externo completo) solo se monta cuando la tarjeta está
+     cerca del viewport, para no cargar 3 webs externas al abrir la página. */
+  const inView = useInView(containerRef, { once: true, margin: "300px" });
   const [scale, setScale] = useState(0.28);
   const [status, setStatus] = useState<"loading" | "live" | "fallback">(
     project.url ? "loading" : "fallback",
@@ -181,10 +184,10 @@ function BrowserPreview({ project }: { project: Project }) {
 
   /* Timeout de seguridad: si el iframe no responde en 4s, fallback */
   useEffect(() => {
-    if (status !== "loading") return;
+    if (status !== "loading" || !inView) return;
     const t = setTimeout(() => setStatus("fallback"), 4000);
     return () => clearTimeout(t);
-  }, [status]);
+  }, [status, inView]);
 
   /*
    * onLoad detecta si el sitio bloqueó el iframe con X-Frame-Options:
@@ -255,8 +258,8 @@ function BrowserPreview({ project }: { project: Project }) {
           </div>
         )}
 
-        {/* Iframe live — solo si hay URL */}
-        {project.url && (
+        {/* Iframe live — solo si hay URL y la tarjeta está cerca del viewport */}
+        {project.url && inView && (
           <iframe
             src={project.url}
             title={project.title}

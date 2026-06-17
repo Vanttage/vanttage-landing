@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
 const items = [
   "R&R Kelab SAS",
@@ -16,9 +17,11 @@ function Sep() {
 
 export default function Marquee() {
   const loop = [...items, ...items];
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: "100px" });
 
   return (
-    <div className="relative w-full overflow-hidden border-y border-white/[0.06] bg-[#0A0A14] py-10">
+    <div ref={ref} className="relative w-full overflow-hidden border-y border-white/[0.06] bg-[#0A0A14] py-10">
       {/* Label */}
       <div className="flex items-center justify-center gap-4 mb-8">
         <span className="h-px w-16 bg-gradient-to-r from-transparent to-white/15" />
@@ -34,7 +37,7 @@ export default function Marquee() {
 
       <motion.div
         className="flex items-center gap-14 whitespace-nowrap"
-        animate={{ x: ["0%", "-50%"] }}
+        animate={inView ? { x: ["0%", "-50%"] } : { x: "0%" }}
         transition={{ ease: "linear", duration: 35, repeat: Infinity }}
       >
         {loop.map((name, i) => (
