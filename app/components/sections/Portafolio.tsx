@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
@@ -303,13 +303,36 @@ function BrowserPreview({ project }: { project: Project }) {
 function ProjectCard({ project, i }: { project: Project; i: number }) {
   const EASE = [0.22, 1, 0.36, 1] as const;
 
+  /* Tilt 3D sutil siguiendo el cursor */
+  const cardRef = useRef<HTMLDivElement>(null);
+  const rotateX = useSpring(useMotionValue(0), { stiffness: 150, damping: 18 });
+  const rotateY = useSpring(useMotionValue(0), { stiffness: 150, damping: 18 });
+
+  function handleMove(e: React.MouseEvent<HTMLDivElement>) {
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    rotateY.set(px * 7);
+    rotateX.set(-py * 7);
+  }
+  function handleLeave() {
+    rotateX.set(0);
+    rotateY.set(0);
+  }
+
   return (
     <motion.div
+      ref={cardRef}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6 }}
+      style={{ rotateX, rotateY, transformPerspective: 1000 }}
       className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
     >
       {/* Top accent line */}

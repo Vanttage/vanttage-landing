@@ -182,7 +182,7 @@ export default function Services() {
     <section
       id="services"
       ref={sectionRef}
-      className="relative h-[600vh] bg-[#020617]"
+      className="relative h-[400vh] bg-[#020617]"
     >
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* Progress dots + counter */}

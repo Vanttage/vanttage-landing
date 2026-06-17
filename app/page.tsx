@@ -12,9 +12,15 @@ export default function Home() {
     <main>
       <Hero />
       <Marquee />
+      {/* fundido oscuro → claro */}
+      <div aria-hidden className="h-24 bg-gradient-to-b from-[#0A0A14] to-[#F8FAFC]" />
       <Problem />
+      {/* fundido claro → oscuro */}
+      <div aria-hidden className="h-24 bg-gradient-to-b from-[#F8FAFC] to-[#020617]" />
       <Services />
       <Portfolio />
+      {/* fundido oscuro → claro */}
+      <div aria-hidden className="h-24 bg-gradient-to-b from-[#020617] to-[#F8FAFC]" />
       <About />
       <CTAFinal />
       <Contact />
