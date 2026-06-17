@@ -11,13 +11,7 @@ import {
   AlertCircle,
   RotateCcw,
 } from "lucide-react";
-import emailjs from "@emailjs/browser";
-import { TEAM_EMAILS } from "@/app/lib/notify";
-
-/* ── Config — rellena con tus keys de EmailJS ── */
-const EJS_SERVICE = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
-const EJS_TEMPLATE = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
-const EJS_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? "";
+import { notifyTeam } from "@/app/lib/notify";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -127,32 +121,19 @@ export default function Contact() {
     setStatus("loading");
 
     const fd = new FormData(e.currentTarget);
+    const company = (fd.get("company") as string) || "";
 
-    const payload = {
-      title:    "Nuevo Proyecto desde Vanttage.com",
-      name:     fd.get("name")    as string,
-      company:  fd.get("company") as string,
-      email:    fd.get("email")   as string,
-      message:  fd.get("message") as string,
-      to_email: TEAM_EMAILS,
-    };
-
-    console.log("📧 EmailJS config:", {
-      service:  EJS_SERVICE  || "⚠️ VACÍO",
-      template: EJS_TEMPLATE || "⚠️ VACÍO",
-      key:      EJS_KEY ? "✅ set" : "⚠️ VACÍO",
+    const ok = await notifyTeam({
+      source: "Formulario (home)",
+      name: fd.get("name") as string,
+      email: fd.get("email") as string,
+      message: `${fd.get("message") as string}${company ? `\n\nEmpresa: ${company}` : ""}`,
     });
 
-    try {
-      const res = await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, payload, {
-        publicKey: EJS_KEY,
-      });
-      console.log("✅ EmailJS ok:", res.status, res.text);
+    if (ok) {
       setStatus("success");
       (e.target as HTMLFormElement).reset();
-    } catch (err: unknown) {
-      const ej = err as { status?: number; text?: string };
-      console.error("❌ EmailJS — status:", ej?.status, "| text:", ej?.text);
+    } else {
       setStatus("error");
     }
   };

@@ -1,21 +1,5 @@
 "use client";
 
-import emailjs from "@emailjs/browser";
-
-/* ─────────── EmailJS ─────────── */
-const EJS_SERVICE = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ?? "";
-const EJS_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY ?? "";
-const EJS_TEMPLATE =
-  process.env.NEXT_PUBLIC_EMAILJS_LEAD_TEMPLATE_ID ??
-  process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ??
-  "";
-
-/* A estos 3 correos llega TODA notificación de contacto del sitio.
-   ⚠️ Para que llegue a los tres, el template de EmailJS debe tener
-   el campo "To Email" = {{to_email}}. */
-export const TEAM_EMAILS =
-  "carforck@gmail.com,moisesruizruizsoraca@gmail.com,vanttagectg@gmail.com";
-
 /* WhatsApp de Moisés (solo dígitos, con código de país) */
 export const MOISES_WHATSAPP = "573226706385";
 
@@ -31,35 +15,35 @@ export interface NotifyInput {
 }
 
 /**
- * Envía una notificación por correo a los 3 miembros del equipo.
+ * Notifica al equipo (los 3 correos) vía el endpoint propio /api/lead (SMTP servidor).
  * Silencioso: nunca rompe la UX si el correo falla.
  */
-export async function notifyTeam(input: NotifyInput): Promise<void> {
-  if (!EJS_SERVICE || !EJS_TEMPLATE || !EJS_KEY) return;
-
+export async function notifyTeam(input: NotifyInput): Promise<boolean> {
   if (input.once) {
     try {
       const k = `notify:${input.once}`;
-      if (sessionStorage.getItem(k)) return;
+      if (sessionStorage.getItem(k)) return true;
       sessionStorage.setItem(k, "1");
     } catch {
       /* sessionStorage no disponible: continúa y envía igual */
     }
   }
 
-  const params = {
-    title: `Nuevo contacto desde ${input.source} · Vanttage.com`,
-    name: input.name || "Visitante",
-    whatsapp: input.whatsapp || "—",
-    email: input.email || "—",
-    message: input.message || `Un visitante intentó contactarte vía ${input.source}.`,
-    company: input.source,
-    to_email: TEAM_EMAILS,
-  };
-
   try {
-    await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, params, { publicKey: EJS_KEY });
+    const res = await fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source: input.source,
+        name: input.name ?? "",
+        whatsapp: input.whatsapp ?? "",
+        email: input.email ?? "",
+        message: input.message ?? "",
+      }),
+      keepalive: true, // permite que el envío sobreviva si la página navega (clic a WhatsApp)
+    });
+    return res.ok;
   } catch {
-    /* silencioso */
+    return false;
   }
 }

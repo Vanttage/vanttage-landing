@@ -7,12 +7,7 @@ import {
   ArrowLeft, Mail, MapPin, Phone, Send,
   CheckCircle2, AlertCircle, RotateCcw, ChevronDown, MessageCircle,
 } from "lucide-react";
-import emailjs from "@emailjs/browser";
-import { TEAM_EMAILS, notifyTeam } from "@/app/lib/notify";
-
-const EJS_SERVICE  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  ?? "";
-const EJS_TEMPLATE = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ?? "";
-const EJS_KEY      = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY  ?? "";
+import { notifyTeam } from "@/app/lib/notify";
 
 const WHATSAPP =
   "https://wa.me/573226706385?text=Hola%20Vanttage%2C%20me%20interesa%20una%20p%C3%A1gina%20web%20para%20mi%20negocio";
@@ -107,19 +102,19 @@ export default function ContactoContent() {
     e.preventDefault();
     setStatus("loading");
     const fd = new FormData(e.currentTarget);
-    const payload = {
-      title:    "Nuevo Proyecto desde Vanttage.com/contacto",
-      name:     fd.get("name")    as string,
-      company:  fd.get("company") as string,
-      email:    fd.get("email")   as string,
-      message:  fd.get("message") as string,
-      to_email: TEAM_EMAILS,
-    };
-    try {
-      await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, payload, { publicKey: EJS_KEY });
+    const company = (fd.get("company") as string) || "";
+
+    const ok = await notifyTeam({
+      source: "Formulario (contacto)",
+      name: fd.get("name") as string,
+      email: fd.get("email") as string,
+      message: `${fd.get("message") as string}${company ? `\n\nEmpresa: ${company}` : ""}`,
+    });
+
+    if (ok) {
       setStatus("success");
       (e.target as HTMLFormElement).reset();
-    } catch {
+    } else {
       setStatus("error");
     }
   };
