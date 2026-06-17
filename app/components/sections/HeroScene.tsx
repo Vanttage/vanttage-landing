@@ -139,8 +139,8 @@ export default function HeroScene() {
     <div ref={wrapRef} className="absolute inset-0">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 65 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: false, alpha: true }}
+        dpr={1}
+        gl={{ antialias: false, alpha: true, powerPreference: "low-power" }}
         frameloop={frameloop}
       >
         <Net />

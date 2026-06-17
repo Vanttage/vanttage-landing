@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -9,6 +9,63 @@ import dynamic from "next/dynamic";
 /* Three.js es pesado y solo es decoración de fondo:
    se carga en el cliente, sin bloquear el render inicial. */
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
+
+/* Mensajes que rotan en los chips flotantes sobre la foto */
+const CHIP_MESSAGES = [
+  "Diseño a tu medida",
+  "Rápida y segura",
+  "Lista en días",
+  "Optimizada para Google",
+  "100% responsive",
+  "Soporte directo",
+  "Pensada para vender",
+];
+
+/* Chip flotante que cambia de mensaje cada cierto intervalo */
+function FloatingChip({
+  start,
+  delay,
+  interval,
+  className,
+}: {
+  start: number;
+  delay: number;
+  interval: number;
+  className: string;
+}) {
+  const [i, setI] = useState(start % CHIP_MESSAGES.length);
+
+  useEffect(() => {
+    const t = setInterval(
+      () => setI((v) => (v + 1) % CHIP_MESSAGES.length),
+      interval,
+    );
+    return () => clearInterval(t);
+  }, [interval]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay }}
+      className={`absolute hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:flex ${className}`}
+    >
+      <span className="text-violet-400">✦</span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="whitespace-nowrap"
+        >
+          {CHIP_MESSAGES[i]}
+        </motion.span>
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -36,10 +93,20 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[#06060C]" />
         <HeroScene />
 
-        {/* Glow orbs */}
-        <div className="absolute -left-40 top-10 h-[32rem] w-[32rem] rounded-full bg-violet-700/30 blur-[120px]" />
-        <div className="absolute right-[-10%] top-[20%] h-[28rem] w-[28rem] rounded-full bg-purple-600/30 blur-[120px]" />
-        <div className="absolute left-1/2 top-[10%] h-[20rem] w-[40rem] -translate-x-1/2 bg-violet-500/20 blur-[140px]" />
+        {/* Glow orbs — degradado radial en vez de filter:blur (mucho más liviano,
+            sobre todo en Safari, que renderiza los blur grandes muy lento) */}
+        <div
+          className="absolute -left-40 top-10 h-[32rem] w-[32rem] rounded-full"
+          style={{ background: "radial-gradient(closest-side, rgba(109,40,217,0.30), transparent)" }}
+        />
+        <div
+          className="absolute right-[-10%] top-[20%] h-[28rem] w-[28rem] rounded-full"
+          style={{ background: "radial-gradient(closest-side, rgba(147,51,234,0.30), transparent)" }}
+        />
+        <div
+          className="absolute left-1/2 top-[10%] h-[20rem] w-[40rem] -translate-x-1/2 rounded-full"
+          style={{ background: "radial-gradient(closest-side, rgba(139,92,246,0.22), transparent)" }}
+        />
       </motion.div>
 
       <div className="mx-auto grid w-full max-w-7xl gap-16 lg:grid-cols-2 lg:items-center">
@@ -130,33 +197,25 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* FLOATING CHIPS 🔥 */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8 }}
-            className="absolute right-[-30px] top-10 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
-          >
-            ✦ Diseño a tu medida
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1 }}
-            className="absolute left-[-40px] top-40 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
-          >
-            ✦ Rápida y segura
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
-            className="absolute bottom-[-20px] left-10 hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white backdrop-blur md:block"
-          >
-            ✦ Lista en días
-          </motion.div>
+          {/* FLOATING CHIPS 🔥 — dinámicos y ubicados en la zona baja para no tapar las caras */}
+          <FloatingChip
+            start={0}
+            delay={0.8}
+            interval={3000}
+            className="right-[-24px] top-[58%]"
+          />
+          <FloatingChip
+            start={2}
+            delay={1}
+            interval={3400}
+            className="left-[-40px] top-[72%]"
+          />
+          <FloatingChip
+            start={4}
+            delay={1.2}
+            interval={3800}
+            className="bottom-[-18px] left-12"
+          />
         </motion.div>
       </div>
 
