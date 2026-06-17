@@ -92,7 +92,7 @@ export const metadata: Metadata = {
       "Creamos páginas web profesionales con diseño único que generan confianza y traen más clientes a tu negocio. Cotización gratis en menos de 24h.",
     images: [
       {
-        url: `${DOMAIN}/opengraph-image`,
+        url: `${DOMAIN}/og.png`,
         width: 1200,
         height: 630,
         alt: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
@@ -107,7 +107,7 @@ export const metadata: Metadata = {
     title: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
     description:
       "Diseño único, código limpio y resultados reales para tu negocio en internet. Cartagena, Colombia.",
-    images: [`${DOMAIN}/opengraph-image`],
+    images: [`${DOMAIN}/og.png`],
   },
 
   alternates: {
