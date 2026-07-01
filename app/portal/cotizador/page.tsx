@@ -22,6 +22,8 @@ interface Cotizacion {
   validez: string;
   notas: string;
   mediosPago: string;
+  asesor: string;
+  asesorCargo: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -69,6 +71,8 @@ const DEFAULT: Cotizacion = {
     "Bre-B (Llave): 1238338732\n" +
     "PayPal: @CarlosCarranza29\n" +
     "Envía el comprobante o captura al confirmar la transferencia. ¡Gracias! 🙏",
+  asesor: "Carlos Carranza",
+  asesorCargo: "Asesor · Líder de proyecto",
 };
 
 const fmt = (n: number) =>
@@ -335,9 +339,18 @@ export default function CotizadorPage() {
                 />
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Preparado por</p>
-                <p className="text-sm font-medium">Vanttage</p>
-                <p className="text-sm text-gray-500">vanttagetech.com</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Emitida por</p>
+                <EditText
+                  value={data.asesor}
+                  onChange={(v) => set({ asesor: v })}
+                  className="text-right text-sm font-semibold"
+                />
+                <EditText
+                  value={data.asesorCargo}
+                  onChange={(v) => set({ asesorCargo: v })}
+                  className="text-right text-xs text-violet-600"
+                />
+                <p className="text-xs text-gray-500">Vanttage · vanttagetech.com</p>
               </div>
             </div>
 
