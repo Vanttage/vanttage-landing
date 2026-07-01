@@ -6,8 +6,22 @@ export async function proxy(req: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Si Supabase aún no está configurado, no bloqueamos (evita romper el sitio)
-  if (!url || !key) return NextResponse.next();
+  // ── Modo interino: clave simple (HTTP Basic) mientras no haya Supabase ──
+  if (!url || !key) {
+    const pass = process.env.PORTAL_PASS;
+    if (pass) {
+      const user = process.env.PORTAL_USER || "vanttage";
+      const expected = "Basic " + btoa(`${user}:${pass}`);
+      if (req.headers.get("authorization") !== expected) {
+        return new NextResponse("Autenticación requerida", {
+          status: 401,
+          headers: { "WWW-Authenticate": 'Basic realm="Portal Vanttage"' },
+        });
+      }
+    }
+    // Sin Supabase ni clave: no bloquea (evita romper el sitio en config)
+    return NextResponse.next();
+  }
 
   let res = NextResponse.next({ request: req });
 

@@ -9,7 +9,7 @@ const modules = [
     title: "Cotizador",
     desc: "Genera cotizaciones con plantilla de marca y expórtalas en PDF.",
     href: "/portal/cotizador",
-    ready: false,
+    ready: true,
   },
   {
     icon: Users,
@@ -39,27 +39,16 @@ export default async function PanelPage() {
     !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
     !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!configured) {
-    return (
-      <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-2xl">
-          🔧
-        </div>
-        <h1 className="text-lg font-semibold">Portal en configuración</h1>
-        <p className="mt-2 text-sm text-white/50">
-          El portal interno está listo, pero falta conectar la base de datos
-          (Supabase). En cuanto se agreguen las credenciales, quedará activo.
-        </p>
-      </main>
-    );
+  let email: string | null = null;
+  if (configured) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    email = user?.email ?? null;
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const nombre = user?.email?.split("@")[0] ?? "admin";
+  const nombre = email?.split("@")[0] ?? "admin";
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
@@ -71,7 +60,7 @@ export default async function PanelPage() {
             Hola, <span className="capitalize text-violet-300">{nombre}</span> 👋
           </h1>
         </div>
-        <LogoutButton />
+        {configured && <LogoutButton />}
       </div>
 
       {/* Módulos */}
@@ -113,9 +102,11 @@ export default async function PanelPage() {
         })}
       </div>
 
-      <p className="mt-10 text-center text-xs text-white/30">
-        Sesión iniciada como {user?.email}
-      </p>
+      {email && (
+        <p className="mt-10 text-center text-xs text-white/30">
+          Sesión iniciada como {email}
+        </p>
+      )}
     </main>
   );
 }
