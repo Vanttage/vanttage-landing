@@ -277,13 +277,28 @@ export default function CotizadorPage() {
 
         {/* ── PLANTILLA (derecha) ── */}
         <main className="flex-1 overflow-y-auto bg-[#0f0f18] p-6 print:bg-white print:p-0">
-          <div className="mx-auto max-w-[820px] rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:rounded-none print:shadow-none">
+          <div
+            className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:rounded-none print:shadow-none"
+          >
+            {/* Marca de agua sutil (logo grande de fondo) */}
+            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+              <Image
+                src="/logo/logo.png"
+                alt=""
+                width={560}
+                height={560}
+                className="w-[68%] max-w-[560px] object-contain opacity-[0.045]"
+              />
+            </div>
+
+            {/* Contenido por encima de la marca de agua */}
+            <div className="relative z-10">
             {/* Encabezado */}
             <div className="flex items-start justify-between border-b border-gray-200 pb-6">
-              <div className="flex items-center gap-3">
-                <Image src="/logo/logo.png" alt="Vanttage" width={48} height={48} className="h-12 w-12 object-contain" />
+              <div className="flex items-center gap-4">
+                <Image src="/logo/logo.png" alt="Vanttage" width={72} height={72} className="h-16 w-16 object-contain" />
                 <div>
-                  <p className="text-xl font-bold tracking-tight">Vanttage</p>
+                  <p className="text-2xl font-bold tracking-tight">Vanttage</p>
                   <p className="text-xs text-gray-500">Software Boutique · Cartagena, Colombia</p>
                 </div>
               </div>
@@ -352,11 +367,10 @@ export default function CotizadorPage() {
                   key={i}
                   className="group grid grid-cols-[1fr_auto] items-start gap-2 border-b border-gray-100 py-2.5"
                 >
-                  <textarea
+                  <EditArea
                     value={it.concepto}
-                    onChange={(e) => editItem(i, { concepto: e.target.value })}
-                    rows={Math.max(1, it.concepto.split("\n").length)}
-                    className="w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 text-sm leading-relaxed outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                    onChange={(v) => editItem(i, { concepto: v })}
+                    className="text-sm leading-relaxed"
                   />
                   <div className="flex items-center justify-end gap-2 pt-0.5">
                     <input
@@ -429,6 +443,7 @@ export default function CotizadorPage() {
                 Cartagena, Colombia · Diseño único, código limpio, resultados reales.
               </p>
             </div>
+            </div>
           </div>
         </main>
       </div>
@@ -467,12 +482,21 @@ function EditArea({
   onChange: (v: string) => void;
   className?: string;
 }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
+
   return (
     <textarea
+      ref={ref}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      rows={Math.max(2, value.split("\n").length)}
-      className={`w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
+      rows={1}
+      className={`w-full resize-none overflow-hidden rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
     />
   );
 }
