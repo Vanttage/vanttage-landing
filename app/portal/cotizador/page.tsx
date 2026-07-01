@@ -1,0 +1,450 @@
+"use client";
+
+import { useRef, useState, useEffect } from "react";
+import Image from "next/image";
+import { Send, Plus, Trash2, Printer, RotateCcw } from "lucide-react";
+
+/* ─────────── Tipos ─────────── */
+interface Item {
+  concepto: string;
+  valor: number;
+}
+interface Cotizacion {
+  numero: string;
+  fecha: string;
+  cliente: string;
+  empresa: string;
+  proyecto: string;
+  resumen: string;
+  items: Item[];
+  entrega: string;
+  formaPago: string;
+  validez: string;
+}
+
+/* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
+const HOY = new Date().toLocaleDateString("es-CO", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+});
+
+const DEFAULT: Cotizacion = {
+  numero: "COT-" + new Date().getFullYear() + "-001",
+  fecha: HOY,
+  cliente: "",
+  empresa: "",
+  proyecto: "Tienda online para venta de camisetas",
+  resumen:
+    "Diseño y desarrollo de una tienda online profesional para la venta de camisetas: catálogo de productos con fotos, carrito de compras, pagos en línea y panel de administración para gestionar productos y pedidos.",
+  items: [
+    { concepto: "Diseño UI/UX + identidad de marca aplicada", valor: 0 },
+    { concepto: "Desarrollo de tienda online (catálogo + carrito)", valor: 0 },
+    { concepto: "Pasarela de pagos (PSE, Nequi, tarjetas)", valor: 0 },
+    { concepto: "Panel de administración de productos y pedidos", valor: 0 },
+    { concepto: "Responsive + SEO básico + puesta en producción", valor: 0 },
+  ],
+  entrega: "3 a 4 semanas",
+  formaPago: "50% para iniciar, 50% contra entrega",
+  validez: "15 días",
+};
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    maximumFractionDigits: 0,
+  }).format(n || 0);
+
+const soloNumero = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
+
+/* ─────────── Chat guía (guión, no IA) ─────────── */
+type Stage =
+  | "cliente"
+  | "empresa"
+  | "proyecto"
+  | "resumen"
+  | "itemConcepto"
+  | "itemValor"
+  | "entrega"
+  | "formaPago"
+  | "validez"
+  | "done";
+
+interface Msg {
+  from: "bot" | "user";
+  text: string;
+}
+
+const PREGUNTAS: Record<Stage, string> = {
+  cliente: "¡Hola! 👋 Armemos la cotización. ¿Nombre del cliente o contacto?",
+  empresa: "¿Nombre del negocio o empresa? (si no tiene, escribe “-”)",
+  proyecto: "¿Título del proyecto? (Enter para dejar el sugerido)",
+  resumen: "Describe brevemente el alcance. (Enter para dejar el sugerido)",
+  itemConcepto:
+    "Agreguemos los ítems. Escribe un concepto, o “listo” para pasar a las condiciones.",
+  itemValor: "¿Valor de ese ítem en COP? (solo números)",
+  entrega: "¿Tiempo estimado de entrega?",
+  formaPago: "¿Forma de pago?",
+  validez: "¿Validez de la cotización?",
+  done: "✅ ¡Listo! Revisa la plantilla a la derecha. Puedes editar cualquier campo directamente y luego descargar el PDF.",
+};
+
+export default function CotizadorPage() {
+  const [data, setData] = useState<Cotizacion>(DEFAULT);
+  const [stage, setStage] = useState<Stage>("cliente");
+  const [tmpConcepto, setTmpConcepto] = useState("");
+  const [input, setInput] = useState("");
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "bot", text: PREGUNTAS.cliente }]);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs]);
+
+  const set = (patch: Partial<Cotizacion>) => setData((d) => ({ ...d, ...patch }));
+  const bot = (text: string) => setMsgs((m) => [...m, { from: "bot", text }]);
+  const goto = (s: Stage) => {
+    setStage(s);
+    bot(PREGUNTAS[s]);
+  };
+
+  function handleSend() {
+    const val = input.trim();
+    setInput("");
+    // Permitir "Enter vacío" solo donde hay sugerido
+    if (!val && !["proyecto", "resumen"].includes(stage)) return;
+    if (val) setMsgs((m) => [...m, { from: "user", text: val }]);
+
+    switch (stage) {
+      case "cliente":
+        set({ cliente: val });
+        goto("empresa");
+        break;
+      case "empresa":
+        set({ empresa: val });
+        goto("proyecto");
+        break;
+      case "proyecto":
+        if (val) set({ proyecto: val });
+        goto("resumen");
+        break;
+      case "resumen":
+        if (val) set({ resumen: val });
+        // Empezamos ítems desde cero para que los defina el usuario
+        set({ items: [] });
+        goto("itemConcepto");
+        break;
+      case "itemConcepto":
+        if (val.toLowerCase() === "listo") {
+          goto("entrega");
+        } else {
+          setTmpConcepto(val);
+          goto("itemValor");
+        }
+        break;
+      case "itemValor": {
+        const nuevo: Item = { concepto: tmpConcepto, valor: soloNumero(val) };
+        setData((d) => ({ ...d, items: [...d.items, nuevo] }));
+        setTmpConcepto("");
+        bot(`Añadido: ${nuevo.concepto} — ${fmt(soloNumero(val))}`);
+        goto("itemConcepto");
+        break;
+      }
+      case "entrega":
+        set({ entrega: val });
+        goto("formaPago");
+        break;
+      case "formaPago":
+        set({ formaPago: val });
+        goto("validez");
+        break;
+      case "validez":
+        set({ validez: val });
+        goto("done");
+        break;
+      default:
+        break;
+    }
+  }
+
+  function reset() {
+    setData(DEFAULT);
+    setStage("cliente");
+    setTmpConcepto("");
+    setMsgs([{ from: "bot", text: PREGUNTAS.cliente }]);
+  }
+
+  const total = data.items.reduce((s, i) => s + (i.valor || 0), 0);
+
+  /* ─────────── Editores de la plantilla ─────────── */
+  const editItem = (idx: number, patch: Partial<Item>) =>
+    setData((d) => ({
+      ...d,
+      items: d.items.map((it, i) => (i === idx ? { ...it, ...patch } : it)),
+    }));
+  const addItem = () =>
+    setData((d) => ({ ...d, items: [...d.items, { concepto: "Nuevo ítem", valor: 0 }] }));
+  const delItem = (idx: number) =>
+    setData((d) => ({ ...d, items: d.items.filter((_, i) => i !== idx) }));
+
+  return (
+    <div className="flex h-screen flex-col">
+      {/* Toolbar */}
+      <header className="no-print flex items-center justify-between border-b border-white/10 px-5 py-3">
+        <div>
+          <p className="text-sm font-semibold">Cotizador · Vanttage</p>
+          <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={reset}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
+          >
+            <RotateCcw size={13} /> Reiniciar
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25"
+          >
+            <Printer size={14} /> Descargar PDF
+          </button>
+        </div>
+      </header>
+
+      <div className="flex min-h-0 flex-1">
+        {/* ── CHAT (izquierda) ── */}
+        <aside className="no-print flex w-[360px] shrink-0 flex-col border-r border-white/10 bg-[#0A0A14]">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4">
+            {msgs.map((m, i) => (
+              <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
+                <div
+                  className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
+                    m.from === "user"
+                      ? "rounded-tr-sm bg-gradient-to-br from-violet-500 to-indigo-500 text-white"
+                      : "rounded-tl-sm bg-white/5 text-white/80"
+                  }`}
+                >
+                  {m.text}
+                </div>
+              </div>
+            ))}
+            <div ref={bottomRef} />
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+            className="flex items-center gap-2 border-t border-white/10 p-3"
+          >
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              disabled={stage === "done"}
+              placeholder={stage === "done" ? "Cotización lista ✓" : "Escribe aquí..."}
+              className="flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50 disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={stage === "done"}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white disabled:opacity-40"
+            >
+              <Send size={15} />
+            </button>
+          </form>
+        </aside>
+
+        {/* ── PLANTILLA (derecha) ── */}
+        <main className="flex-1 overflow-y-auto bg-[#0f0f18] p-6 print:bg-white print:p-0">
+          <div className="mx-auto max-w-[820px] rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:rounded-none print:shadow-none">
+            {/* Encabezado */}
+            <div className="flex items-start justify-between border-b border-gray-200 pb-6">
+              <div className="flex items-center gap-3">
+                <Image src="/logo/logo.png" alt="Vanttage" width={48} height={48} className="h-12 w-12 object-contain" />
+                <div>
+                  <p className="text-xl font-bold tracking-tight">Vanttage</p>
+                  <p className="text-xs text-gray-500">Software Boutique · Cartagena, Colombia</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-semibold text-violet-600">COTIZACIÓN</p>
+                <EditText
+                  value={data.numero}
+                  onChange={(v) => set({ numero: v })}
+                  className="text-right text-xs text-gray-500"
+                />
+                <EditText
+                  value={data.fecha}
+                  onChange={(v) => set({ fecha: v })}
+                  className="text-right text-xs text-gray-500"
+                />
+              </div>
+            </div>
+
+            {/* Cliente */}
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Cliente</p>
+                <EditText
+                  value={data.cliente}
+                  placeholder="Nombre del cliente"
+                  onChange={(v) => set({ cliente: v })}
+                  className="text-sm font-medium"
+                />
+                <EditText
+                  value={data.empresa}
+                  placeholder="Empresa"
+                  onChange={(v) => set({ empresa: v })}
+                  className="text-sm text-gray-500"
+                />
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Preparado por</p>
+                <p className="text-sm font-medium">Vanttage</p>
+                <p className="text-sm text-gray-500">vanttagetech.com</p>
+              </div>
+            </div>
+
+            {/* Proyecto */}
+            <div className="mt-6">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Proyecto</p>
+              <EditText
+                value={data.proyecto}
+                onChange={(v) => set({ proyecto: v })}
+                className="text-base font-semibold"
+              />
+              <EditArea
+                value={data.resumen}
+                onChange={(v) => set({ resumen: v })}
+                className="mt-1 text-sm leading-relaxed text-gray-600"
+              />
+            </div>
+
+            {/* Tabla de ítems */}
+            <div className="mt-6">
+              <div className="grid grid-cols-[1fr_auto] gap-2 border-b-2 border-[#0A2540] pb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                <span>Concepto</span>
+                <span className="text-right">Valor</span>
+              </div>
+              {data.items.map((it, i) => (
+                <div
+                  key={i}
+                  className="group grid grid-cols-[1fr_auto] items-center gap-2 border-b border-gray-100 py-2.5"
+                >
+                  <EditText
+                    value={it.concepto}
+                    onChange={(v) => editItem(i, { concepto: v })}
+                    className="text-sm"
+                  />
+                  <div className="flex items-center justify-end gap-2">
+                    <input
+                      value={it.valor ? it.valor.toLocaleString("es-CO") : ""}
+                      onChange={(e) => editItem(i, { valor: soloNumero(e.target.value) })}
+                      placeholder="0"
+                      className="w-28 rounded border border-transparent bg-transparent py-0.5 text-right text-sm font-medium outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                    />
+                    <button
+                      onClick={() => delItem(i)}
+                      className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <button
+                onClick={addItem}
+                className="no-print mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700"
+              >
+                <Plus size={14} /> Agregar ítem
+              </button>
+
+              {/* Total */}
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
+                <span className="text-sm font-medium">Total</span>
+                <span className="text-lg font-bold">{fmt(total)}</span>
+              </div>
+            </div>
+
+            {/* Condiciones */}
+            <div className="mt-6 grid grid-cols-3 gap-4 text-sm">
+              <Condicion label="Entrega" value={data.entrega} onChange={(v) => set({ entrega: v })} />
+              <Condicion label="Forma de pago" value={data.formaPago} onChange={(v) => set({ formaPago: v })} />
+              <Condicion label="Validez" value={data.validez} onChange={(v) => set({ validez: v })} />
+            </div>
+
+            {/* Footer */}
+            <div className="mt-8 border-t border-gray-200 pt-5 text-center text-xs text-gray-500">
+              <p className="font-medium text-[#0A2540]">¿Aprobamos y arrancamos? 🚀</p>
+              <p className="mt-1">
+                WhatsApp +57 322 670 6385 · vanttagectg@gmail.com · vanttagetech.com
+              </p>
+              <p className="mt-1 text-gray-400">
+                Cartagena, Colombia · Diseño único, código limpio, resultados reales.
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────── Campos editables (se ven como texto, editan al vuelo) ─────────── */
+function EditText({
+  value,
+  onChange,
+  placeholder,
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  return (
+    <input
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className={`w-full rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
+    />
+  );
+}
+
+function EditArea({
+  value,
+  onChange,
+  className = "",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  className?: string;
+}) {
+  return (
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      rows={3}
+      className={`w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
+    />
+  );
+}
+
+function Condicion({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="rounded-xl bg-gray-50 p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{label}</p>
+      <EditArea value={value} onChange={onChange} className="mt-0.5 text-[13px] leading-snug text-[#0A2540]" />
+    </div>
+  );
+}
