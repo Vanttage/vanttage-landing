@@ -217,7 +217,7 @@ export default function CotizadorPage() {
     setData((d) => ({ ...d, items: d.items.filter((_, i) => i !== idx) }));
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col print:block print:h-auto">
       {/* Toolbar */}
       <header className="no-print flex items-center justify-between border-b border-white/10 px-5 py-3">
         <div>
@@ -240,7 +240,7 @@ export default function CotizadorPage() {
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 print:block print:min-h-0">
         {/* ── CHAT (izquierda) ── */}
         <aside className="no-print flex w-[360px] shrink-0 flex-col border-r border-white/10 bg-[#0A0A14]">
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -284,12 +284,12 @@ export default function CotizadorPage() {
         </aside>
 
         {/* ── PLANTILLA (derecha) ── */}
-        <main className="flex-1 overflow-y-auto bg-[#0f0f18] p-6 print:bg-white print:p-0">
+        <main className="flex-1 overflow-y-auto bg-[#0f0f18] p-6 print:block print:overflow-visible print:bg-white print:p-0">
           <div
-            className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:rounded-none print:shadow-none"
+            className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:max-w-full print:overflow-visible print:rounded-none print:p-6 print:shadow-none"
           >
             {/* Marca de agua sutil (logo grande de fondo) */}
-            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
+            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center print:fixed">
               <Image
                 src="/logo/logo.png"
                 alt=""
@@ -413,7 +413,7 @@ export default function CotizadorPage() {
               </button>
 
               {/* Subtotal + descuento + total */}
-              <div className="mt-4 space-y-1.5">
+              <div className="mt-4 space-y-1.5 break-inside-avoid">
                 <div className="flex items-center justify-between px-5 text-sm text-gray-500">
                   <span>Subtotal</span>
                   <span>{fmt(subtotal)}</span>
@@ -438,14 +438,14 @@ export default function CotizadorPage() {
             </div>
 
             {/* Condiciones */}
-            <div className="mt-6 grid grid-cols-3 gap-4 text-sm">
+            <div className="mt-6 grid grid-cols-3 gap-4 text-sm break-inside-avoid">
               <Condicion label="Entrega" value={data.entrega} onChange={(v) => set({ entrega: v })} />
               <Condicion label="Forma de pago" value={data.formaPago} onChange={(v) => set({ formaPago: v })} />
               <Condicion label="Validez" value={data.validez} onChange={(v) => set({ validez: v })} />
             </div>
 
             {/* Observaciones */}
-            <div className="mt-6">
+            <div className="mt-6 break-inside-avoid">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
                 Observaciones
               </p>
@@ -457,7 +457,7 @@ export default function CotizadorPage() {
             </div>
 
             {/* Datos de pago */}
-            <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/60 p-4">
+            <div className="mt-4 break-inside-avoid rounded-xl border border-violet-100 bg-violet-50/60 p-4">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-600">
                 💳 Datos de pago
               </p>
@@ -469,7 +469,7 @@ export default function CotizadorPage() {
             </div>
 
             {/* Footer */}
-            <div className="mt-8 border-t border-gray-200 pt-5 text-center text-xs text-gray-500">
+            <div className="mt-8 break-inside-avoid border-t border-gray-200 pt-5 text-center text-xs text-gray-500">
               <p className="font-medium text-[#0A2540]">¿Aprobamos y arrancamos? 🚀</p>
               <p className="mt-1">
                 WhatsApp +57 310 508 0356 · vanttagectg@gmail.com · vanttagetech.com
