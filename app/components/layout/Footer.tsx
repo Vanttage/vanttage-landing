@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle, Lock } from "lucide-react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { notifyTeam } from "@/app/lib/notify";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -33,6 +34,9 @@ function scrollTo(href: string) {
 }
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/portal")) return null;
+
   return (
     <footer className="relative overflow-hidden bg-[#F1F5F9] px-6 pb-10 pt-24">
 
@@ -172,6 +176,16 @@ export default function Footer() {
             </span>
             <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" />
             <span>Cartagena · Colombia</span>
+            <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" />
+            <a
+              href="/portal"
+              aria-label="Portal interno"
+              title="Portal interno"
+              className="inline-flex items-center gap-1 text-[#CBD5E1] transition-colors hover:text-violet-500"
+            >
+              <Lock size={12} />
+              <span className="text-[11px]">Portal</span>
+            </a>
           </div>
         </div>
 

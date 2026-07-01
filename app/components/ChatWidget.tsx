@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, ArrowUpRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { notifyTeam, MOISES_WHATSAPP } from "@/app/lib/notify";
 
 /* ─────────── TYPES ─────────── */
@@ -130,6 +131,7 @@ export default function ChatWidget() {
   const [hasNotif, setHasNotif] = useState(true);
   const [leadWa, setLeadWa] = useState<string | null>(null);
   const leadSentRef = useRef(false);
+  const pathname = usePathname();
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -287,6 +289,8 @@ export default function ChatWidget() {
     e.preventDefault();
     sendMessage(input);
   }
+
+  if (pathname?.startsWith("/portal")) return null;
 
   return (
     <>

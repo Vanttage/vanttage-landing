@@ -31,6 +31,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen]   = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isPortal = pathname?.startsWith("/portal");
 
   /* ── Scroll state ── */
   useEffect(() => {
@@ -78,6 +79,8 @@ export default function Navbar() {
       }
     }
   }
+
+  if (isPortal) return null;
 
   return (
     <>
