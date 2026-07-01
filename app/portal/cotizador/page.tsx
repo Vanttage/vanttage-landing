@@ -437,7 +437,7 @@ export default function CotizadorPage() {
             <div className="mt-8 border-t border-gray-200 pt-5 text-center text-xs text-gray-500">
               <p className="font-medium text-[#0A2540]">¿Aprobamos y arrancamos? 🚀</p>
               <p className="mt-1">
-                WhatsApp +57 322 670 6385 · vanttagectg@gmail.com · vanttagetech.com
+                WhatsApp +57 310 508 0356 · vanttagectg@gmail.com · vanttagetech.com
               </p>
               <p className="mt-1 text-gray-400">
                 Cartagena, Colombia · Diseño único, código limpio, resultados reales.
