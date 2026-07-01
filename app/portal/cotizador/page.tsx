@@ -20,6 +20,8 @@ interface Cotizacion {
   entrega: string;
   formaPago: string;
   validez: string;
+  notas: string;
+  mediosPago: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -32,21 +34,41 @@ const HOY = new Date().toLocaleDateString("es-CO", {
 const DEFAULT: Cotizacion = {
   numero: "COT-" + new Date().getFullYear() + "-001",
   fecha: HOY,
-  cliente: "",
+  cliente: "Mileidys Ramírez",
   empresa: "",
-  proyecto: "Tienda online para venta de camisetas",
+  proyecto: "Tienda virtual (e-commerce) para venta de camisetas y más",
   resumen:
-    "Diseño y desarrollo de una tienda online profesional para la venta de camisetas: catálogo de productos con fotos, carrito de compras, pagos en línea y panel de administración para gestionar productos y pedidos.",
+    "Desarrollo de una tienda virtual profesional y a la medida para comercializar tus camisetas y demás productos, con panel de administración propio, carrito de compras y pagos por transferencia (sin pasarelas ni comisiones).",
   items: [
-    { concepto: "Diseño UI/UX + identidad de marca aplicada", valor: 0 },
-    { concepto: "Desarrollo de tienda online (catálogo + carrito)", valor: 0 },
-    { concepto: "Pasarela de pagos (PSE, Nequi, tarjetas)", valor: 0 },
-    { concepto: "Panel de administración de productos y pedidos", valor: 0 },
-    { concepto: "Responsive + SEO básico + puesta en producción", valor: 0 },
+    {
+      concepto:
+        "Desarrollo completo de la tienda virtual (e-commerce), incluye:\n" +
+        "• Diseño único adaptado a tu marca (logo, colores, estilo)\n" +
+        "• Catálogo de productos con fotos, precios y variantes (tallas/colores)\n" +
+        "• Carrito de compras para acumular varios productos\n" +
+        "• Checkout con medios de pago manuales (transferencia) — sin pasarelas ni comisiones\n" +
+        "• Panel de administración para que tú edites productos, imágenes y precios\n" +
+        "• Optimización SEO para aparecer en Google\n" +
+        "• Base de datos en la nube (Supabase) para tus productos y pedidos\n" +
+        "• Responsive (celular, tablet y PC) + publicación en internet",
+      valor: 0,
+    },
+    { concepto: "Hosting + dominio .com por 1 año (incluido)", valor: 0 },
+    { concepto: "Soporte y garantía por 1 mes tras la entrega", valor: 0 },
   ],
   entrega: "3 a 4 semanas",
   formaPago: "50% para iniciar, 50% contra entrega",
   validez: "15 días",
+  notas:
+    "Las modificaciones de diseño, nuevas funciones o cambios en la tienda después de la entrega tienen costo adicional. Ofrecemos un plan de soporte y mantenimiento mensual que incluye cambios, actualizaciones y acompañamiento continuo (valor mensual a convenir según necesidades).",
+  mediosPago:
+    "Carlos Carranza V. · CC 1238338732\n" +
+    "Bancolombia: 085-938307-06 (Ahorros)\n" +
+    "Nu: 68309764 (NuPlaca: XNR732 / @XNR732)\n" +
+    "Nequi / Daviplata: 3105080356\n" +
+    "Bre-B (Llave): 1238338732\n" +
+    "PayPal: @CarlosCarranza29\n" +
+    "Envía el comprobante o captura al confirmar la transferencia. ¡Gracias! 🙏",
 };
 
 const fmt = (n: number) =>
@@ -131,8 +153,6 @@ export default function CotizadorPage() {
         break;
       case "resumen":
         if (val) set({ resumen: val });
-        // Empezamos ítems desde cero para que los defina el usuario
-        set({ items: [] });
         goto("itemConcepto");
         break;
       case "itemConcepto":
@@ -330,14 +350,15 @@ export default function CotizadorPage() {
               {data.items.map((it, i) => (
                 <div
                   key={i}
-                  className="group grid grid-cols-[1fr_auto] items-center gap-2 border-b border-gray-100 py-2.5"
+                  className="group grid grid-cols-[1fr_auto] items-start gap-2 border-b border-gray-100 py-2.5"
                 >
-                  <EditText
+                  <textarea
                     value={it.concepto}
-                    onChange={(v) => editItem(i, { concepto: v })}
-                    className="text-sm"
+                    onChange={(e) => editItem(i, { concepto: e.target.value })}
+                    rows={Math.max(1, it.concepto.split("\n").length)}
+                    className="w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 text-sm leading-relaxed outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
                   />
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex items-center justify-end gap-2 pt-0.5">
                     <input
                       value={it.valor ? it.valor.toLocaleString("es-CO") : ""}
                       onChange={(e) => editItem(i, { valor: soloNumero(e.target.value) })}
@@ -372,6 +393,30 @@ export default function CotizadorPage() {
               <Condicion label="Entrega" value={data.entrega} onChange={(v) => set({ entrega: v })} />
               <Condicion label="Forma de pago" value={data.formaPago} onChange={(v) => set({ formaPago: v })} />
               <Condicion label="Validez" value={data.validez} onChange={(v) => set({ validez: v })} />
+            </div>
+
+            {/* Observaciones */}
+            <div className="mt-6">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                Observaciones
+              </p>
+              <EditArea
+                value={data.notas}
+                onChange={(v) => set({ notas: v })}
+                className="mt-1 text-[13px] leading-relaxed text-gray-600"
+              />
+            </div>
+
+            {/* Datos de pago */}
+            <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/60 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-600">
+                💳 Datos de pago
+              </p>
+              <EditArea
+                value={data.mediosPago}
+                onChange={(v) => set({ mediosPago: v })}
+                className="mt-1 text-[13px] leading-relaxed text-[#0A2540]"
+              />
             </div>
 
             {/* Footer */}
@@ -426,7 +471,7 @@ function EditArea({
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      rows={3}
+      rows={Math.max(2, value.split("\n").length)}
       className={`w-full resize-none rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
     />
   );
