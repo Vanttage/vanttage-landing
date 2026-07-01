@@ -24,6 +24,7 @@ interface Cotizacion {
   mediosPago: string;
   asesor: string;
   asesorCargo: string;
+  descuento: number;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -53,10 +54,10 @@ const DEFAULT: Cotizacion = {
         "• Optimización SEO para aparecer en Google\n" +
         "• Base de datos en la nube (Supabase) para tus productos y pedidos\n" +
         "• Responsive (celular, tablet y PC) + publicación en internet",
-      valor: 0,
+      valor: 2000000,
     },
     { concepto: "Hosting + dominio .com por 1 año (incluido)", valor: 0 },
-    { concepto: "Soporte y garantía por 1 mes tras la entrega", valor: 0 },
+    { concepto: "Soporte y garantía por 1 mes tras la entrega (incluido)", valor: 0 },
   ],
   entrega: "3 a 4 semanas",
   formaPago: "50% para iniciar, 50% contra entrega",
@@ -73,6 +74,7 @@ const DEFAULT: Cotizacion = {
     "Envía el comprobante o captura al confirmar la transferencia. ¡Gracias! 🙏",
   asesor: "Carlos Carranza",
   asesorCargo: "Asesor · Líder de proyecto",
+  descuento: 30,
 };
 
 const fmt = (n: number) =>
@@ -199,7 +201,9 @@ export default function CotizadorPage() {
     setMsgs([{ from: "bot", text: PREGUNTAS.cliente }]);
   }
 
-  const total = data.items.reduce((s, i) => s + (i.valor || 0), 0);
+  const subtotal = data.items.reduce((s, i) => s + (i.valor || 0), 0);
+  const descuentoMonto = Math.round((subtotal * (data.descuento || 0)) / 100);
+  const total = subtotal - descuentoMonto;
 
   /* ─────────── Editores de la plantilla ─────────── */
   const editItem = (idx: number, patch: Partial<Item>) =>
@@ -408,10 +412,28 @@ export default function CotizadorPage() {
                 <Plus size={14} /> Agregar ítem
               </button>
 
-              {/* Total */}
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
-                <span className="text-sm font-medium">Total</span>
-                <span className="text-lg font-bold">{fmt(total)}</span>
+              {/* Subtotal + descuento + total */}
+              <div className="mt-4 space-y-1.5">
+                <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                  <span>Subtotal</span>
+                  <span>{fmt(subtotal)}</span>
+                </div>
+                <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                  <span className="flex items-center gap-1.5">
+                    Descuento
+                    <input
+                      value={data.descuento || 0}
+                      onChange={(e) => set({ descuento: soloNumero(e.target.value) })}
+                      className="w-10 rounded border border-transparent bg-transparent text-right outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                    />
+                    %
+                  </span>
+                  <span className="text-emerald-600">– {fmt(descuentoMonto)}</span>
+                </div>
+                <div className="mt-1 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
+                  <span className="text-sm font-medium">Total</span>
+                  <span className="text-lg font-bold">{fmt(total)}</span>
+                </div>
               </div>
             </div>
 
