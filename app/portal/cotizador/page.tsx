@@ -328,7 +328,7 @@ export default function CotizadorPage() {
             {/* Cliente */}
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Cliente</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Cliente</p>
                 <EditText
                   value={data.cliente}
                   placeholder="Nombre del cliente"
@@ -343,7 +343,7 @@ export default function CotizadorPage() {
                 />
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Emitida por</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Emitida por</p>
                 <EditText
                   value={data.asesor}
                   onChange={(v) => set({ asesor: v })}
@@ -360,7 +360,7 @@ export default function CotizadorPage() {
 
             {/* Proyecto */}
             <div className="mt-6">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Proyecto</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Proyecto</p>
               <EditText
                 value={data.proyecto}
                 onChange={(v) => set({ proyecto: v })}
@@ -446,7 +446,7 @@ export default function CotizadorPage() {
 
             {/* Observaciones */}
             <div className="mt-6 break-inside-avoid">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
                 Observaciones
               </p>
               <EditArea
@@ -474,7 +474,7 @@ export default function CotizadorPage() {
               <p className="mt-1">
                 WhatsApp +57 310 508 0356 · vanttagectg@gmail.com · vanttagetech.com
               </p>
-              <p className="mt-1 text-gray-400">
+              <p className="mt-1 text-gray-600">
                 Cartagena, Colombia · Diseño único, código limpio, resultados reales.
               </p>
             </div>
@@ -547,7 +547,7 @@ function Condicion({
 }) {
   return (
     <div className="rounded-xl bg-gray-50 p-3">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">{label}</p>
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">{label}</p>
       <EditArea value={value} onChange={onChange} className="mt-0.5 text-[13px] leading-snug text-[#0A2540]" />
     </div>
   );
