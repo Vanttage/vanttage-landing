@@ -126,11 +126,33 @@ export default function CotizadorPage() {
   const [msgs, setMsgs] = useState<Msg[]>([{ from: "bot", text: PREGUNTAS.cliente }]);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs]);
+
+  /* Si viene ?id=..., carga esa cotización guardada para editarla */
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) return;
+    (async () => {
+      try {
+        const res = await fetch(`/api/portal/cotizaciones/${id}`);
+        if (!res.ok) return;
+        const row = await res.json();
+        if (row?.datos) {
+          setData(row.datos as Cotizacion);
+          setEditingId(row.id);
+          setStage("done");
+          setMsgs([{ from: "bot", text: `Editando ${row.numero || "cotización"} — modifica a la derecha y pulsa Guardar.` }]);
+        }
+      } catch {
+        /* ignora */
+      }
+    })();
+  }, []);
 
   const set = (patch: Partial<Cotizacion>) => setData((d) => ({ ...d, ...patch }));
   const bot = (text: string) => setMsgs((m) => [...m, { from: "bot", text }]);
@@ -211,16 +233,21 @@ export default function CotizadorPage() {
     setSaving(true);
     setSavedMsg("");
     try {
-      const res = await fetch("/api/portal/cotizaciones", {
-        method: "POST",
+      const editing = !!editingId;
+      const url = editing ? `/api/portal/cotizaciones/${editingId}` : "/api/portal/cotizaciones";
+      const res = await fetch(url, {
+        method: editing ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ datos: data, subtotal, total }),
       });
       const json = await res.json();
       if (!res.ok) {
         setSavedMsg(json.error === "DB no configurada" ? "Falta conectar la BD" : "Error al guardar");
+      } else if (editing) {
+        setSavedMsg("Actualizada ✓");
       } else {
         set({ numero: json.numero });
+        setEditingId(json.id);
         setSavedMsg(`Guardada ✓ ${json.numero}`);
       }
     } catch {

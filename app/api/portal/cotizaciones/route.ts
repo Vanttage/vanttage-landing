@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
   const d = body.datos;
   const nombre = String(d.cliente || "").trim();
   const empresa = String(d.empresa || "").trim() || null;
+  const whatsapp = String(body.clienteWhatsapp || d.whatsapp || "").trim() || null;
 
   // Upsert simple del cliente (por nombre)
   let cliente_id: string | null = null;
@@ -39,11 +40,14 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
     if (exist) {
       cliente_id = exist.id;
-      if (empresa) await db.from("clientes").update({ empresa }).eq("id", exist.id);
+      const upd: Record<string, string> = {};
+      if (empresa) upd.empresa = empresa;
+      if (whatsapp) upd.whatsapp = whatsapp;
+      if (Object.keys(upd).length) await db.from("clientes").update(upd).eq("id", exist.id);
     } else {
       const { data: nuevo } = await db
         .from("clientes")
-        .insert({ nombre, empresa, origen: "cotizador" })
+        .insert({ nombre, empresa, whatsapp, origen: "cotizador" })
         .select("id")
         .single();
       cliente_id = nuevo?.id ?? null;

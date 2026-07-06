@@ -85,6 +85,7 @@ export default async function CotizacionesPage() {
                 <th className="px-4 py-3 text-right">Total</th>
                 <th className="px-4 py-3">Estado</th>
                 <th className="px-4 py-3">Fecha</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -100,6 +101,14 @@ export default async function CotizacionesPage() {
                     <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/70">{r.estado}</span>
                   </td>
                   <td className="px-4 py-3 text-white/50">{fecha(r.created_at)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      href={`/portal/cotizador?id=${r.id}`}
+                      className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-violet-300 hover:bg-white/5"
+                    >
+                      Editar
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
