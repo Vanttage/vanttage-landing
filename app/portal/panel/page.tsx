@@ -16,7 +16,14 @@ const modules = [
     title: "Clientes (CRM)",
     desc: "Registra y da seguimiento a clientes y prospectos.",
     href: "/portal/clientes",
-    ready: false,
+    ready: true,
+  },
+  {
+    icon: FileText,
+    title: "Cotizaciones",
+    desc: "Historial de cotizaciones con su consecutivo.",
+    href: "/portal/cotizaciones",
+    ready: true,
   },
   {
     icon: Inbox,

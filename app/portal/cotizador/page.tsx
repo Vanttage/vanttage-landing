@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Send, Plus, Trash2, Printer, RotateCcw } from "lucide-react";
+import { Send, Plus, Trash2, Printer, RotateCcw, Save } from "lucide-react";
 
 /* ─────────── Tipos ─────────── */
 interface Item {
@@ -124,6 +124,8 @@ export default function CotizadorPage() {
   const [tmpConcepto, setTmpConcepto] = useState("");
   const [input, setInput] = useState("");
   const [msgs, setMsgs] = useState<Msg[]>([{ from: "bot", text: PREGUNTAS.cliente }]);
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -205,6 +207,29 @@ export default function CotizadorPage() {
   const descuentoMonto = Math.round((subtotal * (data.descuento || 0)) / 100);
   const total = subtotal - descuentoMonto;
 
+  async function guardar() {
+    setSaving(true);
+    setSavedMsg("");
+    try {
+      const res = await fetch("/api/portal/cotizaciones", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ datos: data, subtotal, total }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setSavedMsg(json.error === "DB no configurada" ? "Falta conectar la BD" : "Error al guardar");
+      } else {
+        set({ numero: json.numero });
+        setSavedMsg(`Guardada ✓ ${json.numero}`);
+      }
+    } catch {
+      setSavedMsg("Error de conexión");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   /* ─────────── Editores de la plantilla ─────────── */
   const editItem = (idx: number, patch: Partial<Item>) =>
     setData((d) => ({
@@ -225,11 +250,19 @@ export default function CotizadorPage() {
           <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
         </div>
         <div className="flex items-center gap-2">
+          {savedMsg && <span className="text-xs text-emerald-400">{savedMsg}</span>}
           <button
             onClick={reset}
             className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
           >
             <RotateCcw size={13} /> Reiniciar
+          </button>
+          <button
+            onClick={guardar}
+            disabled={saving}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
+          >
+            <Save size={14} /> {saving ? "Guardando…" : "Guardar"}
           </button>
           <button
             onClick={() => window.print()}
