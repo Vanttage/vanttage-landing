@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Portal Interno · Vanttage",
@@ -11,6 +12,9 @@ export default function PortalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#06060C] text-white">{children}</div>
+    <div className="min-h-screen bg-[var(--pbg)] text-[var(--ptext)]">
+      {children}
+      <Toaster position="top-right" richColors closeButton theme="dark" />
+    </div>
   );
 }

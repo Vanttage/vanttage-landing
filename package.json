@@ -14,12 +14,14 @@
     "@react-three/fiber": "^9.6.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.0",
+    "@tanstack/react-table": "^8.21.3",
     "framer-motion": "^12.35.0",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "nodemailer": "^6.10.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "sonner": "^2.0.7",
     "three": "^0.184.0"
   },
   "devDependencies": {
