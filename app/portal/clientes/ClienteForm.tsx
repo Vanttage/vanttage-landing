@@ -42,10 +42,10 @@ export default function ClienteForm() {
   }
 
   const input =
-    "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50";
+    "w-full rounded-lg border border-[var(--pborder)] bg-[var(--pinput)] px-3 py-2 text-sm outline-none placeholder:text-[var(--pfaint)] focus:border-violet-400/50";
 
   return (
-    <form onSubmit={submit} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+    <form onSubmit={submit} className="rounded-xl border border-[var(--pborder)] bg-[var(--pcard)] p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <input className={input} placeholder="Nombre *" value={f.nombre} onChange={(e) => setF({ ...f, nombre: e.target.value })} />
         <input className={input} placeholder="Empresa" value={f.empresa} onChange={(e) => setF({ ...f, empresa: e.target.value })} />
@@ -57,7 +57,7 @@ export default function ClienteForm() {
         <button type="submit" disabled={saving} className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
           {saving ? <Loader2 size={15} className="animate-spin" /> : "Guardar"}
         </button>
-        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 hover:bg-white/5">
+        <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-[var(--pborder)] px-4 py-2 text-sm text-[var(--pmuted)] hover:bg-[var(--pcardhover)]">
           Cancelar
         </button>
       </div>

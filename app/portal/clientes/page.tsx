@@ -43,7 +43,7 @@ export default async function ClientesPage() {
       )}
 
       {!error && rows.length === 0 && (
-        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-8 text-center text-sm text-white/50">
+        <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
           Aún no hay clientes. Se agregan solos al guardar cotizaciones, o créalos con “Nuevo cliente”.
         </p>
       )}
@@ -54,16 +54,16 @@ export default async function ClientesPage() {
             <Link
               key={c.id}
               href={`/portal/clientes/${c.id}`}
-              className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-violet-400/40 hover:bg-white/[0.05]"
+              className="group rounded-xl border border-[var(--pborder)] bg-[var(--pcard)] p-4 transition hover:border-violet-400/40 hover:bg-[var(--pcardhover)]"
             >
               <div className="flex items-center justify-between gap-2">
-                <p className="font-semibold text-white group-hover:text-violet-200">{c.nombre}</p>
+                <p className="font-semibold text-[var(--ptext)] group-hover:text-violet-200">{c.nombre}</p>
                 <span className="shrink-0 rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-violet-300">
                   {c.etapa || "Prospecto"}
                 </span>
               </div>
-              {c.empresa && <p className="text-sm text-white/60">{c.empresa}</p>}
-              <div className="mt-2 space-y-0.5 text-sm text-white/50">
+              {c.empresa && <p className="text-sm text-[var(--pmuted)]">{c.empresa}</p>}
+              <div className="mt-2 space-y-0.5 text-sm text-[var(--pmuted)]">
                 {c.whatsapp && <p>📱 {c.whatsapp}</p>}
                 {c.email && <p>✉️ {c.email}</p>}
               </div>

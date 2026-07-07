@@ -22,7 +22,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   if (!cliente) {
     return (
       <PortalShell title="Cliente">
-        <p className="text-sm text-white/50">No se encontró el cliente.</p>
+        <p className="text-sm text-[var(--pmuted)]">No se encontró el cliente.</p>
       </PortalShell>
     );
   }
@@ -41,7 +41,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
 
   return (
     <PortalShell title={cliente.nombre} subtitle={cliente.empresa || "Ficha de cliente"}>
-      <Link href="/portal/clientes" className="mb-4 inline-flex items-center gap-2 text-sm text-white/50 hover:text-white">
+      <Link href="/portal/clientes" className="mb-4 inline-flex items-center gap-2 text-sm text-[var(--pmuted)] hover:text-[var(--ptext)]">
         <ArrowLeft size={15} /> Contactos
       </Link>
       <ClienteDetalle

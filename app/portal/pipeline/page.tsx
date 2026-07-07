@@ -25,7 +25,7 @@ export default async function PipelinePage() {
       {error ? (
         <p className="text-sm text-amber-200">{error}</p>
       ) : clientes.length === 0 ? (
-        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-8 text-center text-sm text-white/50">
+        <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
           Aún no hay contactos. Se agregan al guardar cotizaciones o desde “Contactos”.
         </p>
       ) : (

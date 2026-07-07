@@ -51,28 +51,28 @@ export default async function DashboardPage() {
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k) => (
-          <div key={k.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <div key={k.label} className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
             <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: `${k.color}22`, color: k.color }}>
               <k.icon size={18} />
             </div>
             <p className="text-2xl font-semibold">{k.value}</p>
-            <p className="text-sm text-white/40">{k.label}</p>
+            <p className="text-sm text-[var(--pfaint)]">{k.label}</p>
           </div>
         ))}
       </div>
 
       {/* Segunda fila */}
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-sm text-white/40">Valor total cotizado</p>
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="text-sm text-[var(--pfaint)]">Valor total cotizado</p>
           <p className="mt-1 text-xl font-semibold">{fmt(valorCotizado)}</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-sm text-white/40">Tasa de conversión</p>
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="text-sm text-[var(--pfaint)]">Tasa de conversión</p>
           <p className="mt-1 text-xl font-semibold">{conversion}%</p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-sm text-white/40">Enviadas / pendientes</p>
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="text-sm text-[var(--pfaint)]">Enviadas / pendientes</p>
           <p className="mt-1 text-xl font-semibold">{cots.filter((c) => c.estado === "enviada").length}</p>
         </div>
       </div>
@@ -84,20 +84,20 @@ export default async function DashboardPage() {
           <Link href="/portal/cotizaciones" className="text-sm text-violet-300 hover:text-violet-200">Ver todas →</Link>
         </div>
         {cots.length === 0 ? (
-          <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-8 text-center text-sm text-white/50">
+          <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
             Aún no hay cotizaciones. Crea una en “Nueva cotización”.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="overflow-hidden rounded-xl border border-[var(--pborder)]">
             <table className="w-full text-sm">
               <tbody>
                 {cots.slice(0, 6).map((c) => (
-                  <tr key={c.id} className="border-t border-white/5 first:border-0 hover:bg-white/[0.03]">
+                  <tr key={c.id} className="border-t border-[var(--pborder)] first:border-0 hover:bg-[var(--pcardhover)]">
                     <td className="px-4 py-3 font-medium text-violet-300">{c.numero || `#${c.consecutivo}`}</td>
                     <td className="px-4 py-3">{c.cliente_nombre || "—"}</td>
                     <td className="px-4 py-3 text-right">{fmt(c.total)}</td>
-                    <td className="px-4 py-3"><span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/70">{c.estado}</span></td>
-                    <td className="px-4 py-3 text-white/40">{fecha(c.created_at)}</td>
+                    <td className="px-4 py-3"><span className="rounded-full bg-[var(--pchip)] px-2 py-0.5 text-xs text-[var(--pmuted)]">{c.estado}</span></td>
+                    <td className="px-4 py-3 text-[var(--pfaint)]">{fecha(c.created_at)}</td>
                     <td className="px-4 py-3 text-right"><Link href={`/portal/cotizador?id=${c.id}`} className="text-xs text-violet-300 hover:text-violet-200">Abrir</Link></td>
                   </tr>
                 ))}

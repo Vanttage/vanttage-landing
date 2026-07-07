@@ -33,11 +33,11 @@ export default function EstadoSelect({ id, estado }: { id: string; estado: strin
       value={val}
       disabled={busy}
       onChange={(e) => change(e.target.value)}
-      className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs capitalize outline-none focus:border-violet-400/50"
+      className="rounded-full border border-[var(--pborder)] bg-[var(--pinput)] px-2 py-1 text-xs capitalize outline-none focus:border-violet-400/50"
       style={{ color: color[val] || "#fff" }}
     >
       {ESTADOS.map((e) => (
-        <option key={e} value={e} className="bg-[#0A0A14] text-white">{e}</option>
+        <option key={e} value={e} className="bg-[var(--psidebar)] text-[var(--ptext)]">{e}</option>
       ))}
     </select>
   );

@@ -60,21 +60,21 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
     router.refresh();
   }
 
-  const input = "w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50";
+  const input = "w-full rounded-lg border border-[var(--pborder)] bg-[var(--pinput)] px-3 py-2 text-sm outline-none placeholder:text-[var(--pfaint)] focus:border-violet-400/50";
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_1.3fr]">
       {/* Columna izquierda: datos + etapa + cotizaciones */}
       <div className="space-y-5">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-xs uppercase tracking-wider text-white/40">Etapa del pipeline</p>
-            <button onClick={() => setEditing((v) => !v)} className="inline-flex items-center gap-1 text-xs text-white/50 hover:text-white">
+            <p className="text-xs uppercase tracking-wider text-[var(--pfaint)]">Etapa del pipeline</p>
+            <button onClick={() => setEditing((v) => !v)} className="inline-flex items-center gap-1 text-xs text-[var(--pmuted)] hover:text-[var(--ptext)]">
               <Pencil size={12} /> {editing ? "Cerrar" : "Editar datos"}
             </button>
           </div>
           <select value={etapa} onChange={(e) => cambiarEtapa(e.target.value)} className={`${input} mb-4`}>
-            {ETAPAS.map((e) => <option key={e} value={e} className="bg-[#0A0A14]">{e}</option>)}
+            {ETAPAS.map((e) => <option key={e} value={e} className="bg-[var(--psidebar)]">{e}</option>)}
           </select>
 
           {editing ? (
@@ -86,26 +86,26 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
               <button onClick={guardarDatos} disabled={busy} className="rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Guardar</button>
             </div>
           ) : (
-            <div className="space-y-1 text-sm text-white/60">
+            <div className="space-y-1 text-sm text-[var(--pmuted)]">
               {cliente.empresa && <p>🏢 {cliente.empresa}</p>}
               {cliente.whatsapp && <p>📱 {cliente.whatsapp}</p>}
               {cliente.email && <p>✉️ {cliente.email}</p>}
-              {cliente.notas && <p className="text-white/40">📝 {cliente.notas}</p>}
+              {cliente.notas && <p className="text-[var(--pfaint)]">📝 {cliente.notas}</p>}
             </div>
           )}
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="mb-3 text-xs uppercase tracking-wider text-white/40">Cotizaciones ({cotizaciones.length})</p>
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="mb-3 text-xs uppercase tracking-wider text-[var(--pfaint)]">Cotizaciones ({cotizaciones.length})</p>
           {cotizaciones.length === 0 ? (
-            <p className="text-sm text-white/40">Sin cotizaciones.</p>
+            <p className="text-sm text-[var(--pfaint)]">Sin cotizaciones.</p>
           ) : (
             <div className="space-y-2">
               {cotizaciones.map((c) => (
-                <Link key={c.id} href={`/portal/cotizador?id=${c.id}`} className="flex items-center justify-between rounded-lg border border-white/5 px-3 py-2 text-sm hover:bg-white/5">
+                <Link key={c.id} href={`/portal/cotizador?id=${c.id}`} className="flex items-center justify-between rounded-lg border border-[var(--pborder)] px-3 py-2 text-sm hover:bg-[var(--pcardhover)]">
                   <span className="text-violet-300">{c.numero || `#${c.consecutivo}`}</span>
                   <span>{fmt(c.total)}</span>
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/60">{c.estado}</span>
+                  <span className="rounded-full bg-[var(--pchip)] px-2 py-0.5 text-xs text-[var(--pmuted)]">{c.estado}</span>
                 </Link>
               ))}
             </div>
@@ -115,14 +115,14 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
 
       {/* Columna derecha: registrar + timeline */}
       <div className="space-y-5">
-        <form onSubmit={registrar} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="mb-3 text-xs uppercase tracking-wider text-white/40">Registrar interacción</p>
+        <form onSubmit={registrar} className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="mb-3 text-xs uppercase tracking-wider text-[var(--pfaint)]">Registrar interacción</p>
           <div className="mb-2 flex gap-2">
             <select value={canal} onChange={(e) => setCanal(e.target.value)} className={input}>
-              {CANALES.map((c) => <option key={c} value={c} className="bg-[#0A0A14]">{c}</option>)}
+              {CANALES.map((c) => <option key={c} value={c} className="bg-[var(--psidebar)]">{c}</option>)}
             </select>
             <select value={autor} onChange={(e) => setAutor(e.target.value)} className={input}>
-              {AUTORES.map((a) => <option key={a} value={a} className="bg-[#0A0A14]">{a}</option>)}
+              {AUTORES.map((a) => <option key={a} value={a} className="bg-[var(--psidebar)]">{a}</option>)}
             </select>
           </div>
           <div className="flex gap-2">
@@ -133,10 +133,10 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
           </div>
         </form>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="mb-4 text-xs uppercase tracking-wider text-white/40">Historial ({interacciones.length})</p>
+        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
+          <p className="mb-4 text-xs uppercase tracking-wider text-[var(--pfaint)]">Historial ({interacciones.length})</p>
           {interacciones.length === 0 ? (
-            <p className="text-sm text-white/40">Aún no hay interacciones registradas.</p>
+            <p className="text-sm text-[var(--pfaint)]">Aún no hay interacciones registradas.</p>
           ) : (
             <div className="space-y-4">
               {interacciones.map((it) => {
@@ -147,8 +147,8 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
                       <Icon size={14} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm text-white/80">{it.detalle}</p>
-                      <p className="text-xs text-white/40">
+                      <p className="text-sm text-[var(--ptext)]">{it.detalle}</p>
+                      <p className="text-xs text-[var(--pfaint)]">
                         {it.canal}{it.autor ? ` · ${it.autor}` : ""} · {fechaHora(it.created_at)}
                       </p>
                     </div>

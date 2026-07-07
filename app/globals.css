@@ -64,6 +64,32 @@ html {
   outline-offset: 2px;
 }
 
+/* ── Tema del portal interno (dark por defecto / light con data-ptheme) ── */
+:root {
+  --pbg: #06060c;
+  --psidebar: #0a0a14;
+  --pcard: rgba(255, 255, 255, 0.03);
+  --pcardhover: rgba(255, 255, 255, 0.06);
+  --pinput: rgba(255, 255, 255, 0.05);
+  --pchip: rgba(255, 255, 255, 0.1);
+  --ptext: #ffffff;
+  --pmuted: rgba(255, 255, 255, 0.55);
+  --pfaint: rgba(255, 255, 255, 0.4);
+  --pborder: rgba(255, 255, 255, 0.1);
+}
+:root[data-ptheme="light"] {
+  --pbg: #f3f4f6;
+  --psidebar: #ffffff;
+  --pcard: #ffffff;
+  --pcardhover: #f1f5f9;
+  --pinput: #ffffff;
+  --pchip: rgba(2, 6, 23, 0.06);
+  --ptext: #0a2540;
+  --pmuted: #64748b;
+  --pfaint: #94a3b8;
+  --pborder: rgba(2, 6, 23, 0.1);
+}
+
 /* ── Impresión (PDF del cotizador): oculta UI y deja solo el documento ── */
 @media print {
   .no-print {

@@ -76,7 +76,7 @@ export default async function CotizacionesPage({
             className={`rounded-full px-3 py-1.5 text-xs transition ${
               (filtro || "") === f.key
                 ? "bg-violet-500/20 text-violet-200"
-                : "border border-white/10 text-white/50 hover:bg-white/5"
+                : "border border-[var(--pborder)] text-[var(--pmuted)] hover:bg-[var(--pcardhover)]"
             }`}
           >
             {f.label}
@@ -91,15 +91,15 @@ export default async function CotizacionesPage({
       )}
 
       {!error && rows.length === 0 && (
-        <p className="rounded-xl border border-white/10 bg-white/5 px-4 py-8 text-center text-sm text-white/50">
+        <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
           Aún no hay cotizaciones guardadas. Crea una en el Cotizador y pulsa “Guardar”.
         </p>
       )}
 
       {rows.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-white/10">
+        <div className="overflow-hidden rounded-xl border border-[var(--pborder)]">
           <table className="w-full text-sm">
-            <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-white/40">
+            <thead className="bg-[var(--pinput)] text-left text-xs uppercase tracking-wider text-[var(--pfaint)]">
               <tr>
                 <th className="px-4 py-3">N°</th>
                 <th className="px-4 py-3">Cliente</th>
@@ -112,21 +112,21 @@ export default async function CotizacionesPage({
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id} className="border-t border-white/5 hover:bg-white/[0.03]">
+                <tr key={r.id} className="border-t border-[var(--pborder)] hover:bg-[var(--pcardhover)]">
                   <td className="px-4 py-3 font-medium text-violet-300">
                     {r.numero || `#${r.consecutivo}`}
                   </td>
                   <td className="px-4 py-3">{r.cliente_nombre || "—"}</td>
-                  <td className="max-w-[220px] truncate px-4 py-3 text-white/60">{r.proyecto || "—"}</td>
+                  <td className="max-w-[220px] truncate px-4 py-3 text-[var(--pmuted)]">{r.proyecto || "—"}</td>
                   <td className="px-4 py-3 text-right font-medium">{fmt(r.total)}</td>
                   <td className="px-4 py-3">
                     <EstadoSelect id={r.id} estado={r.estado} />
                   </td>
-                  <td className="px-4 py-3 text-white/50">{fecha(r.created_at)}</td>
+                  <td className="px-4 py-3 text-[var(--pmuted)]">{fecha(r.created_at)}</td>
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/portal/cotizador?id=${r.id}`}
-                      className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-violet-300 hover:bg-white/5"
+                      className="rounded-lg border border-[var(--pborder)] px-3 py-1.5 text-xs text-violet-300 hover:bg-[var(--pcardhover)]"
                     >
                       Editar
                     </Link>

@@ -13,13 +13,13 @@ export default function PortalShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-[#06060C] text-white">
+    <div className="flex min-h-screen bg-[var(--pbg)] text-[var(--ptext)]">
       <Sidebar />
       <div className="flex-1 overflow-x-hidden">
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-white/10 bg-[#06060C]/80 px-6 py-4 backdrop-blur">
+        <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-[var(--pborder)] bg-[var(--pbg)]/80 px-6 py-4 backdrop-blur">
           <div>
             <h1 className="text-lg font-semibold">{title}</h1>
-            {subtitle && <p className="text-sm text-white/40">{subtitle}</p>}
+            {subtitle && <p className="text-sm text-[var(--pfaint)]">{subtitle}</p>}
           </div>
           {actions}
         </header>

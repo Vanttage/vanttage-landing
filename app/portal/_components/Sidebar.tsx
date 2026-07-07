@@ -11,6 +11,7 @@ import {
   FilePlus2,
   ExternalLink,
 } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const nav = [
   { href: "/portal/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -24,12 +25,12 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="no-print sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-[#0A0A14] px-3 py-5">
+    <aside className="no-print sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-[var(--pborder)] bg-[var(--psidebar)] px-3 py-5">
       <Link href="/portal/dashboard" className="mb-6 flex items-center gap-2.5 px-2">
         <Image src="/logo/logo.png" alt="Vanttage" width={32} height={32} className="h-8 w-8 object-contain" />
         <div>
-          <p className="text-sm font-semibold leading-none text-white">Vanttage</p>
-          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-white/40">Portal interno</p>
+          <p className="text-sm font-semibold leading-none text-[var(--ptext)]">Vanttage</p>
+          <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--pfaint)]">Portal interno</p>
         </div>
       </Link>
 
@@ -43,7 +44,7 @@ export default function Sidebar() {
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                 active
                   ? "bg-violet-500/15 font-medium text-violet-200"
-                  : "text-white/60 hover:bg-white/5 hover:text-white"
+                  : "text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]"
               }`}
             >
               <Icon size={17} />
@@ -53,12 +54,15 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <Link
-        href="/"
-        className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-white/40 hover:text-white/70"
-      >
-        <ExternalLink size={14} /> Ver el sitio
-      </Link>
+      <div className="mt-1 border-t border-[var(--pborder)] pt-2">
+        <ThemeToggle />
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-[var(--pfaint)] hover:text-[var(--pmuted)]"
+        >
+          <ExternalLink size={14} /> Ver el sitio
+        </Link>
+      </div>
     </aside>
   );
 }
