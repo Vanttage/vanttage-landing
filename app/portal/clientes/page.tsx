@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabaseAdmin } from "../_lib/supabase-admin";
 import ClienteForm from "./ClienteForm";
 import PortalShell from "../_components/PortalShell";
+import OrigenBadge from "./OrigenBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,7 @@ export default async function ClientesPage() {
                 </span>
               </div>
               {c.empresa && <p className="text-sm text-[var(--pmuted)]">{c.empresa}</p>}
+              <div className="mt-2"><OrigenBadge origen={c.origen} /></div>
               <div className="mt-2 space-y-0.5 text-sm text-[var(--pmuted)]">
                 {c.whatsapp && <p>📱 {c.whatsapp}</p>}
                 {c.email && <p>✉️ {c.email}</p>}
