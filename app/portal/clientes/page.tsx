@@ -1,22 +1,8 @@
-import Link from "next/link";
 import { supabaseAdmin } from "../_lib/supabase-admin";
-import ClienteForm from "./ClienteForm";
 import PortalShell from "../_components/PortalShell";
-import OrigenBadge from "./OrigenBadge";
+import ContactosTable, { type Cliente } from "./ContactosTable";
 
 export const dynamic = "force-dynamic";
-
-interface Cliente {
-  id: string;
-  nombre: string;
-  empresa: string | null;
-  whatsapp: string | null;
-  email: string | null;
-  notas: string | null;
-  origen: string | null;
-  etapa: string | null;
-  created_at: string;
-}
 
 export default async function ClientesPage() {
   const db = supabaseAdmin();
@@ -36,42 +22,13 @@ export default async function ClientesPage() {
   }
 
   return (
-    <PortalShell title="Contactos" subtitle={`${rows.length} en el CRM`} actions={<ClienteForm />}>
-      {error && (
+    <PortalShell title="Contactos" subtitle={`${rows.length} en el CRM`}>
+      {error ? (
         <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {error}
         </div>
-      )}
-
-      {!error && rows.length === 0 && (
-        <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
-          Aún no hay clientes. Se agregan solos al guardar cotizaciones, o créalos con “Nuevo cliente”.
-        </p>
-      )}
-
-      {rows.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {rows.map((c) => (
-            <Link
-              key={c.id}
-              href={`/portal/clientes/${c.id}`}
-              className="group rounded-xl border border-[var(--pborder)] bg-[var(--pcard)] p-4 transition hover:border-violet-400/40 hover:bg-[var(--pcardhover)]"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <p className="font-semibold text-[var(--ptext)] group-hover:text-violet-200">{c.nombre}</p>
-                <span className="shrink-0 rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-violet-300">
-                  {c.etapa || "Prospecto"}
-                </span>
-              </div>
-              {c.empresa && <p className="text-sm text-[var(--pmuted)]">{c.empresa}</p>}
-              <div className="mt-2"><OrigenBadge origen={c.origen} /></div>
-              <div className="mt-2 space-y-0.5 text-sm text-[var(--pmuted)]">
-                {c.whatsapp && <p>📱 {c.whatsapp}</p>}
-                {c.email && <p>✉️ {c.email}</p>}
-              </div>
-            </Link>
-          ))}
-        </div>
+      ) : (
+        <ContactosTable initial={rows} />
       )}
     </PortalShell>
   );
