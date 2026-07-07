@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft, Users } from "lucide-react";
 import { supabaseAdmin } from "../_lib/supabase-admin";
 import ClienteForm from "./ClienteForm";
+import PortalShell from "../_components/PortalShell";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,7 @@ interface Cliente {
   email: string | null;
   notas: string | null;
   origen: string | null;
+  etapa: string | null;
   created_at: string;
 }
 
@@ -34,24 +35,7 @@ export default async function ClientesPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <Link href="/portal/panel" className="mb-6 inline-flex items-center gap-2 text-sm text-white/50 hover:text-white">
-        <ArrowLeft size={15} /> Panel
-      </Link>
-
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/20 text-violet-300">
-            <Users size={18} />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold">Clientes (CRM)</h1>
-            <p className="text-sm text-white/40">{rows.length} contactos</p>
-          </div>
-        </div>
-        <ClienteForm />
-      </div>
-
+    <PortalShell title="Contactos" subtitle={`${rows.length} en el CRM`} actions={<ClienteForm />}>
       {error && (
         <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {error}
@@ -65,25 +49,28 @@ export default async function ClientesPage() {
       )}
 
       {rows.length > 0 && (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map((c) => (
-            <div key={c.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-white">{c.nombre}</p>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/50">
-                  {c.origen || "—"}
+            <Link
+              key={c.id}
+              href={`/portal/clientes/${c.id}`}
+              className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-violet-400/40 hover:bg-white/[0.05]"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-semibold text-white group-hover:text-violet-200">{c.nombre}</p>
+                <span className="shrink-0 rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-violet-300">
+                  {c.etapa || "Prospecto"}
                 </span>
               </div>
               {c.empresa && <p className="text-sm text-white/60">{c.empresa}</p>}
               <div className="mt-2 space-y-0.5 text-sm text-white/50">
                 {c.whatsapp && <p>📱 {c.whatsapp}</p>}
                 {c.email && <p>✉️ {c.email}</p>}
-                {c.notas && <p className="text-white/40">📝 {c.notas}</p>}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
-    </main>
+    </PortalShell>
   );
 }

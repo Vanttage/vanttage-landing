@@ -1,6 +1,15 @@
 import Link from "next/link";
-import { ArrowLeft, FileText, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { supabaseAdmin } from "../_lib/supabase-admin";
+import PortalShell from "../_components/PortalShell";
+import EstadoSelect from "./EstadoSelect";
+
+const FILTROS = [
+  { key: "", label: "Todas" },
+  { key: "enviada", label: "Enviadas" },
+  { key: "aprobada", label: "Aprobadas" },
+  { key: "rechazada", label: "Rechazadas" },
+];
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +30,12 @@ interface Row {
   created_at: string;
 }
 
-export default async function CotizacionesPage() {
+export default async function CotizacionesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ estado?: string }>;
+}) {
+  const { estado: filtro } = await searchParams;
   const db = supabaseAdmin();
   let rows: Row[] = [];
   let error = "";
@@ -29,37 +43,45 @@ export default async function CotizacionesPage() {
   if (!db) {
     error = "La base de datos aún no está conectada.";
   } else {
-    const { data, error: e } = await db
+    let q = db
       .from("cotizaciones")
       .select("id,consecutivo,numero,cliente_nombre,proyecto,total,estado,created_at")
       .order("consecutivo", { ascending: false })
       .limit(300);
+    if (filtro) q = q.eq("estado", filtro);
+    const { data, error: e } = await q;
     if (e) error = e.message;
     else rows = (data as Row[]) ?? [];
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <Link href="/portal/panel" className="mb-6 inline-flex items-center gap-2 text-sm text-white/50 hover:text-white">
-        <ArrowLeft size={15} /> Panel
-      </Link>
-
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/20 text-violet-300">
-            <FileText size={18} />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold">Cotizaciones</h1>
-            <p className="text-sm text-white/40">{rows.length} en el historial</p>
-          </div>
-        </div>
+    <PortalShell
+      title="Cotizaciones"
+      subtitle={`${rows.length} en el historial`}
+      actions={
         <Link
           href="/portal/cotizador"
           className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white"
         >
           <Plus size={15} /> Nueva
         </Link>
+      }
+    >
+      {/* Filtros por estado */}
+      <div className="mb-4 flex flex-wrap gap-2">
+        {FILTROS.map((f) => (
+          <Link
+            key={f.key}
+            href={f.key ? `/portal/cotizaciones?estado=${f.key}` : "/portal/cotizaciones"}
+            className={`rounded-full px-3 py-1.5 text-xs transition ${
+              (filtro || "") === f.key
+                ? "bg-violet-500/20 text-violet-200"
+                : "border border-white/10 text-white/50 hover:bg-white/5"
+            }`}
+          >
+            {f.label}
+          </Link>
+        ))}
       </div>
 
       {error && (
@@ -98,7 +120,7 @@ export default async function CotizacionesPage() {
                   <td className="max-w-[220px] truncate px-4 py-3 text-white/60">{r.proyecto || "—"}</td>
                   <td className="px-4 py-3 text-right font-medium">{fmt(r.total)}</td>
                   <td className="px-4 py-3">
-                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/70">{r.estado}</span>
+                    <EstadoSelect id={r.id} estado={r.estado} />
                   </td>
                   <td className="px-4 py-3 text-white/50">{fecha(r.created_at)}</td>
                   <td className="px-4 py-3 text-right">
@@ -115,6 +137,6 @@ export default async function CotizacionesPage() {
           </table>
         </div>
       )}
-    </main>
+    </PortalShell>
   );
 }

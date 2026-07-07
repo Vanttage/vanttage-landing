@@ -30,7 +30,27 @@ export async function PATCH(
   if (!db) return NextResponse.json({ error: "DB no configurada" }, { status: 503 });
 
   const body = await req.json().catch(() => null);
-  if (!body?.datos) return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
+  if (!body) return NextResponse.json({ error: "Body inválido" }, { status: 400 });
+
+  // ── Caso 1: cambiar solo el estado (aprobar/rechazar/etc.) ──
+  if (body.estado && !body.datos) {
+    const { data: cot, error } = await db
+      .from("cotizaciones")
+      .update({ estado: body.estado })
+      .eq("id", id)
+      .select("cliente_id")
+      .single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    // Al aprobar, mover al cliente a la etapa "Aprobado"
+    if (body.estado === "aprobada" && cot?.cliente_id) {
+      await db.from("clientes").update({ etapa: "Aprobado" }).eq("id", cot.cliente_id);
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  // ── Caso 2: actualizar el contenido de la cotización ──
+  if (!body.datos) return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
   const d = body.datos;
 
   const { error } = await db

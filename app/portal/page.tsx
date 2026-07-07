@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/* /portal → el middleware decide: con sesión va al panel, sin sesión al login */
+/* /portal → dashboard del CRM */
 export default function PortalIndex() {
-  redirect("/portal/panel");
+  redirect("/portal/dashboard");
 }
