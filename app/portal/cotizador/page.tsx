@@ -414,7 +414,7 @@ export default function CotizadorPage() {
             </div>
 
             {/* Cliente */}
-            <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="mt-6 grid grid-cols-2 gap-4 break-inside-avoid">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Cliente</p>
                 <EditText
@@ -449,7 +449,7 @@ export default function CotizadorPage() {
             </div>
 
             {/* Proyecto */}
-            <div className="mt-6">
+            <div className="mt-6 break-inside-avoid">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
                 {esPropuesta ? "Propuesta" : "Proyecto"}
               </p>
@@ -706,12 +706,16 @@ function EditText({
   className?: string;
 }) {
   return (
-    <input
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      className={`w-full rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
-    />
+    <>
+      <input
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className={`w-full rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hidden ${className}`}
+      />
+      {/* Versión estática para PDF (el input se recorta al paginar) */}
+      <div className={`hidden px-1 py-0.5 print:block ${className}`}>{value}</div>
+    </>
   );
 }
 
@@ -733,13 +737,17 @@ function EditArea({
   }, [value]);
 
   return (
-    <textarea
-      ref={ref}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      rows={1}
-      className={`w-full resize-none overflow-hidden rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent ${className}`}
-    />
+    <>
+      <textarea
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={1}
+        className={`w-full resize-none overflow-hidden rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hidden ${className}`}
+      />
+      {/* Versión estática para PDF: texto que fluye y pagina sin recortarse */}
+      <div className={`hidden whitespace-pre-wrap px-1 py-0.5 print:block ${className}`}>{value}</div>
+    </>
   );
 }
 
