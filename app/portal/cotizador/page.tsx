@@ -236,6 +236,22 @@ export default function CotizadorPage() {
     }
   }
 
+  /* Nombre del PDF = "CÓDIGO - Cliente" (el navegador usa document.title al guardar) */
+  function descargarPdf() {
+    const prev = document.title;
+    const nombre = `${data.numero || "Cotizacion"} - ${data.cliente || "Cliente"}`
+      .replace(/[\\/:*?"<>|]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    document.title = nombre;
+    const restore = () => {
+      document.title = prev;
+      window.removeEventListener("afterprint", restore);
+    };
+    window.addEventListener("afterprint", restore);
+    window.print();
+  }
+
   function reset() {
     setData(DEFAULT);
     setStage("cliente");
@@ -311,7 +327,7 @@ export default function CotizadorPage() {
             <Save size={14} /> {saving ? "Guardando…" : "Guardar"}
           </button>
           <button
-            onClick={() => window.print()}
+            onClick={descargarPdf}
             className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25"
           >
             <Printer size={14} /> Descargar PDF
