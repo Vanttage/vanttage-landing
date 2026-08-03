@@ -640,14 +640,11 @@ export default function CotizadorPage() {
             {/* Firma (solo propuesta) */}
             {esPropuesta && (
               <div className="mt-12 break-inside-avoid">
-                <div className="w-72">
-                  <div className="h-10" />
-                  <div className="border-t border-gray-400 pt-2">
-                    <p className="text-sm font-semibold text-[#0A2540]">{data.asesor}</p>
-                    {data.firmaEmail && <p className="text-xs text-gray-600">{data.firmaEmail}</p>}
-                    <p className="text-xs text-gray-500">{data.asesorCargo}</p>
-                    {data.firmaCC && <p className="text-xs text-gray-500">C.C. {data.firmaCC}</p>}
-                  </div>
+                <div>
+                  <p className="text-lg font-bold text-[#0A2540]">{data.asesor}</p>
+                  {data.firmaEmail && <p className="text-xs text-gray-600">{data.firmaEmail}</p>}
+                  <p className="text-xs text-gray-500">{data.asesorCargo}</p>
+                  {data.firmaCC && <p className="text-xs text-gray-500">C.C. {data.firmaCC}</p>}
                 </div>
               </div>
             )}
