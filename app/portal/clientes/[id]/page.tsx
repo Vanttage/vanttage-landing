@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { supabaseAdmin } from "../../_lib/supabase-admin";
 import PortalShell from "../../_components/PortalShell";
 import ClienteDetalle from "./ClienteDetalle";
@@ -40,10 +38,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
     .order("consecutivo", { ascending: false });
 
   return (
-    <PortalShell title={cliente.nombre} subtitle={cliente.empresa || "Ficha de cliente"}>
-      <Link href="/portal/clientes" className="mb-4 inline-flex items-center gap-2 text-sm text-[var(--pmuted)] hover:text-[var(--ptext)]">
-        <ArrowLeft size={15} /> Contactos
-      </Link>
+    <PortalShell title={cliente.nombre} subtitle={cliente.empresa || "Ficha de cliente"} backHref="/portal/clientes" backLabel="Contactos">
       <ClienteDetalle
         cliente={cliente}
         interacciones={interacciones ?? []}

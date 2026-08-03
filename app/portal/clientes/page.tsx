@@ -16,7 +16,7 @@ export default async function ClientesPage() {
       .from("clientes")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(500);
+      .limit(2000);
     if (e) error = e.message;
     else rows = (data as Cliente[]) ?? [];
   }

@@ -2,7 +2,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import Link from "next/link";
+import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 
 /* ─────────── Tipos ─────────── */
 interface Item {
@@ -384,9 +385,19 @@ export default function CotizadorPage() {
     <div className="flex h-screen flex-col print:block print:h-auto">
       {/* Toolbar */}
       <header className="no-print flex items-center justify-between border-b border-white/10 px-5 py-3">
-        <div>
-          <p className="text-sm font-semibold">Cotizador · Vanttage</p>
-          <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/portal/cotizaciones"
+            title="Volver a Cotizaciones"
+            aria-label="Volver a Cotizaciones"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <div>
+            <p className="text-sm font-semibold">Cotizador · Vanttage</p>
+            <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
+          </div>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {savedMsg && <span className="w-full text-right text-xs text-emerald-400 sm:w-auto">{savedMsg}</span>}

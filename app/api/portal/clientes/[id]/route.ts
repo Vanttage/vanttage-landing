@@ -26,6 +26,11 @@ export async function PATCH(
 
   const { error } = await db.from("clientes").update(upd).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Si cambió el nombre, mantener sincronizado el nombre copiado en sus cotizaciones
+  if (typeof upd.nombre === "string") {
+    await db.from("cotizaciones").update({ cliente_nombre: upd.nombre }).eq("cliente_id", id);
+  }
   return NextResponse.json({ ok: true });
 }
 

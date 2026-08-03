@@ -18,7 +18,7 @@ export default async function CotizacionesPage() {
       .from("cotizaciones")
       .select("id,consecutivo,numero,cliente_nombre,proyecto,total,estado,created_at")
       .order("consecutivo", { ascending: false })
-      .limit(300);
+      .limit(2000);
     if (e) error = e.message;
     else rows = (data as Cot[]) ?? [];
   }

@@ -1,19 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
 import Sidebar from "./Sidebar";
 
 export default function PortalShell({
   title,
   subtitle,
   actions,
+  backHref,
+  backLabel = "Volver",
   children,
 }: {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  backHref?: string;
+  backLabel?: string;
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -65,11 +70,22 @@ export default function PortalShell({
             </button>
             <button
               onClick={() => setCollapsed((v) => !v)}
-              aria-label="Contraer menú"
+              aria-label={collapsed ? "Expandir menú" : "Contraer menú"}
               className="hidden rounded-lg p-1.5 text-[var(--pmuted)] hover:bg-[var(--pcardhover)] md:block"
             >
               {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
             </button>
+            {backHref && (
+              <Link
+                href={backHref}
+                aria-label={backLabel}
+                title={backLabel}
+                className="inline-flex items-center gap-1 rounded-lg border border-[var(--pborder)] px-2 py-1.5 text-sm text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]"
+              >
+                <ArrowLeft size={16} />
+                <span className="hidden sm:inline">{backLabel}</span>
+              </Link>
+            )}
             <div className="min-w-0">
               <h1 className="truncate text-lg font-semibold">{title}</h1>
               {subtitle && <p className="truncate text-sm text-[var(--pfaint)]">{subtitle}</p>}
