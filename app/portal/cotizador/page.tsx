@@ -40,6 +40,7 @@ interface Cotizacion {
   beneficios?: string;
   firmaTexto?: string;
   firmaCC?: string;
+  firmaEmail?: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -638,16 +639,12 @@ export default function CotizadorPage() {
 
             {/* Firma (solo propuesta) */}
             {esPropuesta && (
-              <div className="mt-10 break-inside-avoid">
+              <div className="mt-12 break-inside-avoid">
                 <div className="w-72">
-                  <p
-                    className="mb-1 text-3xl leading-none text-[#0A2540]"
-                    style={{ fontFamily: '"Snell Roundhand","Segoe Script","Brush Script MT",cursive' }}
-                  >
-                    {data.firmaTexto || data.asesor || "Carlos J. Carranza"}
-                  </p>
+                  <div className="h-10" />
                   <div className="border-t border-gray-400 pt-2">
                     <p className="text-sm font-semibold text-[#0A2540]">{data.asesor}</p>
+                    {data.firmaEmail && <p className="text-xs text-gray-600">{data.firmaEmail}</p>}
                     <p className="text-xs text-gray-500">{data.asesorCargo}</p>
                     {data.firmaCC && <p className="text-xs text-gray-500">C.C. {data.firmaCC}</p>}
                   </div>
