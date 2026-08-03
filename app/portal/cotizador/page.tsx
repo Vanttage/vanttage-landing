@@ -41,6 +41,8 @@ interface Cotizacion {
   firmaTexto?: string;
   firmaCC?: string;
   firmaEmail?: string;
+  referenciaTexto?: string;
+  referenciaUrl?: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -637,9 +639,30 @@ export default function CotizadorPage() {
               />
             </div>
 
+            {/* Referencias · trabajos realizados (solo propuesta) */}
+            {esPropuesta && (
+              <div className="mt-6 break-inside-avoid rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">
+                  Referencias · Trabajos realizados
+                </p>
+                <p className="mt-1 text-sm text-gray-600">
+                  {data.referenciaTexto ||
+                    "Portafolio de desarrollos y proyectos realizados con Vanttage:"}{" "}
+                  <a
+                    href={data.referenciaUrl || "https://vanttagetech.com/proyectos"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-violet-600 underline"
+                  >
+                    {(data.referenciaUrl || "https://vanttagetech.com/proyectos").replace(/^https?:\/\//, "")}
+                  </a>
+                </p>
+              </div>
+            )}
+
             {/* Firma (solo propuesta) */}
             {esPropuesta && (
-              <div className="mt-12 break-inside-avoid">
+              <div className="mt-8 break-inside-avoid">
                 <div>
                   <p className="text-lg font-bold text-[#0A2540]">{data.asesor}</p>
                   {data.firmaEmail && <p className="text-xs text-gray-600">{data.firmaEmail}</p>}
