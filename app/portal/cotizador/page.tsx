@@ -122,6 +122,9 @@ interface Msg {
   text: string;
 }
 
+const SALUDO_IA =
+  "¡Hola! 👋 Cuéntame en tus palabras qué necesitas (cliente, servicio, precios, plazos…) y lo voy armando en el documento de la derecha. Ej: “Propuesta para el Hotel Pestagua: sysadmin mensual 1.200.000, más un plan por intervención”. También puedes cambiar a modo Guiado arriba.";
+
 const PREGUNTAS: Record<Stage, string> = {
   cliente: "¡Hola! 👋 Armemos la cotización. ¿Nombre del cliente o contacto?",
   empresa: "¿Nombre del negocio o empresa? (si no tiene, escribe “-”)",
@@ -141,11 +144,13 @@ export default function CotizadorPage() {
   const [stage, setStage] = useState<Stage>("cliente");
   const [tmpConcepto, setTmpConcepto] = useState("");
   const [input, setInput] = useState("");
-  const [msgs, setMsgs] = useState<Msg[]>([{ from: "bot", text: PREGUNTAS.cliente }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "bot", text: SALUDO_IA }]);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(true);
+  const [iaMode, setIaMode] = useState(true);
+  const [iaBusy, setIaBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -180,7 +185,71 @@ export default function CotizadorPage() {
     bot(PREGUNTAS[s]);
   };
 
+  /* Aplica el patch de la IA sobre el documento (items se reemplaza por el array completo) */
+  function aplicarPatch(patch: Record<string, unknown>) {
+    if (!patch || typeof patch !== "object") return;
+    setData((d) => {
+      const next: Cotizacion = { ...d };
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === undefined || v === null) continue;
+        if (k === "items" && Array.isArray(v)) {
+          next.items = (v as unknown[])
+            .filter((x) => x && typeof x === "object")
+            .map((x) => {
+              const it = x as Record<string, unknown>;
+              return {
+                concepto: String(it.concepto ?? ""),
+                valor: Number(it.valor) || 0,
+                ...(it.etiqueta ? { etiqueta: String(it.etiqueta) } : {}),
+                ...(it.color ? { color: String(it.color) } : {}),
+              } as Item;
+            });
+        } else if (k === "descuento") {
+          next.descuento = Number(v) || 0;
+        } else if (k in next) {
+          // @ts-expect-error asignación dinámica de campos string conocidos
+          next[k] = v;
+        }
+      }
+      return next;
+    });
+  }
+
+  /* Chat con IA: interpreta texto libre y llena el documento */
+  async function handleSendIA() {
+    const val = input.trim();
+    if (!val || iaBusy) return;
+    setInput("");
+    const historial = [...msgs, { from: "user" as const, text: val }];
+    setMsgs((m) => [...m, { from: "user", text: val }]);
+    setIaBusy(true);
+    try {
+      const payload = historial.map((m) => ({
+        role: m.from === "user" ? "user" : "assistant",
+        content: m.text,
+      }));
+      const r = await fetch("/api/portal/cotizador-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: payload, estado: data }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        bot(e?.error?.includes("GROQ") ? "⚠️ La IA no está configurada (falta GROQ_API_KEY). Puedes usar el modo Guiado." : "⚠️ No pude procesar eso, intenta de nuevo.");
+        return;
+      }
+      const { reply, patch } = await r.json();
+      if (patch && Object.keys(patch).length) aplicarPatch(patch);
+      bot(reply || "Listo ✓");
+    } catch {
+      bot("⚠️ Error de conexión. Intenta otra vez.");
+    } finally {
+      setIaBusy(false);
+    }
+  }
+
   function handleSend() {
+    if (iaMode) return void handleSendIA();
     const val = input.trim();
     setInput("");
     // Permitir "Enter vacío" solo donde hay sugerido
@@ -257,7 +326,14 @@ export default function CotizadorPage() {
     setData(DEFAULT);
     setStage("cliente");
     setTmpConcepto("");
-    setMsgs([{ from: "bot", text: PREGUNTAS.cliente }]);
+    setMsgs([{ from: "bot", text: iaMode ? SALUDO_IA : PREGUNTAS.cliente }]);
+  }
+
+  /* Cambiar entre IA y Guiado sin perder el documento */
+  function cambiarModo(ia: boolean) {
+    setIaMode(ia);
+    setStage(ia ? "done" : "cliente");
+    setMsgs([{ from: "bot", text: ia ? SALUDO_IA : PREGUNTAS.cliente }]);
   }
 
   const subtotal = data.items.reduce((s, i) => s + (i.valor || 0), 0);
@@ -360,9 +436,22 @@ export default function CotizadorPage() {
             chatOpen ? "translate-x-0" : "-translate-x-full md:hidden"
           }`}
         >
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 md:hidden">
-            <span className="text-xs font-medium text-white/50">Asistente de cotización</span>
-            <button onClick={() => setChatOpen(false)} className="rounded-lg p-1 text-white/50 hover:bg-white/5" title="Cerrar">
+          <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2.5">
+            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs">
+              <button
+                onClick={() => cambiarModo(true)}
+                className={`rounded-md px-2.5 py-1 font-medium transition ${iaMode ? "bg-gradient-to-br from-violet-500 to-indigo-500 text-white" : "text-white/50 hover:text-white/80"}`}
+              >
+                ✨ IA
+              </button>
+              <button
+                onClick={() => cambiarModo(false)}
+                className={`rounded-md px-2.5 py-1 font-medium transition ${!iaMode ? "bg-white/15 text-white" : "text-white/50 hover:text-white/80"}`}
+              >
+                Guiado
+              </button>
+            </div>
+            <button onClick={() => setChatOpen(false)} className="rounded-lg p-1 text-white/50 hover:bg-white/5 md:hidden" title="Cerrar">
               <PanelLeftClose size={16} />
             </button>
           </div>
@@ -380,6 +469,15 @@ export default function CotizadorPage() {
                 </div>
               </div>
             ))}
+            {iaBusy && (
+              <div className="flex justify-start">
+                <div className="flex gap-1 rounded-2xl rounded-tl-sm bg-white/5 px-3.5 py-3">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.3s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.15s]" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40" />
+                </div>
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
           <form
@@ -392,18 +490,26 @@ export default function CotizadorPage() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              disabled={stage === "done"}
+              disabled={iaMode ? iaBusy : stage === "done"}
               lang="es"
               spellCheck
               autoComplete="on"
               autoCapitalize="sentences"
               enterKeyHint="send"
-              placeholder={stage === "done" ? "Cotización lista ✓" : "Escribe aquí..."}
+              placeholder={
+                iaMode
+                  ? iaBusy
+                    ? "Pensando…"
+                    : "Describe la cotización o propuesta…"
+                  : stage === "done"
+                    ? "Cotización lista ✓"
+                    : "Escribe aquí..."
+              }
               className="flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50 disabled:opacity-50"
             />
             <button
               type="submit"
-              disabled={stage === "done"}
+              disabled={iaMode ? iaBusy : stage === "done"}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white disabled:opacity-40"
             >
               <Send size={15} />
