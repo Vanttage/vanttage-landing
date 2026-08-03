@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { Send, Plus, Trash2, Printer, RotateCcw, Save } from "lucide-react";
+import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 /* ─────────── Tipos ─────────── */
 interface Item {
@@ -145,6 +145,7 @@ export default function CotizadorPage() {
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [chatOpen, setChatOpen] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -311,33 +312,60 @@ export default function CotizadorPage() {
           <p className="text-sm font-semibold">Cotizador · Vanttage</p>
           <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
         </div>
-        <div className="flex items-center gap-2">
-          {savedMsg && <span className="text-xs text-emerald-400">{savedMsg}</span>}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {savedMsg && <span className="w-full text-right text-xs text-emerald-400 sm:w-auto">{savedMsg}</span>}
+          <button
+            onClick={() => setChatOpen((v) => !v)}
+            title={chatOpen ? "Ocultar chat" : "Mostrar chat"}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
+          >
+            {chatOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
+            <span className="hidden sm:inline">Chat</span>
+          </button>
           <button
             onClick={reset}
             className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
           >
-            <RotateCcw size={13} /> Reiniciar
+            <RotateCcw size={13} /> <span className="hidden sm:inline">Reiniciar</span>
           </button>
           <button
             onClick={guardar}
             disabled={saving}
             className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
           >
-            <Save size={14} /> {saving ? "Guardando…" : "Guardar"}
+            <Save size={14} /> {saving ? "Guardando…" : <span className="hidden sm:inline">Guardar</span>}
           </button>
           <button
             onClick={descargarPdf}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25 sm:px-4"
           >
-            <Printer size={14} /> Descargar PDF
+            <Printer size={14} /> <span className="hidden sm:inline">Descargar </span>PDF
           </button>
         </div>
       </header>
 
       <div className="flex min-h-0 flex-1 print:block print:min-h-0">
-        {/* ── CHAT (izquierda) ── */}
-        <aside className="no-print flex w-[360px] shrink-0 flex-col border-r border-white/10 bg-[#0A0A14]">
+        {/* ── Backdrop (solo móvil, cuando el chat está abierto) ── */}
+        {chatOpen && (
+          <div
+            onClick={() => setChatOpen(false)}
+            className="no-print fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+            aria-hidden
+          />
+        )}
+
+        {/* ── CHAT (izquierda) — panel fijo en escritorio, cajón deslizable en móvil ── */}
+        <aside
+          className={`no-print fixed inset-y-0 left-0 z-40 flex w-[86%] max-w-[340px] flex-col border-r border-white/10 bg-[#0A0A14] transition-transform duration-300 ease-out md:static md:z-auto md:w-[360px] md:max-w-none md:shrink-0 ${
+            chatOpen ? "translate-x-0" : "-translate-x-full md:hidden"
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 md:hidden">
+            <span className="text-xs font-medium text-white/50">Asistente de cotización</span>
+            <button onClick={() => setChatOpen(false)} className="rounded-lg p-1 text-white/50 hover:bg-white/5" title="Cerrar">
+              <PanelLeftClose size={16} />
+            </button>
+          </div>
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {msgs.map((m, i) => (
               <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
@@ -365,6 +393,11 @@ export default function CotizadorPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={stage === "done"}
+              lang="es"
+              spellCheck
+              autoComplete="on"
+              autoCapitalize="sentences"
+              enterKeyHint="send"
               placeholder={stage === "done" ? "Cotización lista ✓" : "Escribe aquí..."}
               className="flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50 disabled:opacity-50"
             />
@@ -379,9 +412,9 @@ export default function CotizadorPage() {
         </aside>
 
         {/* ── PLANTILLA (derecha) ── */}
-        <main className="flex-1 overflow-y-auto bg-[#0f0f18] p-6 print:block print:overflow-visible print:bg-white print:p-0">
+        <main className="min-w-0 flex-1 overflow-y-auto bg-[#0f0f18] p-3 sm:p-6 print:block print:overflow-visible print:bg-white print:p-0">
           <div
-            className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:max-w-full print:overflow-visible print:rounded-none print:p-6 print:shadow-none"
+            className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-5 text-[#0A2540] shadow-2xl sm:p-8 md:p-10 print:max-w-full print:overflow-visible print:rounded-none print:p-6 print:shadow-none"
           >
             {/* Marca de agua sutil (logo grande de fondo) — solo modo Vanttage */}
             {data.marca !== "personal" && (
@@ -477,7 +510,7 @@ export default function CotizadorPage() {
               <EditArea
                 value={data.resumen}
                 onChange={(v) => set({ resumen: v })}
-                className="mt-1 text-sm leading-relaxed text-gray-600"
+                className="mt-1 text-sm leading-relaxed text-gray-600 text-justify"
               />
             </div>
 
@@ -489,7 +522,7 @@ export default function CotizadorPage() {
                   <EditArea
                     value={data.contexto ?? ""}
                     onChange={(v) => set({ contexto: v })}
-                    className="mt-1 text-sm leading-relaxed text-gray-600"
+                    className="mt-1 text-sm leading-relaxed text-gray-600 text-justify"
                   />
                 </div>
                 <div className="mt-4 break-inside-avoid">
@@ -497,7 +530,7 @@ export default function CotizadorPage() {
                   <EditArea
                     value={data.objetivo ?? ""}
                     onChange={(v) => set({ objetivo: v })}
-                    className="mt-1 text-sm leading-relaxed text-gray-600"
+                    className="mt-1 text-sm leading-relaxed text-gray-600 text-justify"
                   />
                 </div>
               </>
@@ -516,19 +549,19 @@ export default function CotizadorPage() {
                       className="group break-inside-avoid rounded-xl border border-gray-200 p-4"
                       style={{ borderLeftWidth: 4, borderLeftColor: c }}
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                         <EditArea
                           value={it.concepto}
                           onChange={(v) => editItem(i, { concepto: v })}
-                          className="flex-1 text-sm leading-relaxed"
+                          className="min-w-0 flex-1 text-sm leading-relaxed text-justify"
                         />
-                        <div className="flex flex-col items-end gap-1.5">
+                        <div className="flex flex-row-reverse items-center justify-end gap-1.5 sm:flex-col sm:items-end">
                           <input
                             value={it.etiqueta ?? (it.valor ? fmt(it.valor) : "")}
                             onChange={(e) => editItem(i, { etiqueta: e.target.value })}
                             placeholder="Precio"
                             style={{ borderColor: `${c}55`, background: `${c}14`, color: c }}
-                            className="w-40 rounded-full border px-3 py-1 text-right text-xs font-semibold outline-none"
+                            className="w-32 rounded-full border px-3 py-1 text-right text-xs font-semibold outline-none sm:w-40"
                           />
                           <button
                             onClick={() => delItem(i)}
@@ -555,7 +588,7 @@ export default function CotizadorPage() {
                   <EditArea
                     value={data.beneficios ?? ""}
                     onChange={(v) => set({ beneficios: v })}
-                    className="mt-1 text-sm leading-relaxed text-gray-600"
+                    className="mt-1 text-sm leading-relaxed text-gray-600 text-justify"
                   />
                 </div>
               </div>
@@ -727,6 +760,9 @@ function EditText({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
+        lang="es"
+        spellCheck
+        autoCapitalize="sentences"
         className={`w-full rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hidden ${className}`}
       />
       {/* Versión estática para PDF (el input se recorta al paginar) */}
@@ -759,6 +795,9 @@ function EditArea({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={1}
+        lang="es"
+        spellCheck
+        autoCapitalize="sentences"
         className={`w-full resize-none overflow-hidden rounded border border-transparent bg-transparent px-1 py-0.5 outline-none hover:border-gray-200 focus:border-violet-300 print:hidden ${className}`}
       />
       {/* Versión estática para PDF: texto que fluye y pagina sin recortarse */}
