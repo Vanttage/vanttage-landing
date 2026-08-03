@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const ETAPAS = ["Prospecto", "Contactado", "Cotizado", "Aprobado", "En desarrollo", "Entregado", "Perdido"];
 
@@ -13,13 +14,22 @@ export default function Pipeline({ clientes }: { clientes: C[] }) {
   const [items, setItems] = useState(clientes);
 
   async function mover(id: string, etapa: string) {
+    const anterior = items.find((c) => c.id === id)?.etapa ?? "Prospecto";
     setItems((prev) => prev.map((c) => (c.id === id ? { ...c, etapa } : c)));
-    await fetch(`/api/portal/clientes/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ etapa }),
-    });
-    router.refresh();
+    try {
+      const r = await fetch(`/api/portal/clientes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ etapa }),
+      });
+      if (!r.ok) throw new Error();
+      toast.success(`Movido a “${etapa}”`);
+      router.refresh();
+    } catch {
+      // Revertir si el servidor falla
+      setItems((prev) => prev.map((c) => (c.id === id ? { ...c, etapa: anterior } : c)));
+      toast.error("No se pudo mover el contacto");
+    }
   }
 
   return (
@@ -43,6 +53,7 @@ export default function Pipeline({ clientes }: { clientes: C[] }) {
                   <select
                     value={etapa}
                     onChange={(e) => mover(c.id, e.target.value)}
+                    aria-label={`Cambiar etapa de ${c.nombre}`}
                     className="mt-2 w-full rounded border border-[var(--pborder)] bg-[var(--pinput)] px-2 py-1 text-xs text-[var(--pmuted)] outline-none focus:border-violet-400/50"
                   >
                     {ETAPAS.map((e) => <option key={e} value={e} className="bg-[var(--psidebar)]">{e}</option>)}

@@ -55,6 +55,7 @@ export default function CotizacionesTable({ initial }: { initial: Cot[] }) {
     {
       accessorKey: "estado", header: "Estado", cell: (i) => (
         <select value={i.getValue() as string} onChange={(e) => cambiarEstado(i.row.original.id, e.target.value)}
+          aria-label={`Estado de ${i.row.original.numero || "#" + i.row.original.consecutivo}`}
           className="rounded-full border border-[var(--pborder)] bg-[var(--pinput)] px-2 py-1 text-xs capitalize outline-none"
           style={{ color: estadoColor[i.getValue() as string] || "var(--ptext)" }}>
           {ESTADOS.map((e) => <option key={e} value={e} className="bg-[var(--psidebar)] text-[var(--ptext)]">{e}</option>)}
@@ -65,8 +66,8 @@ export default function CotizacionesTable({ initial }: { initial: Cot[] }) {
     {
       id: "acciones", header: "", enableSorting: false, cell: (i) => (
         <div className="flex justify-end gap-1">
-          <Link href={`/portal/cotizador?id=${i.row.original.id}`} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]" title="Editar"><Pencil size={14} /></Link>
-          <button onClick={() => borrar(i.row.original)} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-red-500/10 hover:text-red-400" title="Eliminar"><Trash2 size={14} /></button>
+          <Link href={`/portal/cotizador?id=${i.row.original.id}`} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]" title="Editar" aria-label="Editar cotización"><Pencil size={14} /></Link>
+          <button onClick={() => borrar(i.row.original)} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-red-500/10 hover:text-red-400" title="Eliminar" aria-label="Eliminar cotización"><Trash2 size={14} /></button>
         </div>
       ),
     },
@@ -85,7 +86,7 @@ export default function CotizacionesTable({ initial }: { initial: Cot[] }) {
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <div className="relative max-w-xs flex-1">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pfaint)]" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar…" className={`${inp} w-full pl-9`} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar…" aria-label="Buscar cotizaciones" className={`${inp} w-full pl-9`} />
         </div>
         <div className="flex flex-wrap gap-1.5">
           {FILTROS.map((f) => (

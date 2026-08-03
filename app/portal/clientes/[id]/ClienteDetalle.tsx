@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageCircle, Phone, Mail, Users2, StickyNote, Send, Loader2, Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 export const ETAPAS = ["Prospecto", "Contactado", "Cotizado", "Aprobado", "En desarrollo", "Entregado", "Perdido"];
 const CANALES = ["WhatsApp", "Llamada", "Correo", "Reunión", "Nota"] as const;
@@ -32,32 +33,56 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
   const [busy, setBusy] = useState(false);
 
   async function patchCliente(body: Record<string, unknown>) {
-    await fetch(`/api/portal/clientes/${cliente.id}`, {
+    const r = await fetch(`/api/portal/clientes/${cliente.id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
     });
+    if (!r.ok) throw new Error();
     router.refresh();
   }
 
-  async function cambiarEtapa(e: string) { setEtapa(e); await patchCliente({ etapa: e }); }
+  async function cambiarEtapa(e: string) {
+    const anterior = etapa;
+    setEtapa(e);
+    try {
+      await patchCliente({ etapa: e });
+      toast.success(`Etapa: ${e}`);
+    } catch {
+      setEtapa(anterior);
+      toast.error("No se pudo cambiar la etapa");
+    }
+  }
 
   async function guardarDatos() {
     setBusy(true);
-    await patchCliente(form);
-    setEditing(false);
-    setBusy(false);
+    try {
+      await patchCliente(form);
+      setEditing(false);
+      toast.success("Datos actualizados");
+    } catch {
+      toast.error("No se pudieron guardar los datos");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
     if (!detalle.trim()) return;
     setBusy(true);
-    await fetch("/api/portal/interacciones", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cliente_id: cliente.id, canal, autor, detalle }),
-    });
-    setDetalle("");
-    setBusy(false);
-    router.refresh();
+    try {
+      const r = await fetch("/api/portal/interacciones", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cliente_id: cliente.id, canal, autor, detalle }),
+      });
+      if (!r.ok) throw new Error();
+      setDetalle("");
+      toast.success("Interacción registrada");
+      router.refresh();
+    } catch {
+      toast.error("No se pudo registrar la interacción");
+    } finally {
+      setBusy(false);
+    }
   }
 
   const input = "w-full rounded-lg border border-[var(--pborder)] bg-[var(--pinput)] px-3 py-2 text-sm outline-none placeholder:text-[var(--pfaint)] focus:border-violet-400/50";
@@ -73,7 +98,7 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
               <Pencil size={12} /> {editing ? "Cerrar" : "Editar datos"}
             </button>
           </div>
-          <select value={etapa} onChange={(e) => cambiarEtapa(e.target.value)} className={`${input} mb-4`}>
+          <select value={etapa} onChange={(e) => cambiarEtapa(e.target.value)} aria-label="Etapa del pipeline" className={`${input} mb-4`}>
             {ETAPAS.map((e) => <option key={e} value={e} className="bg-[var(--psidebar)]">{e}</option>)}
           </select>
 
@@ -118,15 +143,15 @@ export default function ClienteDetalle({ cliente, interacciones, cotizaciones }:
         <form onSubmit={registrar} className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
           <p className="mb-3 text-xs uppercase tracking-wider text-[var(--pfaint)]">Registrar interacción</p>
           <div className="mb-2 flex gap-2">
-            <select value={canal} onChange={(e) => setCanal(e.target.value)} className={input}>
+            <select value={canal} onChange={(e) => setCanal(e.target.value)} aria-label="Canal de la interacción" className={input}>
               {CANALES.map((c) => <option key={c} value={c} className="bg-[var(--psidebar)]">{c}</option>)}
             </select>
-            <select value={autor} onChange={(e) => setAutor(e.target.value)} className={input}>
+            <select value={autor} onChange={(e) => setAutor(e.target.value)} aria-label="Autor de la interacción" className={input}>
               {AUTORES.map((a) => <option key={a} value={a} className="bg-[var(--psidebar)]">{a}</option>)}
             </select>
           </div>
           <div className="flex gap-2">
-            <input className={input} placeholder="¿Qué se hizo? (ej: le envié la cotización por WhatsApp)" value={detalle} onChange={(e) => setDetalle(e.target.value)} />
+            <input className={input} placeholder="¿Qué se hizo? (ej: le envié la cotización por WhatsApp)" aria-label="Detalle de la interacción" value={detalle} onChange={(e) => setDetalle(e.target.value)} />
             <button type="submit" disabled={busy} className="flex h-9 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 text-white disabled:opacity-50">
               {busy ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
             </button>

@@ -44,11 +44,20 @@ export default function ContactosTable({ initial }: { initial: Cliente[] }) {
     } catch {}
   }
 
-  // Auto-refresco cada 25s (sensación en vivo sin recargar)
+  // Auto-refresco cada 25s (se pausa mientras el modal está abierto para no pisar la edición)
   useEffect(() => {
+    if (modal) return;
     const t = setInterval(refetch, 25000);
     return () => clearInterval(t);
-  }, []);
+  }, [modal]);
+
+  // Cerrar el modal con la tecla Escape
+  useEffect(() => {
+    if (!modal) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setModal(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modal]);
 
   async function guardar() {
     if (!modal?.nombre.trim()) return toast.error("El nombre es obligatorio");
@@ -100,10 +109,10 @@ export default function ContactosTable({ initial }: { initial: Cliente[] }) {
         enableSorting: false,
         cell: (i) => (
           <div className="flex justify-end gap-1">
-            <button onClick={() => setModal({ ...empty, ...i.row.original, empresa: i.row.original.empresa || "", whatsapp: i.row.original.whatsapp || "", email: i.row.original.email || "", notas: i.row.original.notas || "", etapa: i.row.original.etapa || "Prospecto" })} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]" title="Editar">
+            <button onClick={() => setModal({ ...empty, ...i.row.original, empresa: i.row.original.empresa || "", whatsapp: i.row.original.whatsapp || "", email: i.row.original.email || "", notas: i.row.original.notas || "", etapa: i.row.original.etapa || "Prospecto" })} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]" title="Editar" aria-label={`Editar ${i.row.original.nombre}`}>
               <Pencil size={14} />
             </button>
-            <button onClick={() => borrar(i.row.original)} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-red-500/10 hover:text-red-400" title="Eliminar">
+            <button onClick={() => borrar(i.row.original)} className="rounded p-1.5 text-[var(--pmuted)] hover:bg-red-500/10 hover:text-red-400" title="Eliminar" aria-label={`Eliminar ${i.row.original.nombre}`}>
               <Trash2 size={14} />
             </button>
           </div>
@@ -128,10 +137,10 @@ export default function ContactosTable({ initial }: { initial: Cliente[] }) {
 
   return (
     <div>
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
         <div className="relative flex-1 max-w-xs">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--pfaint)]" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar…" className={`${inp} pl-9`} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar…" aria-label="Buscar contactos" className={`${inp} pl-9`} />
         </div>
         <button onClick={() => setModal({ ...empty })} className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white">
           <Plus size={15} /> Nuevo
@@ -177,17 +186,17 @@ export default function ContactosTable({ initial }: { initial: Cliente[] }) {
       {/* Modal crear/editar */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setModal(null)}>
-          <div className="w-full max-w-md rounded-2xl border border-[var(--pborder)] bg-[var(--psidebar)] p-5" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-modal="true" aria-labelledby="modal-contacto-titulo" className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-[var(--pborder)] bg-[var(--psidebar)] p-5" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-semibold">{modal.id ? "Editar contacto" : "Nuevo contacto"}</h3>
-              <button onClick={() => setModal(null)} className="text-[var(--pmuted)] hover:text-[var(--ptext)]"><X size={18} /></button>
+              <h3 id="modal-contacto-titulo" className="font-semibold">{modal.id ? "Editar contacto" : "Nuevo contacto"}</h3>
+              <button onClick={() => setModal(null)} aria-label="Cerrar" className="text-[var(--pmuted)] hover:text-[var(--ptext)]"><X size={18} /></button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inp} placeholder="Nombre *" value={modal.nombre} onChange={(e) => setModal({ ...modal, nombre: e.target.value })} />
+              <input className={inp} placeholder="Nombre *" aria-label="Nombre" autoFocus value={modal.nombre} onChange={(e) => setModal({ ...modal, nombre: e.target.value })} />
               <input className={inp} placeholder="Empresa" value={modal.empresa} onChange={(e) => setModal({ ...modal, empresa: e.target.value })} />
               <input className={inp} placeholder="WhatsApp" value={modal.whatsapp} onChange={(e) => setModal({ ...modal, whatsapp: e.target.value })} />
               <input className={inp} placeholder="Correo" value={modal.email} onChange={(e) => setModal({ ...modal, email: e.target.value })} />
-              <select className={inp} value={modal.etapa} onChange={(e) => setModal({ ...modal, etapa: e.target.value })}>
+              <select className={inp} aria-label="Etapa" value={modal.etapa} onChange={(e) => setModal({ ...modal, etapa: e.target.value })}>
                 {ETAPAS.map((x) => <option key={x} value={x} className="bg-[var(--psidebar)]">{x}</option>)}
               </select>
             </div>

@@ -13,9 +13,13 @@ export async function PATCH(
   if (!db) return NextResponse.json({ error: "DB no configurada" }, { status: 503 });
 
   const b = await req.json().catch(() => ({}));
+  // El nombre es obligatorio: no permitir dejarlo vacío/nulo
+  if (b.nombre !== undefined && !String(b.nombre).trim()) {
+    return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 });
+  }
   const upd: Record<string, unknown> = {};
   for (const k of ["nombre", "empresa", "whatsapp", "email", "notas", "etapa"]) {
-    if (b[k] !== undefined) upd[k] = b[k] === "" ? null : b[k];
+    if (b[k] !== undefined) upd[k] = k === "nombre" ? String(b[k]).trim() : b[k] === "" ? null : b[k];
   }
   if (b.valor_estimado !== undefined) upd.valor_estimado = Number(b.valor_estimado) || 0;
   if (!Object.keys(upd).length) return NextResponse.json({ error: "Nada que actualizar" }, { status: 400 });

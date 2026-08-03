@@ -72,7 +72,7 @@ export default async function DashboardPage() {
           <p className="mt-1 text-xl font-semibold">{conversion}%</p>
         </div>
         <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
-          <p className="text-sm text-[var(--pfaint)]">Enviadas / pendientes</p>
+          <p className="text-sm text-[var(--pfaint)]">Enviadas (pendientes)</p>
           <p className="mt-1 text-xl font-semibold">{cots.filter((c) => c.estado === "enviada").length}</p>
         </div>
       </div>
@@ -88,8 +88,8 @@ export default async function DashboardPage() {
             Aún no hay cotizaciones. Crea una en “Nueva cotización”.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-[var(--pborder)]">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-xl border border-[var(--pborder)]">
+            <table className="w-full min-w-[560px] text-sm">
               <tbody>
                 {cots.slice(0, 6).map((c) => (
                   <tr key={c.id} className="border-t border-[var(--pborder)] first:border-0 hover:bg-[var(--pcardhover)]">

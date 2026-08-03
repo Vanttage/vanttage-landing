@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const nombre = String(b?.nombre || "").trim();
   if (!nombre) return NextResponse.json({ error: "El nombre es obligatorio" }, { status: 400 });
 
-  const fields = {
+  const fields: Record<string, unknown> = {
     nombre,
     empresa: b.empresa?.trim() || null,
     whatsapp: b.whatsapp?.trim() || null,
@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
     notas: b.notas?.trim() || null,
     origen: b.origen || "manual",
   };
+  // La etapa elegida en el formulario debe respetarse al crear/editar
+  if (b.etapa) fields.etapa = String(b.etapa);
 
   if (b.id) {
     const { error } = await db.from("clientes").update(fields).eq("id", b.id);
