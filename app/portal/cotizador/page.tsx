@@ -3,98 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen, ArrowLeft } from "lucide-react";
-
-/* ─────────── Tipos ─────────── */
-interface Item {
-  concepto: string;
-  valor: number;
-  etiqueta?: string;
-  color?: string;
-}
-interface Cotizacion {
-  numero: string;
-  fecha: string;
-  cliente: string;
-  empresa: string;
-  proyecto: string;
-  resumen: string;
-  items: Item[];
-  entrega: string;
-  formaPago: string;
-  validez: string;
-  notas: string;
-  mediosPago: string;
-  asesor: string;
-  asesorCargo: string;
-  descuento: number;
-  /* Marca: "vanttage" (por defecto, con logo) o "personal" (sin logo Vanttage) */
-  marca?: "vanttage" | "personal";
-  marcaNombre?: string;
-  marcaTagline?: string;
-  titulo?: string;
-  contacto?: string;
-  /* Modo propuesta: layout narrativo con secciones + precio por bloque */
-  tipo?: "cotizacion" | "propuesta";
-  objetivo?: string;
-  contexto?: string;
-  beneficios?: string;
-  firmaTexto?: string;
-  firmaCC?: string;
-  firmaEmail?: string;
-  referenciaTexto?: string;
-  referenciaUrl?: string;
-}
-
-/* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
-const HOY = new Date().toLocaleDateString("es-CO", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});
-
-const DEFAULT: Cotizacion = {
-  numero: "COT-" + new Date().getFullYear() + "-001",
-  fecha: HOY,
-  cliente: "Mileidys Ramírez",
-  empresa: "",
-  proyecto: "Tienda virtual (e-commerce) para venta de camisetas y más",
-  resumen:
-    "Desarrollo de una tienda virtual profesional y a la medida para comercializar tus camisetas y demás productos, con panel de administración propio, carrito de compras y pagos por transferencia (sin pasarelas ni comisiones).",
-  items: [
-    {
-      concepto:
-        "Desarrollo completo de la tienda virtual (e-commerce), incluye:\n" +
-        "• Diseño único adaptado a tu marca (logo, colores, estilo)\n" +
-        "• Catálogo de productos con fotos, precios y variantes (tallas/colores)\n" +
-        "• Carrito de compras para acumular varios productos\n" +
-        "• Checkout con medios de pago manuales (transferencia) — sin pasarelas ni comisiones\n" +
-        "• Panel de administración para que tú edites productos, imágenes y precios\n" +
-        "• Optimización SEO para aparecer en Google\n" +
-        "• Base de datos en la nube (Supabase) para tus productos y pedidos\n" +
-        "• Responsive (celular, tablet y PC) + publicación en internet",
-      valor: 2000000,
-    },
-    { concepto: "Hosting + dominio .com por 1 año (incluido)", valor: 0 },
-    { concepto: "Soporte y garantía por 1 mes tras la entrega (incluido)", valor: 0 },
-  ],
-  entrega: "3 a 4 semanas",
-  formaPago: "50% para iniciar, 50% contra entrega",
-  validez: "15 días",
-  notas:
-    "Las modificaciones de diseño, nuevas funciones o cambios en la tienda después de la entrega tienen costo adicional. Ofrecemos un plan de soporte y mantenimiento mensual que incluye cambios, actualizaciones y acompañamiento continuo (valor mensual a convenir según necesidades).",
-  mediosPago:
-    "Carlos Carranza V. · CC 1238338732\n" +
-    "Bancolombia: 085-938307-06 (Ahorros)\n" +
-    "Nu: 68309764 (NuPlaca: XNR732 / @XNR732)\n" +
-    "Nequi / Daviplata: 3105080356\n" +
-    "Bre-B (Llave): 1238338732\n" +
-    "PayPal: @CarlosCarranza29\n" +
-    "Envía el comprobante o captura al confirmar la transferencia. ¡Gracias! 🙏",
-  asesor: "Carlos Carranza",
-  asesorCargo: "Asesor · Líder de proyecto",
-  descuento: 30,
-};
+import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen, ArrowLeft, FileText, Copy, Sparkles } from "lucide-react";
+import { PLANTILLAS, plantillaVacia, DEFAULT, type Item, type Cotizacion } from "./plantillas";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -141,7 +51,7 @@ const PREGUNTAS: Record<Stage, string> = {
 };
 
 export default function CotizadorPage() {
-  const [data, setData] = useState<Cotizacion>(DEFAULT);
+  const [data, setData] = useState<Cotizacion>(plantillaVacia);
   const [stage, setStage] = useState<Stage>("cliente");
   const [tmpConcepto, setTmpConcepto] = useState("");
   const [input, setInput] = useState("");
@@ -152,16 +62,19 @@ export default function CotizadorPage() {
   const [chatOpen, setChatOpen] = useState(true);
   const [iaMode, setIaMode] = useState(true);
   const [iaBusy, setIaBusy] = useState(false);
+  const [elegido, setElegido] = useState(false);
+  const [booted, setBooted] = useState(false);
+  const [previas, setPrevias] = useState<{ id: string; numero: string | null; cliente_nombre: string | null; proyecto: string | null }[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs]);
 
-  /* Si viene ?id=..., carga esa cotización guardada para editarla */
+  /* Si viene ?id=..., carga esa cotización guardada para editarla (salta el selector) */
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id");
-    if (!id) return;
+    if (!id) { setBooted(true); return; }
     (async () => {
       try {
         const res = await fetch(`/api/portal/cotizaciones/${id}`);
@@ -170,14 +83,63 @@ export default function CotizadorPage() {
         if (row?.datos) {
           setData(row.datos as Cotizacion);
           setEditingId(row.id);
+          setElegido(true);
           setStage("done");
           setMsgs([{ from: "bot", text: `Editando ${row.numero || "cotización"} — modifica a la derecha y pulsa Guardar.` }]);
         }
       } catch {
         /* ignora */
+      } finally {
+        setBooted(true);
       }
     })();
   }, []);
+
+  /* Cargar cotizaciones previas para la opción "Duplicar una anterior" del selector */
+  useEffect(() => {
+    if (elegido) return;
+    (async () => {
+      try {
+        const r = await fetch("/api/portal/cotizaciones");
+        if (r.ok) {
+          const j = await r.json();
+          setPrevias((j.cotizaciones ?? []).slice(0, 8));
+        }
+      } catch {
+        /* ignora */
+      }
+    })();
+  }, [elegido]);
+
+  /* Elegir punto de partida en el selector */
+  function usarPlantilla(build: () => Cotizacion, nombre: string) {
+    setData(build());
+    setElegido(true);
+    setStage("done");
+    setMsgs([{ from: "bot", text: iaMode ? `Cargué la plantilla “${nombre}”. Dime el cliente y ajusta lo que necesites (o edita a la derecha).` : SALUDO_IA }]);
+  }
+  function empezarVacio() {
+    setData(plantillaVacia());
+    setElegido(true);
+    setStage("done");
+    setMsgs([{ from: "bot", text: iaMode ? SALUDO_IA : PREGUNTAS.cliente }]);
+    if (!iaMode) setStage("cliente");
+  }
+  async function duplicarPrevia(id: string) {
+    try {
+      const res = await fetch(`/api/portal/cotizaciones/${id}`);
+      if (!res.ok) return;
+      const row = await res.json();
+      if (row?.datos) {
+        setData({ ...(row.datos as Cotizacion), numero: "COT-" + new Date().getFullYear() + "-001" });
+        setElegido(true);
+        setStage("done");
+        setMsgs([{ from: "bot", text: "Dupliqué esa cotización. Es una copia nueva: cambia el cliente y guarda para asignarle su propio número." }]);
+      }
+    } catch {
+      /* ignora */
+    }
+  }
 
   const set = (patch: Partial<Cotizacion>) => setData((d) => ({ ...d, ...patch }));
   const bot = (text: string) => setMsgs((m) => [...m, { from: "bot", text }]);
@@ -324,7 +286,9 @@ export default function CotizadorPage() {
   }
 
   function reset() {
-    setData(DEFAULT);
+    setData(plantillaVacia());
+    setEditingId(null);
+    setElegido(false);
     setStage("cliente");
     setTmpConcepto("");
     setMsgs([{ from: "bot", text: iaMode ? SALUDO_IA : PREGUNTAS.cliente }]);
@@ -380,6 +344,98 @@ export default function CotizadorPage() {
     setData((d) => ({ ...d, items: [...d.items, { concepto: "Nuevo ítem", valor: 0 }] }));
   const delItem = (idx: number) =>
     setData((d) => ({ ...d, items: d.items.filter((_, i) => i !== idx) }));
+
+  /* Evita el parpadeo del selector mientras se resuelve si viene ?id (edición) */
+  if (!booted) {
+    return <div className="min-h-screen bg-[#0b0b13]" />;
+  }
+
+  /* ─────────── Pantalla de inicio: elegir punto de partida ─────────── */
+  if (!elegido) {
+    return (
+      <div className="min-h-screen overflow-y-auto bg-[#0b0b13] text-white">
+        <header className="flex items-center gap-3 border-b border-white/10 px-5 py-3">
+          <Link
+            href="/portal/cotizaciones"
+            title="Volver a Cotizaciones"
+            aria-label="Volver a Cotizaciones"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
+          >
+            <ArrowLeft size={16} />
+          </Link>
+          <div>
+            <p className="text-sm font-semibold">Nuevo documento · Cotizador</p>
+            <p className="text-xs text-white/40">Elige cómo empezar</p>
+          </div>
+        </header>
+
+        <div className="mx-auto max-w-4xl px-5 py-8">
+          {/* Empezar de 0 */}
+          <button
+            onClick={empezarVacio}
+            className="group mb-6 flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/70 group-hover:text-white">
+              <Sparkles size={20} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold">Empezar de 0</span>
+              <span className="block text-xs text-white/50">Documento en blanco. Ideal si lo armas con el chat de IA.</span>
+            </span>
+          </button>
+
+          {/* Plantillas */}
+          <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/40">
+            <FileText size={13} /> Plantillas de servicios
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {PLANTILLAS.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => usarPlantilla(p.build, p.nombre)}
+                className="group flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
+              >
+                <span className="text-2xl leading-none">{p.emoji}</span>
+                <span className="min-w-0">
+                  <span className="flex items-center gap-2 text-sm font-semibold">
+                    {p.nombre}
+                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${p.tipo === "propuesta" ? "bg-indigo-500/20 text-indigo-300" : "bg-violet-500/20 text-violet-300"}`}>
+                      {p.tipo === "propuesta" ? "Propuesta" : "Cotización"}
+                    </span>
+                  </span>
+                  <span className="mt-0.5 block text-xs text-white/50">{p.desc}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Duplicar una anterior */}
+          {previas.length > 0 && (
+            <>
+              <p className="mb-3 mt-8 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/40">
+                <Copy size={13} /> Duplicar una anterior
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {previas.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => duplicarPrevia(c.id)}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{c.cliente_nombre || "Sin cliente"}</span>
+                      <span className="block truncate text-xs text-white/45">{c.proyecto || "—"}</span>
+                    </span>
+                    <span className="shrink-0 text-xs text-violet-300">{c.numero || "—"}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen flex-col print:block print:h-auto">
