@@ -8,6 +8,8 @@ import { Send, Plus, Trash2, Printer, RotateCcw, Save } from "lucide-react";
 interface Item {
   concepto: string;
   valor: number;
+  etiqueta?: string;
+  color?: string;
 }
 interface Cotizacion {
   numero: string;
@@ -31,6 +33,11 @@ interface Cotizacion {
   marcaTagline?: string;
   titulo?: string;
   contacto?: string;
+  /* Modo propuesta: layout narrativo con secciones + precio por bloque */
+  tipo?: "cotizacion" | "propuesta";
+  objetivo?: string;
+  contexto?: string;
+  beneficios?: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -234,6 +241,7 @@ export default function CotizadorPage() {
   const subtotal = data.items.reduce((s, i) => s + (i.valor || 0), 0);
   const descuentoMonto = Math.round((subtotal * (data.descuento || 0)) / 100);
   const total = subtotal - descuentoMonto;
+  const esPropuesta = data.tipo === "propuesta";
 
   async function guardar() {
     setSaving(true);
@@ -429,13 +437,17 @@ export default function CotizadorPage() {
                   onChange={(v) => set({ asesorCargo: v })}
                   className="text-right text-xs text-violet-600"
                 />
-                <p className="text-xs text-gray-500">Vanttage · vanttagetech.com</p>
+                {data.marca !== "personal" && (
+                  <p className="text-xs text-gray-500">Vanttage · vanttagetech.com</p>
+                )}
               </div>
             </div>
 
             {/* Proyecto */}
             <div className="mt-6">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Proyecto</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                {esPropuesta ? "Propuesta" : "Proyecto"}
+              </p>
               <EditText
                 value={data.proyecto}
                 onChange={(v) => set({ proyecto: v })}
@@ -448,69 +460,148 @@ export default function CotizadorPage() {
               />
             </div>
 
-            {/* Tabla de ítems */}
-            <div className="mt-6">
-              <div className="grid grid-cols-[1fr_auto] gap-2 border-b-2 border-[#0A2540] pb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                <span>Concepto</span>
-                <span className="text-right">Valor</span>
-              </div>
-              {data.items.map((it, i) => (
-                <div
-                  key={i}
-                  className="group grid grid-cols-[1fr_auto] items-start gap-2 border-b border-gray-100 py-2.5"
-                >
+            {/* Secciones narrativas (solo propuesta) */}
+            {esPropuesta && (
+              <>
+                <div className="mt-6 break-inside-avoid">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Contexto y situación</p>
                   <EditArea
-                    value={it.concepto}
-                    onChange={(v) => editItem(i, { concepto: v })}
-                    className="text-sm leading-relaxed"
+                    value={data.contexto ?? ""}
+                    onChange={(v) => set({ contexto: v })}
+                    className="mt-1 text-sm leading-relaxed text-gray-600"
                   />
-                  <div className="flex items-center justify-end gap-2 pt-0.5">
-                    <input
-                      value={it.valor ? it.valor.toLocaleString("es-CO") : ""}
-                      onChange={(e) => editItem(i, { valor: soloNumero(e.target.value) })}
-                      placeholder="0"
-                      className="w-28 rounded border border-transparent bg-transparent py-0.5 text-right text-sm font-medium outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
-                    />
-                    <button
-                      onClick={() => delItem(i)}
-                      className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                </div>
+                <div className="mt-4 break-inside-avoid">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Objetivo de la propuesta</p>
+                  <EditArea
+                    value={data.objetivo ?? ""}
+                    onChange={(v) => set({ objetivo: v })}
+                    className="mt-1 text-sm leading-relaxed text-gray-600"
+                  />
+                </div>
+              </>
+            )}
+
+            {esPropuesta ? (
+              /* ── PROPUESTA: servicios como tarjetas con etiqueta de precio ── */
+              <div className="mt-6">
+                <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-violet-600">Servicios propuestos</p>
+                <div className="space-y-3">
+                  {data.items.map((it, i) => {
+                    const c = it.color || "#7c3aed";
+                    return (
+                    <div
+                      key={i}
+                      className="group break-inside-avoid rounded-xl border border-gray-200 p-4"
+                      style={{ borderLeftWidth: 4, borderLeftColor: c }}
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      <div className="flex items-start justify-between gap-3">
+                        <EditArea
+                          value={it.concepto}
+                          onChange={(v) => editItem(i, { concepto: v })}
+                          className="flex-1 text-sm leading-relaxed"
+                        />
+                        <div className="flex flex-col items-end gap-1.5">
+                          <input
+                            value={it.etiqueta ?? (it.valor ? fmt(it.valor) : "")}
+                            onChange={(e) => editItem(i, { etiqueta: e.target.value })}
+                            placeholder="Precio"
+                            style={{ borderColor: `${c}55`, background: `${c}14`, color: c }}
+                            className="w-40 rounded-full border px-3 py-1 text-right text-xs font-semibold outline-none"
+                          />
+                          <button
+                            onClick={() => delItem(i)}
+                            className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+                <button
+                  onClick={addItem}
+                  className="no-print mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700"
+                >
+                  <Plus size={14} /> Agregar servicio
+                </button>
+
+                {/* Beneficios */}
+                <div className="mt-6 break-inside-avoid">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Beneficios</p>
+                  <EditArea
+                    value={data.beneficios ?? ""}
+                    onChange={(v) => set({ beneficios: v })}
+                    className="mt-1 text-sm leading-relaxed text-gray-600"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* ── COTIZACIÓN: tabla + total ── */
+              <div className="mt-6">
+                <div className="grid grid-cols-[1fr_auto] gap-2 border-b-2 border-[#0A2540] pb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                  <span>Concepto</span>
+                  <span className="text-right">Valor</span>
+                </div>
+                {data.items.map((it, i) => (
+                  <div
+                    key={i}
+                    className="group grid grid-cols-[1fr_auto] items-start gap-2 border-b border-gray-100 py-2.5"
+                  >
+                    <EditArea
+                      value={it.concepto}
+                      onChange={(v) => editItem(i, { concepto: v })}
+                      className="text-sm leading-relaxed"
+                    />
+                    <div className="flex items-center justify-end gap-2 pt-0.5">
+                      <input
+                        value={it.valor ? it.valor.toLocaleString("es-CO") : ""}
+                        onChange={(e) => editItem(i, { valor: soloNumero(e.target.value) })}
+                        placeholder="0"
+                        className="w-28 rounded border border-transparent bg-transparent py-0.5 text-right text-sm font-medium outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                      />
+                      <button
+                        onClick={() => delItem(i)}
+                        className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  onClick={addItem}
+                  className="no-print mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700"
+                >
+                  <Plus size={14} /> Agregar ítem
+                </button>
+
+                <div className="mt-4 space-y-1.5 break-inside-avoid">
+                  <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                    <span>Subtotal</span>
+                    <span>{fmt(subtotal)}</span>
+                  </div>
+                  <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                    <span className="flex items-center gap-1.5">
+                      Descuento
+                      <input
+                        value={data.descuento || 0}
+                        onChange={(e) => set({ descuento: soloNumero(e.target.value) })}
+                        className="w-10 rounded border border-transparent bg-transparent text-right outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                      />
+                      %
+                    </span>
+                    <span className="text-emerald-600">– {fmt(descuentoMonto)}</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
+                    <span className="text-sm font-medium">Total</span>
+                    <span className="text-lg font-bold">{fmt(total)}</span>
                   </div>
                 </div>
-              ))}
-              <button
-                onClick={addItem}
-                className="no-print mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700"
-              >
-                <Plus size={14} /> Agregar ítem
-              </button>
-
-              {/* Subtotal + descuento + total */}
-              <div className="mt-4 space-y-1.5 break-inside-avoid">
-                <div className="flex items-center justify-between px-5 text-sm text-gray-500">
-                  <span>Subtotal</span>
-                  <span>{fmt(subtotal)}</span>
-                </div>
-                <div className="flex items-center justify-between px-5 text-sm text-gray-500">
-                  <span className="flex items-center gap-1.5">
-                    Descuento
-                    <input
-                      value={data.descuento || 0}
-                      onChange={(e) => set({ descuento: soloNumero(e.target.value) })}
-                      className="w-10 rounded border border-transparent bg-transparent text-right outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
-                    />
-                    %
-                  </span>
-                  <span className="text-emerald-600">– {fmt(descuentoMonto)}</span>
-                </div>
-                <div className="mt-1 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
-                  <span className="text-sm font-medium">Total</span>
-                  <span className="text-lg font-bold">{fmt(total)}</span>
-                </div>
               </div>
-            </div>
+            )}
 
             {/* Condiciones */}
             <div className="mt-6 grid grid-cols-3 gap-4 text-sm break-inside-avoid">
