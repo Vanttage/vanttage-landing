@@ -25,6 +25,12 @@ interface Cotizacion {
   asesor: string;
   asesorCargo: string;
   descuento: number;
+  /* Marca: "vanttage" (por defecto, con logo) o "personal" (sin logo Vanttage) */
+  marca?: "vanttage" | "personal";
+  marcaNombre?: string;
+  marcaTagline?: string;
+  titulo?: string;
+  contacto?: string;
 }
 
 /* ─────────── Datos por defecto (tienda de camisetas) ─────────── */
@@ -348,30 +354,39 @@ export default function CotizadorPage() {
           <div
             className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-10 text-[#0A2540] shadow-2xl print:max-w-full print:overflow-visible print:rounded-none print:p-6 print:shadow-none"
           >
-            {/* Marca de agua sutil (logo grande de fondo) */}
-            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center print:fixed">
-              <Image
-                src="/logo/logo.png"
-                alt=""
-                width={560}
-                height={560}
-                className="w-[68%] max-w-[560px] object-contain opacity-[0.045]"
-              />
-            </div>
+            {/* Marca de agua sutil (logo grande de fondo) — solo modo Vanttage */}
+            {data.marca !== "personal" && (
+              <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center print:fixed">
+                <Image
+                  src="/logo/logo.png"
+                  alt=""
+                  width={560}
+                  height={560}
+                  className="w-[68%] max-w-[560px] object-contain opacity-[0.045]"
+                />
+              </div>
+            )}
 
             {/* Contenido por encima de la marca de agua */}
             <div className="relative z-10">
             {/* Encabezado */}
             <div className="flex items-start justify-between border-b border-gray-200 pb-6">
-              <div className="flex items-center gap-4">
-                <Image src="/logo/logo.png" alt="Vanttage" width={72} height={72} className="h-16 w-16 object-contain" />
+              {data.marca === "personal" ? (
                 <div>
-                  <p className="text-2xl font-bold tracking-tight">Vanttage</p>
-                  <p className="text-xs text-gray-500">Software Boutique · Cartagena, Colombia</p>
+                  <p className="text-2xl font-bold tracking-tight">{data.marcaNombre || "Carlos Carranza"}</p>
+                  <p className="text-xs text-gray-500">{data.marcaTagline || "Soluciones Tecnológicas · Cartagena, Colombia"}</p>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Image src="/logo/logo.png" alt="Vanttage" width={72} height={72} className="h-16 w-16 object-contain" />
+                  <div>
+                    <p className="text-2xl font-bold tracking-tight">Vanttage</p>
+                    <p className="text-xs text-gray-500">Software Boutique · Cartagena, Colombia</p>
+                  </div>
+                </div>
+              )}
               <div className="text-right">
-                <p className="text-lg font-semibold text-violet-600">COTIZACIÓN</p>
+                <p className="text-lg font-semibold text-violet-600">{data.titulo || "COTIZACIÓN"}</p>
                 <EditText
                   value={data.numero}
                   onChange={(v) => set({ numero: v })}
@@ -530,12 +545,15 @@ export default function CotizadorPage() {
 
             {/* Footer */}
             <div className="mt-8 break-inside-avoid border-t border-gray-200 pt-5 text-center text-xs text-gray-500">
-              <p className="font-medium text-[#0A2540]">¿Aprobamos y arrancamos? 🚀</p>
+              <p className="font-medium text-[#0A2540]">¿Avanzamos? 🚀</p>
               <p className="mt-1">
-                WhatsApp +57 310 508 0356 · vanttagectg@gmail.com · vanttagetech.com
+                {data.contacto ||
+                  "WhatsApp +57 310 508 0356 · vanttagectg@gmail.com · vanttagetech.com"}
               </p>
               <p className="mt-1 text-gray-600">
-                Cartagena, Colombia · Diseño único, código limpio, resultados reales.
+                {data.marca === "personal"
+                  ? "Cartagena, Colombia · Soluciones tecnológicas a la medida."
+                  : "Cartagena, Colombia · Diseño único, código limpio, resultados reales."}
               </p>
             </div>
             </div>
