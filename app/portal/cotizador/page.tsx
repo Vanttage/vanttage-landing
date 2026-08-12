@@ -712,14 +712,14 @@ export default function CotizadorPage() {
             {esPropuesta ? (
               /* ── PROPUESTA: servicios como tarjetas con etiqueta de precio ── */
               <div className="mt-6">
-                <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-violet-600">Servicios propuestos</p>
+                <p className="mb-3 break-after-avoid text-[10px] font-semibold uppercase tracking-wider text-violet-600">Servicios propuestos</p>
                 <div className="space-y-3">
                   {data.items.map((it, i) => {
                     const c = it.color || "#7c3aed";
                     return (
                     <div
                       key={i}
-                      className="group break-inside-avoid rounded-xl border border-gray-200 p-4"
+                      className={`group break-inside-avoid rounded-xl border border-gray-200 p-4 ${i === 0 ? "break-before-avoid" : ""}`}
                       style={{ borderLeftWidth: 4, borderLeftColor: c }}
                     >
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
@@ -764,6 +764,33 @@ export default function CotizadorPage() {
                     className="mt-1 text-sm leading-relaxed text-gray-600 text-justify"
                   />
                 </div>
+
+                {/* Inversión: subtotal + descuento + total (solo si hay valores numéricos) */}
+                {subtotal > 0 && (
+                  <div className="mt-6 space-y-1.5 break-inside-avoid">
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-violet-600">Inversión</p>
+                    <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                      <span>Subtotal</span>
+                      <span>{fmt(subtotal)}</span>
+                    </div>
+                    <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                      <span className="flex items-center gap-1.5">
+                        Descuento
+                        <input
+                          value={data.descuento || 0}
+                          onChange={(e) => set({ descuento: soloNumero(e.target.value) })}
+                          className="w-10 rounded border border-transparent bg-transparent text-right outline-none hover:border-gray-200 focus:border-violet-300 print:hover:border-transparent"
+                        />
+                        %
+                      </span>
+                      <span className="text-emerald-600">– {fmt(descuentoMonto)}</span>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between rounded-xl bg-[#0A2540] px-5 py-3 text-white">
+                      <span className="text-sm font-medium">Total</span>
+                      <span className="text-lg font-bold">{fmt(total)}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               /* ── COTIZACIÓN: tabla + total ── */

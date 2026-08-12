@@ -95,7 +95,7 @@ function ecommerce(): Cotizacion {
           "• Diseño único adaptado a tu marca (logo, colores, estilo)\n" +
           "• Catálogo de productos con fotos, precios y variantes (tallas/colores)\n" +
           "• Carrito de compras para acumular varios productos\n" +
-          "• Checkout con medios de pago manuales (transferencia) — sin pasarelas ni comisiones\n" +
+          "• Checkout con medios de pago manuales (transferencia), sin pasarelas ni comisiones\n" +
           "• Panel de administración para que tú edites productos, imágenes y precios\n" +
           "• Optimización SEO para aparecer en Google\n" +
           "• Base de datos en la nube (Supabase) para tus productos y pedidos\n" +
@@ -193,7 +193,7 @@ function soporteTI(): Cotizacion {
     notas:
       "Cada intervención cuenta con su soporte que evidencia el proceso realizado, como garantía del servicio. Se maneja total confidencialidad y buen uso de la información. Aclaración de no exclusividad: de forma simultánea se prestan servicios a otras entidades y empresas, lo cual se informa para efectos de disponibilidad y coordinación.",
     firmaEmail: "carforck@gmail.com",
-    referenciaTexto: "Vanttage — trabajos realizados",
+    referenciaTexto: "Vanttage · trabajos realizados",
     referenciaUrl: "https://vanttagetech.com/proyectos",
   };
 }
@@ -222,6 +222,63 @@ function cursos(): Cotizacion {
   };
 }
 
+/* ─────────── Misión Mapache — diagnóstico gamificado (proyecto de Zulay) ─────────── */
+function misionMapache(): Cotizacion {
+  return {
+    ...base(),
+    tipo: "propuesta",
+    descuento: 10,
+    cliente: "Zulay",
+    empresa: "Empresa de capacitación (3 socias)",
+    proyecto: "Misión Mapache: diagnóstico interactivo gamificado",
+    resumen:
+      "Experiencia web gamificada para diagnosticar la percepción del personal sobre la convivencia con la fauna (mapaches), con identidad visual propia y resultados centralizados de forma automática. Temática: “Convivir con la naturaleza”.",
+    contexto:
+      "Hoy existe un prototipo hecho con ChatGPT que funciona, pero se percibe genérico y con estética de IA, y solo exporta los resultados como un archivo CSV local que cada participante tendría que descargar y enviar manualmente. Se busca una herramienta con identidad propia, tipo juego, y con los datos consolidados automáticamente.",
+    objetivo:
+      "Crear una experiencia con identidad visual propia (animada, tipo juego) que mida, sin juzgar, la percepción del personal sobre la convivencia con los mapaches, y que centralice los resultados de forma automática para su análisis posterior. Dura unos 5 minutos por participante y se responde desde el celular.",
+    beneficios:
+      "Una actividad que se ve profesional y llamativa, sin rastro de plataformas de terceros. Los datos llegan en tiempo real al propio Google Sheets del cliente y queda como una herramienta reutilizable para futuras capacitaciones.",
+    items: [
+      {
+        concepto:
+          "Diseño y desarrollo completo de Misión Mapache\n" +
+          "• Landing con identidad propia (logo del cliente, mascota mapache animada)\n" +
+          "• Formulario de registro con autorización de habeas data (Ley 1581 de 2012)\n" +
+          "• Juego de 6 situaciones con mapa/camino animado y mascota interactiva\n" +
+          "• Pantalla de resultados con puntaje, nivel/insignia y desglose por 6 dimensiones\n" +
+          "• Envío automático de resultados a un Google Sheets del cliente\n" +
+          "• Sección de contacto + pruebas en móvil y escritorio\n" +
+          "• 1 ronda de ajustes posteriores a la entrega",
+        valor: 2000000,
+        etiqueta: "$2.000.000",
+        color: "#7c3aed",
+      },
+      {
+        concepto:
+          "Opcional: dominio propio + hosting\n" +
+          "• Compra y configuración de dominio (ej. misionmapache.com)\n" +
+          "• Hosting anual + certificado SSL\n" +
+          "• SEO técnico: metadatos + Open Graph (previsualización bonita al compartir en WhatsApp) + indexación en Google\n" +
+          "• URL profesional de la empresa, reutilizable para futuras capacitaciones\n" +
+          "(La renovación anual del dominio y el hosting queda a cargo del cliente, aprox. USD 15 a 25 al año)",
+        valor: 0,
+        etiqueta: "$200.000 · opcional",
+        color: "#059669",
+      },
+    ],
+    entrega: "7 a 10 días hábiles desde la aprobación y la entrega del logo/colores",
+    formaPago:
+      "Para iniciar se requiere el 50% de anticipo. El 50% restante se paga contra entrega. El desarrollo comienza una vez confirmado el anticipo.",
+    validez: "15 días",
+    notas:
+      "Para iniciar necesitamos: el anticipo del 50%, el logo de la empresa, la confirmación final de las 6 preguntas (en revisión), la cuenta de Google donde recibir el Sheet de resultados, los colores corporativos o preferencia de paleta, y el nombre de dominio deseado (solo si toman el opcional). El diseño del mapa/camino del juego se presenta para aprobación antes de desarrollar.",
+    firmaEmail: "carforck@gmail.com",
+    referenciaTexto: "Vanttage · trabajos realizados",
+    referenciaUrl: "https://vanttagetech.com/proyectos",
+  };
+}
+
 export interface Plantilla {
   id: string;
   nombre: string;
@@ -236,6 +293,7 @@ export const PLANTILLAS: Plantilla[] = [
   { id: "landing", nombre: "Página web / landing", desc: "Sitio profesional con SEO y formulario de contacto.", emoji: "🌐", tipo: "cotizacion", build: landing },
   { id: "soporteTI", nombre: "Servicios TI / soporte", desc: "Propuesta de mantenimiento, soporte e innovación.", emoji: "🛠️", tipo: "propuesta", build: soporteTI },
   { id: "cursos", nombre: "Capacitación / cursos", desc: "Formación práctica y personalizada.", emoji: "🎓", tipo: "cotizacion", build: cursos },
+  { id: "misionMapache", nombre: "Misión Mapache", desc: "Diagnóstico web gamificado para Zulay (juego + datos a Google Sheets).", emoji: "🦝", tipo: "propuesta", build: misionMapache },
 ];
 
 /* Se conserva para la acción "Reiniciar" y compatibilidad */

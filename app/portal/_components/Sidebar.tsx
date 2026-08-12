@@ -9,6 +9,7 @@ import {
   Users,
   FileText,
   FilePlus2,
+  Receipt,
   ExternalLink,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
@@ -19,6 +20,7 @@ const nav = [
   { href: "/portal/clientes", label: "Contactos", icon: Users },
   { href: "/portal/cotizaciones", label: "Cotizaciones", icon: FileText },
   { href: "/portal/cotizador", label: "Nueva cotización", icon: FilePlus2 },
+  { href: "/portal/cuenta-cobro", label: "Cuenta de cobro", icon: Receipt },
 ];
 
 export default function Sidebar({
