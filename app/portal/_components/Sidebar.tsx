@@ -9,7 +9,7 @@ import {
   Users,
   FileText,
   FilePlus2,
-  Receipt,
+  // Receipt, // (cuenta de cobro: oculta, no desplegada)
   ExternalLink,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
@@ -20,7 +20,10 @@ const nav = [
   { href: "/portal/clientes", label: "Contactos", icon: Users },
   { href: "/portal/cotizaciones", label: "Cotizaciones", icon: FileText },
   { href: "/portal/cotizador", label: "Nueva cotización", icon: FilePlus2 },
-  { href: "/portal/cuenta-cobro", label: "Cuenta de cobro", icon: Receipt },
+  // Cuenta de cobro: oculta de lo desplegado. El código vive en app/portal/_cuenta-cobro/
+  // (carpeta privada = Next no la publica como ruta). Para reactivarla: renombrar la
+  // carpeta a "cuenta-cobro" y descomentar el import Receipt + esta línea:
+  // { href: "/portal/cuenta-cobro", label: "Cuenta de cobro", icon: Receipt },
 ];
 
 export default function Sidebar({
