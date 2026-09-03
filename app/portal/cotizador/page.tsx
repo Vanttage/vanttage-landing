@@ -769,11 +769,12 @@ export default function CotizadorPage() {
                 {subtotal > 0 && (
                   <div className="mt-6 space-y-1.5 break-inside-avoid">
                     <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-violet-600">Inversión</p>
-                    <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                    {/* Subtotal y descuento: en PDF solo salen si hay descuento (evita "Descuento 0%") */}
+                    <div className={`flex items-center justify-between px-5 text-sm text-gray-500 ${data.descuento ? "" : "print:hidden"}`}>
                       <span>Subtotal</span>
                       <span>{fmt(subtotal)}</span>
                     </div>
-                    <div className="flex items-center justify-between px-5 text-sm text-gray-500">
+                    <div className={`flex items-center justify-between px-5 text-sm text-gray-500 ${data.descuento ? "" : "print:hidden"}`}>
                       <span className="flex items-center gap-1.5">
                         Descuento
                         <input

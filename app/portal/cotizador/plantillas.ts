@@ -279,6 +279,114 @@ function misionMapache(): Cotizacion {
   };
 }
 
+/* ─────────── Plataforma web (proyecto de investigación · Duvan Felipe Muñoz) ─────────── */
+function plataformaWeb(): Cotizacion {
+  return {
+    ...base(),
+    tipo: "propuesta",
+    cliente: "Duvan Felipe Muñoz",
+    proyecto: "Plataforma web: repositorio, divulgación y participación ciudadana",
+    resumen:
+      "Diseño, desarrollo e implementación de una plataforma web que funcione como repositorio digital, espacio de divulgación científica y mecanismo de participación ciudadana del proyecto, garantizando el acceso público a sus productos de investigación y a los procesos participativos.",
+    contexto:
+      "El proyecto de investigación “Estrategias sociojurídicas para la gestión comunitaria de los Centros de Producción ante las tensiones entre propiedad privada y patrimonio cultural en el Paisaje Cultural Fortificado de Cartagena de Indias” requiere una plataforma web que centralice y dé acceso público a sus productos de investigación, divulgue sus avances y habilite la participación ciudadana.",
+    objetivo:
+      "Entregar una plataforma web administrable, responsive y accesible, que sirva como repositorio documental, espacio de divulgación y mecanismo de participación ciudadana del proyecto.",
+    beneficios:
+      "Acceso público y organizado a los productos de investigación; divulgación de avances y resultados; participación ciudadana mediante formularios; y una plataforma que el propio equipo puede administrar y actualizar.",
+    items: [
+      {
+        concepto:
+          "Diseño, desarrollo e implementación de la plataforma web, incluye:\n" +
+          "• Banco bibliográfico especializado: repositorio con consulta pública, descarga (según derechos de autor), clasificación por categorías, búsqueda por palabras clave y almacenamiento o redirección a repositorios oficiales\n" +
+          "• Módulo de divulgación: noticias, informes y memoria audiovisual/fotográfica (con fecha, lugar y descripción por registro)\n" +
+          "• Cartografía social: espacio para visualizar la cartografía construida con las comunidades\n" +
+          "• Proyecto de Acuerdo Distrital: visualización, descarga en PDF, formulario de observaciones ciudadanas y almacenamiento organizado de las observaciones\n" +
+          "• Información institucional: objetivo, objetivos específicos, entidades, equipo investigador, productos esperados, cronograma y contacto\n" +
+          "• Administrable por el equipo (gestor de contenidos), responsive, accesibilidad básica e integración con redes sociales\n" +
+          "• Base de datos en la nube (Supabase) para el banco de información y las observaciones\n" +
+          "• Optimización SEO y publicación en internet + 1 ronda de ajustes posteriores a la entrega",
+        valor: 1500000,
+        etiqueta: "$1.500.000",
+        color: "#7c3aed",
+      },
+      {
+        concepto:
+          "Dominio propio + hosting\n" +
+          "• Compra y configuración de dominio\n" +
+          "• Hosting anual + certificado SSL\n" +
+          "• Configuración base de posicionamiento y previsualización al compartir en redes\n" +
+          "(La renovación anual del dominio y el hosting queda a cargo del cliente, aprox. USD 15 a 25 al año)",
+        valor: 200000,
+        etiqueta: "$200.000",
+        color: "#059669",
+      },
+    ],
+    entrega: "4 a 6 semanas desde la aprobación y la entrega de los insumos (matriz de archivos, contenidos, cartografía y documento del acuerdo)",
+    formaPago: "50% para iniciar, 50% contra entrega",
+    validez: "15 días",
+    notas:
+      "Esta cotización cubre únicamente la plataforma web; no incluye la producción audiovisual del anexo técnico. El equipo del proyecto suministra los insumos: la matriz con los archivos ya identificados para el banco bibliográfico, los contenidos de divulgación (fecha, lugar y descripción), la cartografía social y el documento del Proyecto de Acuerdo Distrital. Referente de diseño: patrimoniocolombia.org. La base de datos usa el plan gratuito de Supabase, suficiente para el arranque; si el volumen crece se puede escalar. Cambios o módulos nuevos tras la entrega tienen costo adicional.",
+    firmaEmail: "carforck@gmail.com",
+    referenciaTexto: "Vanttage · trabajos realizados",
+    referenciaUrl: "https://vanttagetech.com/proyectos",
+  };
+}
+
+/* ─────────── Landing principal de Daz Ambiental (mismo dominio, Misión Mapache como proyecto) ─────────── */
+function landingDaz(): Cotizacion {
+  return {
+    ...base(),
+    tipo: "propuesta",
+    descuento: 20,
+    cliente: "Zulay",
+    empresa: "Daz Ambiental Consultorías, Asesorías y Servicios",
+    proyecto: "Página web principal de Daz Ambiental",
+    resumen:
+      "Desarrollo de la página web principal de Daz Ambiental, con identidad propia y todas sus secciones, integrando Misión Mapache como uno de sus proyectos dentro del sitio, sobre el dominio existente dazambiental.com.",
+    contexto:
+      "Daz Ambiental requiere una página web institucional propia que presente la empresa, sus servicios y sus proyectos de forma profesional, aprovechando el dominio dazambiental.com que ya tienen y donde vive Misión Mapache.",
+    objetivo:
+      "Entregar la página web principal de Daz Ambiental, con identidad propia, editable y responsive, con Misión Mapache integrada como uno de los proyectos dentro del menú del sitio.",
+    beneficios:
+      "Una presencia web institucional unificada bajo dazambiental.com, que agrupa la información de la empresa y sus proyectos (incluido Misión Mapache) en un solo lugar profesional y administrable.",
+    items: [
+      {
+        concepto:
+          "Desarrollo de la página web principal de Daz Ambiental, incluye:\n" +
+          "• Diseño único con la identidad de Daz Ambiental (logo, colores, estilo)\n" +
+          "• Secciones: Inicio, Quiénes somos, Servicios, Proyectos y Contacto\n" +
+          "• Sección Proyectos con Misión Mapache integrada como subpágina dentro del menú\n" +
+          "• Formulario de contacto que llega al correo/WhatsApp\n" +
+          "• Optimización SEO y posicionamiento en Google (metadatos y Open Graph para compartir)\n" +
+          "• Responsive (celular, tablet y PC)\n" +
+          "• Publicación sobre el dominio existente dazambiental.com\n" +
+          "• 1 ronda de ajustes posteriores a la entrega",
+        valor: 2000000,
+        etiqueta: "$2.000.000",
+        color: "#7c3aed",
+      },
+      {
+        concepto:
+          "Dominio + hosting\n" +
+          "• Se publica sobre el dominio existente dazambiental.com (ya contratado)\n" +
+          "• Sin costo adicional de dominio ni hosting nuevos",
+        valor: 0,
+        etiqueta: "Incluido (dominio existente)",
+        color: "#059669",
+      },
+    ],
+    entrega: "2 a 3 semanas desde la aprobación y la entrega del logo, colores y contenidos",
+    formaPago: "50% para iniciar, 50% contra entrega",
+    validez: "15 días",
+    notas:
+      "Se integra Misión Mapache como uno de los proyectos dentro del sitio, sobre el dominio dazambiental.com que ya está contratado (sin costo adicional de dominio ni hosting). Los contenidos (textos, fotos, información de servicios y proyectos) los suministra el cliente. Cambios o secciones nuevas después de la entrega tienen costo adicional. Disponible un plan de mantenimiento mensual (actualizaciones, cambios y posicionamiento continuo).",
+    firmaEmail: "carforck@gmail.com",
+    referenciaTexto: "Vanttage · trabajos realizados",
+    referenciaUrl: "https://vanttagetech.com/proyectos",
+  };
+}
+
 export interface Plantilla {
   id: string;
   nombre: string;
@@ -294,6 +402,8 @@ export const PLANTILLAS: Plantilla[] = [
   { id: "soporteTI", nombre: "Servicios TI / soporte", desc: "Propuesta de mantenimiento, soporte e innovación.", emoji: "🛠️", tipo: "propuesta", build: soporteTI },
   { id: "cursos", nombre: "Capacitación / cursos", desc: "Formación práctica y personalizada.", emoji: "🎓", tipo: "cotizacion", build: cursos },
   { id: "misionMapache", nombre: "Misión Mapache", desc: "Diagnóstico web gamificado para Zulay (juego + datos a Google Sheets).", emoji: "🦝", tipo: "propuesta", build: misionMapache },
+  { id: "plataformaWeb", nombre: "Plataforma web (repositorio)", desc: "Repositorio + divulgación + participación ciudadana, administrable, con Supabase.", emoji: "🏛️", tipo: "propuesta", build: plataformaWeb },
+  { id: "landingDaz", nombre: "Landing Daz Ambiental", desc: "Web principal de Daz Ambiental con Misión Mapache como proyecto (dominio existente).", emoji: "🌿", tipo: "propuesta", build: landingDaz },
 ];
 
 /* Se conserva para la acción "Reiniciar" y compatibilidad */

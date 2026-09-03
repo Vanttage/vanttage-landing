@@ -25,7 +25,20 @@ export interface Project {
 
 /* ─────────── DATA (ajusta con tus proyectos reales) ─────────── */
 
-export const allProjects: Project[] = [
+const projectsRaw: Project[] = [
+  {
+    id: "08",
+    category: "Página Web",
+    title: "Daz Ambiental",
+    description:
+      "Página web institucional para Daz Ambiental (consultorías y servicios ambientales), con sus secciones y el proyecto Misión Mapache integrado como uno de sus proyectos. Sitio propio, editable y responsive.",
+    url: "https://dazambiental.com",
+    tags: ["Página Web", "Institucional", "Responsive"],
+    accent: "#22c55e",
+    year: "2026",
+    mockupGradient: "from-green-900 via-emerald-800 to-teal-900",
+    mockupHeaderColor: "#16a34a",
+  },
   {
     id: "01",
     category: "Rediseño Web",
@@ -118,6 +131,12 @@ export const allProjects: Project[] = [
     mockupHeaderColor: "#0284c7",
   },
 ];
+
+/* Orden de exhibición: los más recientes primero (por año, descendente).
+   El sort es estable, así que dentro de un mismo año se conserva el orden de arriba. */
+export const allProjects: Project[] = [...projectsRaw].sort(
+  (a, b) => Number(b.year) - Number(a.year),
+);
 
 /* ─────────── LIVE BROWSER PREVIEW ─────────── */
 

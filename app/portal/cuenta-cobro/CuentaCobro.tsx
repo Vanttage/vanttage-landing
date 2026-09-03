@@ -3,9 +3,14 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, Plus, Trash2 } from "lucide-react";
 
 /* ─────────── Datos de la cuenta de cobro ─────────── */
+interface LineItem {
+  desc: string;
+  valor: number;
+}
+
 interface Cuenta {
   consecutivo: string;
   fecha: string;
@@ -15,40 +20,39 @@ interface Cuenta {
   clienteNit: string;
   contacto: string;
   concepto: string;
-  porcentaje: string;
-  valorDesarrolloBruto: string;
-  descuentoPct: string;
-  descuentoMonto: string;
-  valorDominio: string;
-  valorTotalProyecto: string;
-  anticipoDesarrollo: string;
-  anticipoDominio: string;
-  montoNumeros: string;
+  items: LineItem[];
   montoLetras: string;
+  notaExtra: string;
 }
 
 const HOY = new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" });
+const fmt = (n: number) =>
+  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n || 0);
+const soloNumero = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
 
 const DEFAULT: Cuenta = {
-  consecutivo: "CC-2026-001",
+  consecutivo: "CC-2026-004",
   fecha: HOY,
   refCotizacion: "COT-2026-011",
   ciudad: "Cartagena de Indias",
   clienteNombre: "Daz Ambiental Consultorías, Asesorías y Servicios",
   clienteNit: "901.964.412",
   contacto: "Zulay",
-  concepto:
-    "Anticipo del cincuenta por ciento (50%) para el inicio del proyecto “Misión Mapache: diagnóstico interactivo gamificado”, incluyendo el desarrollo y el dominio propio con hosting, según cotización COT-2026-011 aprobada por el cliente.",
-  porcentaje: "50%",
-  valorDesarrolloBruto: "$2.000.000",
-  descuentoPct: "10%",
-  descuentoMonto: "– $200.000",
-  valorDominio: "$200.000",
-  valorTotalProyecto: "$2.000.000",
-  anticipoDesarrollo: "$900.000",
-  anticipoDominio: "$100.000",
-  montoNumeros: "$1.000.000",
+  concepto: "Saldo (50% restante) del proyecto Misión Mapache, según cotización COT-2026-011 aprobada por el cliente.",
+  items: [
+    {
+      desc:
+        "Saldo (50% restante) del desarrollo de la plataforma web «Misión Mapache: diagnóstico interactivo gamificado».",
+      valor: 900000,
+    },
+    {
+      desc: "Saldo (50% restante) del dominio propio + hosting.",
+      valor: 100000,
+    },
+  ],
   montoLetras: "Un millón de pesos m/cte",
+  notaExtra:
+    "Corresponde al 50% restante del proyecto; el anticipo del 50% ($1.000.000, cuenta CC-2026-001) fue cancelado al inicio, para un valor total de $2.000.000 (desarrollo $1.800.000 con el 10% de descuento aplicado + dominio $200.000). Si requiere facturación electrónica, el valor variaría por el IVA y otros impuestos; manejándolo mediante cuenta de cobro, se mantiene el mismo valor.",
 };
 
 const EMISOR = {
@@ -69,14 +73,20 @@ const PAGOS = [
 ];
 
 const NOTAS_LEGALES = [
-  "No responsable de IVA (Responsabilidad 49 — RUT DIAN).",
+  "No responsable de IVA (Responsabilidad 49 · RUT DIAN).",
   "No obligado a facturar electrónicamente (persona natural no responsable de IVA).",
   "Documento equivalente a factura para efectos de cobro de servicios personales.",
 ];
 
-export default function CuentaCobroPage() {
+export default function CuentaCobro() {
   const [d, setD] = useState<Cuenta>(DEFAULT);
   const set = (patch: Partial<Cuenta>) => setD((prev) => ({ ...prev, ...patch }));
+  const editItem = (i: number, patch: Partial<LineItem>) =>
+    setD((prev) => ({ ...prev, items: prev.items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) }));
+  const addItem = () => setD((prev) => ({ ...prev, items: [...prev.items, { desc: "Nuevo concepto", valor: 0 }] }));
+  const delItem = (i: number) => setD((prev) => ({ ...prev, items: prev.items.filter((_, idx) => idx !== i) }));
+
+  const total = d.items.reduce((s, it) => s + (it.valor || 0), 0);
 
   function descargarPdf() {
     const prev = document.title;
@@ -141,7 +151,11 @@ export default function CuentaCobroPage() {
                 <p className="text-lg font-semibold text-violet-600">CUENTA DE COBRO</p>
                 <Edit value={d.consecutivo} onChange={(v) => set({ consecutivo: v })} className="text-right text-xs text-gray-500" />
                 <Edit value={d.fecha} onChange={(v) => set({ fecha: v })} className="text-right text-xs text-gray-500" />
-                <p className="text-right text-[11px] text-gray-400">Ref. cotización: <Edit value={d.refCotizacion} onChange={(v) => set({ refCotizacion: v })} className="inline text-gray-500" inline /></p>
+                {(d.refCotizacion || "").trim() && (
+                  <p className="text-right text-[11px] text-gray-400">
+                    Ref. cotización: <Edit value={d.refCotizacion} onChange={(v) => set({ refCotizacion: v })} className="text-gray-500" inline />
+                  </p>
+                )}
               </div>
             </div>
 
@@ -155,53 +169,49 @@ export default function CuentaCobroPage() {
                 <p className="mt-1 text-xs text-gray-500">{EMISOR.contacto}</p>
               </div>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Debe a</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Para</p>
                 <Edit value={d.clienteNombre} placeholder="Nombre o razón social" onChange={(v) => set({ clienteNombre: v })} className="text-sm font-semibold" />
                 <div className="text-xs text-gray-500">
-                  NIT/C.C.: <Edit value={d.clienteNit} placeholder="Pendiente" onChange={(v) => set({ clienteNit: v })} className="inline" inline />
+                  NIT/C.C.: <Edit value={d.clienteNit} placeholder="Pendiente" onChange={(v) => set({ clienteNit: v })} inline />
                 </div>
                 <div className="text-xs text-gray-500">
-                  Contacto: <Edit value={d.contacto} onChange={(v) => set({ contacto: v })} className="inline" inline />
+                  Contacto: <Edit value={d.contacto} onChange={(v) => set({ contacto: v })} inline />
                 </div>
               </div>
             </div>
 
-            {/* Concepto */}
+            {/* Concepto + conceptos con valor */}
             <div className="mt-6 break-inside-avoid">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Por concepto de</p>
               <EditArea value={d.concepto} onChange={(v) => set({ concepto: v })} className="mt-1 text-sm leading-relaxed text-gray-700 text-justify" />
 
-              {/* Desglose: valor del proyecto (con dominio) + anticipo del 50% */}
-              <div className="mt-3 rounded-xl bg-violet-50/70 px-4 py-3 text-[13px] text-gray-600">
-                <div className="flex items-center justify-between py-0.5">
-                  <span>Desarrollo del proyecto (Misión Mapache)</span>
-                  <Edit value={d.valorDesarrolloBruto} onChange={(v) => set({ valorDesarrolloBruto: v })} className="text-right font-medium text-[#0A2540]" inline />
-                </div>
-                <div className="flex items-center justify-between py-0.5 text-emerald-700">
-                  <span>Descuento aplicado (<Edit value={d.descuentoPct} onChange={(v) => set({ descuentoPct: v })} className="text-emerald-700" inline />) según cotización</span>
-                  <Edit value={d.descuentoMonto} onChange={(v) => set({ descuentoMonto: v })} className="text-right font-medium text-emerald-700" inline />
-                </div>
-                <div className="flex items-center justify-between py-0.5">
-                  <span>Dominio propio + hosting</span>
-                  <Edit value={d.valorDominio} onChange={(v) => set({ valorDominio: v })} className="text-right font-medium text-[#0A2540]" inline />
-                </div>
-                <div className="mt-1 flex items-center justify-between border-t border-violet-200 pt-1.5 font-semibold text-[#0A2540]">
-                  <span>Total del proyecto</span>
-                  <Edit value={d.valorTotalProyecto} onChange={(v) => set({ valorTotalProyecto: v })} className="text-right font-semibold text-[#0A2540]" inline />
-                </div>
-                <p className="mt-2 text-[12px] text-gray-500">
-                  La presente cuenta de cobro corresponde al anticipo del{" "}
-                  <Edit value={d.porcentaje} onChange={(v) => set({ porcentaje: v })} className="font-semibold text-[#0A2540]" inline /> del proyecto:
-                </p>
-                <div className="flex items-center justify-between py-0.5">
-                  <span>50% del desarrollo</span>
-                  <Edit value={d.anticipoDesarrollo} onChange={(v) => set({ anticipoDesarrollo: v })} className="text-right font-medium text-[#0A2540]" inline />
-                </div>
-                <div className="flex items-center justify-between py-0.5">
-                  <span>50% del dominio</span>
-                  <Edit value={d.anticipoDominio} onChange={(v) => set({ anticipoDominio: v })} className="text-right font-medium text-[#0A2540]" inline />
-                </div>
+              <div className="mt-3 overflow-hidden rounded-xl border border-gray-200">
+                {d.items.map((it, i) => (
+                  <div key={i} className="group flex items-start justify-between gap-3 border-b border-gray-100 px-4 py-2.5 last:border-0">
+                    <EditArea value={it.desc} onChange={(v) => editItem(i, { desc: v })} className="flex-1 text-sm leading-relaxed text-gray-700 text-justify" />
+                    <div className="flex items-center gap-2 pt-0.5">
+                      <input
+                        value={it.valor ? it.valor.toLocaleString("es-CO") : ""}
+                        onChange={(e) => editItem(i, { valor: soloNumero(e.target.value) })}
+                        placeholder="0"
+                        className="w-28 rounded border border-transparent bg-transparent py-0.5 text-right text-sm font-semibold text-[#0A2540] outline-none hover:border-gray-200 focus:border-violet-300"
+                      />
+                      <button onClick={() => delItem(i)} className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500" aria-label="Eliminar concepto">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
+              <button onClick={addItem} className="no-print mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-700">
+                <Plus size={14} /> Agregar concepto
+              </button>
+
+              {(d.notaExtra || "").trim() && (
+                <div className="mt-3 rounded-xl bg-violet-50/70 px-4 py-2 text-[13px] leading-relaxed text-gray-600">
+                  <EditArea value={d.notaExtra} onChange={(v) => set({ notaExtra: v })} className="text-[13px] leading-relaxed text-gray-600 text-justify" />
+                </div>
+              )}
             </div>
 
             {/* Valor destacado */}
@@ -210,10 +220,10 @@ export default function CuentaCobroPage() {
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">Valor a pagar</p>
                 <Edit value={d.montoLetras} onChange={(v) => set({ montoLetras: v })} className="text-xs text-white/80" dark />
               </div>
-              <Edit value={d.montoNumeros} onChange={(v) => set({ montoNumeros: v })} inline className="text-2xl font-bold" dark />
+              <span className="shrink-0 text-2xl font-bold">{fmt(total)}</span>
             </div>
 
-            {/* Datos de pago */}
+            {/* Datos de pago + notas */}
             <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-[1.2fr_1fr] break-inside-avoid">
               <div className="rounded-xl border border-gray-200 p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-600">Datos de pago</p>
@@ -227,7 +237,7 @@ export default function CuentaCobroPage() {
                   ))}
                 </div>
                 <p className="mt-2 text-[11px] text-gray-400">
-                  Envía el comprobante al confirmar la transferencia (puedes subirlo a la carpeta compartida del proyecto en Drive).
+                  Envía el comprobante al confirmar la transferencia.
                 </p>
               </div>
 
@@ -282,7 +292,6 @@ function Edit({
   const border = dark ? "hover:border-white/30 focus:border-white/50" : "hover:border-gray-200 focus:border-violet-300";
   const common = `rounded border border-transparent bg-transparent px-0.5 outline-none ${border} ${className}`;
   if (inline) {
-    // Ancho ajustado al contenido para que fluya dentro del texto
     const len = Math.max((value || placeholder || "").length, 3);
     return (
       <input
