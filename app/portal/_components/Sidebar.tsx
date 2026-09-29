@@ -8,7 +8,7 @@ import {
   KanbanSquare,
   Users,
   FileText,
-  FilePlus2,
+  // FilePlus2, // (nueva cotización: oculta del menú)
   // Receipt, // (cuenta de cobro: oculta, no desplegada)
   ExternalLink,
 } from "lucide-react";
@@ -19,7 +19,10 @@ const nav = [
   { href: "/portal/pipeline", label: "Pipeline", icon: KanbanSquare },
   { href: "/portal/clientes", label: "Contactos", icon: Users },
   { href: "/portal/cotizaciones", label: "Cotizaciones", icon: FileText },
-  { href: "/portal/cotizador", label: "Nueva cotización", icon: FilePlus2 },
+  // Nueva cotización: oculta del menú. La ruta /portal/cotizador SIGUE viva porque es
+  // el editor que usan "Editar"/"Abrir" desde Cotizaciones, Dashboard y Contactos.
+  // Para devolverla al menú: descomentar el import FilePlus2 + esta línea:
+  // { href: "/portal/cotizador", label: "Nueva cotización", icon: FilePlus2 },
   // Cuenta de cobro: oculta de lo desplegado. El código vive en app/portal/_cuenta-cobro/
   // (carpeta privada = Next no la publica como ruta). Para reactivarla: renombrar la
   // carpeta a "cuenta-cobro" y descomentar el import Receipt + esta línea:

@@ -85,7 +85,7 @@ export default async function DashboardPage() {
         </div>
         {cots.length === 0 ? (
           <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
-            Aún no hay cotizaciones. Crea una en “Nueva cotización”.
+            Aún no hay cotizaciones. Crea una desde “Cotizaciones”.
           </p>
         ) : (
           <div className="overflow-x-auto rounded-xl border border-[var(--pborder)]">
