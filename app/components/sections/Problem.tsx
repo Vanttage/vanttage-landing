@@ -7,15 +7,15 @@ const cards = [
   {
     icon: Globe,
     label: "Visibilidad",
-    title: "Si no estás en internet, no existes",
-    body: "Hoy tus clientes buscan todo en Google. Si no tienes una web, le estás regalando esos clientes a tu competencia.",
+    title: "Si no apareces en Google, no te encuentran",
+    body: "Tus clientes buscan en Google antes de comprar. Si no tienes web, esa búsqueda termina en tu competencia.",
     accent: "violet",
   },
   {
     icon: Clock,
     label: "Disponibilidad",
     title: "Tu negocio abierto las 24 horas",
-    body: "Tu página trabaja mientras tú duermes. Cualquier persona puede conocerte, contactarte y comprar a cualquier hora.",
+    body: "Aunque tengas el local cerrado, la gente puede ver lo que ofreces y escribirte o comprarte a cualquier hora.",
     accent: "violet",
     highlight: true,
   },
@@ -23,28 +23,28 @@ const cards = [
     icon: Star,
     label: "Confianza",
     title: "Primera impresión que vende",
-    body: "Una web profesional genera credibilidad al instante. Los clientes confían más en negocios que tienen presencia digital sólida.",
+    body: "Antes de escribirte, la gente busca tu negocio. Si encuentra una web bien hecha, confía más en ti y te escribe.",
     accent: "violet",
   },
   {
     icon: ShoppingBag,
     label: "Ventas",
     title: "Muestra lo que vendes, y véndelo",
-    body: "Exhibe tus servicios, productos y precios de forma clara. Convierte cada visita en una oportunidad real de venta.",
+    body: "Pon tus productos, servicios y precios a la vista, con un botón para que te escriban o te compren ahí mismo.",
     accent: "violet",
   },
   {
     icon: Users,
     label: "Alcance",
     title: "Llega a más clientes",
-    body: "Tu negocio ya no está limitado a quienes te conocen. Con una web, puedes llegar a clientes nuevos en toda Colombia y el mundo.",
+    body: "Ya no dependes solo de quienes te conocen. Con una web te encuentran clientes de otras ciudades de Colombia y de afuera.",
     accent: "violet",
   },
   {
     icon: TrendingUp,
     label: "Crecimiento",
     title: "Compite con los grandes",
-    body: "Una web bien hecha pone a tu negocio al mismo nivel que las empresas grandes. El tamaño ya no es una barrera.",
+    body: "Con una web bien hecha, un negocio pequeño se ve igual de serio que una empresa grande. Eso pesa a la hora de elegir.",
     accent: "violet",
   },
 ] as const;
@@ -55,7 +55,7 @@ export default function Problem() {
   return (
     <section
       id="solutions"
-      className="relative bg-[#F8FAFC] py-20 px-6 md:py-32"
+      className="surface-light relative bg-[#F8FAFC] py-20 px-6 md:py-32"
     >
       {/* Glow estático */}
       <div
@@ -90,25 +90,14 @@ export default function Problem() {
             Tu negocio merece
           </h2>
 
-          {/* Big word + reflection */}
+          {/* Big word */}
           <div className="relative inline-block w-full">
             <span
               className="block font-semibold leading-[0.85] tracking-[-0.03em] text-transparent bg-clip-text bg-gradient-to-b from-violet-500 to-purple-700"
               style={{ fontSize: "clamp(2.4rem, 10.5vw, 9.5rem)" }}
             >
-              Presencia Real
+              Presencia real
             </span>
-
-            {/* Reflection */}
-            <div className="pointer-events-none absolute left-0 right-0 top-full h-10 overflow-hidden">
-              <span
-                className="block font-semibold leading-[0.85] tracking-[-0.03em] text-transparent bg-clip-text bg-gradient-to-b from-violet-500 to-purple-700 opacity-20 scale-y-[-1]"
-                style={{ fontSize: "clamp(2.4rem, 10.5vw, 9.5rem)" }}
-              >
-                Presencia Real
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#F8FAFC]" />
-            </div>
           </div>
 
           <motion.p
@@ -118,8 +107,8 @@ export default function Problem() {
             transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
             className="mx-auto mt-8 max-w-xl text-[15px] leading-relaxed text-gray-500"
           >
-            En un mundo cada vez más digital, tener presencia en línea no es un lujo —
-            es la diferencia entre crecer o quedarse atrás.
+            Casi todos tus clientes te buscan en el celular antes de llamarte.
+            Lo que encuentren ahí decide si te escriben o se van con otro.
           </motion.p>
         </motion.div>
 
@@ -143,7 +132,7 @@ export default function Problem() {
                 <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${"highlight" in card ? "bg-violet-100" : "bg-purple-50"}`}>
                   <card.icon size={16} className="text-violet-600" />
                 </div>
-                <span className="text-[10px] tracking-[0.18em] uppercase text-violet-500">
+                <span className="text-[10px] tracking-[0.18em] uppercase text-violet-600">
                   {card.label}
                 </span>
               </div>

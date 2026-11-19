@@ -14,9 +14,9 @@ const organization = {
     height: 256,
   },
   description:
-    "Agencia de software boutique en Cartagena, Colombia. Desarrollamos sitios web, aplicaciones a medida y automatizaciones que convierten visitas en clientes reales.",
+    "Software boutique en Cartagena, Colombia. Hacemos páginas web, aplicaciones web a medida y automatizaciones para negocios.",
   foundingDate: "2024",
-  areaServed: ["Colombia", "Latinoamérica"],
+  areaServed: ["Colombia", "Latinoamérica", "Estados Unidos", "España"],
   serviceType: [
     "Desarrollo Web",
     "Software a Medida",
@@ -55,7 +55,7 @@ const localBusiness = {
   telephone: "+57-322-670-6385",
   email: "vanttagectg@gmail.com",
   description:
-    "Software boutique especializado en desarrollo web, automatización y diseño digital en Cartagena, Colombia.",
+    "Software boutique en Cartagena, Colombia: páginas web, aplicaciones web y automatización de procesos.",
   priceRange: "$$",
   address: {
     "@type": "PostalAddress",
@@ -85,7 +85,7 @@ const localBusiness = {
         itemOffered: {
           "@type": "Service",
           name: "Desarrollo Web a Medida",
-          description: "Sitios y aplicaciones web construidos desde cero con arquitectura moderna.",
+          description: "Páginas y aplicaciones web hechas desde cero para cada cliente.",
         },
       },
       {
@@ -93,7 +93,7 @@ const localBusiness = {
         itemOffered: {
           "@type": "Service",
           name: "Migración de Stack Legacy",
-          description: "Modernización de plataformas web sin perder SEO ni autoridad de dominio.",
+          description: "Pasamos tu sitio viejo a tecnología actual sin perder posiciones en Google.",
         },
       },
       {
@@ -109,7 +109,7 @@ const localBusiness = {
         itemOffered: {
           "@type": "Service",
           name: "Automatización de Procesos",
-          description: "Flujos automáticos que eliminan tareas manuales y escalan operaciones.",
+          description: "Automatizamos tareas repetitivas para que tu equipo no las haga a mano.",
         },
       },
     ],

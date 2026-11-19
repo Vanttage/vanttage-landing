@@ -1,7 +1,7 @@
 export const faqs = [
   {
     q: "¿Cuánto cuesta una página web?",
-    a: "Cada proyecto se cotiza a la medida según su alcance, por eso no manejamos precios fijos. Escríbenos directamente y te preparamos una cotización personalizada sin costo, adaptada a lo que tu negocio necesita.",
+    a: "Cada proyecto se cotiza según su alcance, por eso no manejamos precios fijos. Escríbenos y te preparamos una cotización sin costo con lo que tu negocio necesita.",
   },
   {
     q: "¿Cuánto tiempo toma hacer mi página?",
@@ -9,14 +9,14 @@ export const faqs = [
   },
   {
     q: "¿Usan plantillas o diseño propio?",
-    a: "Todo es diseño 100% único. Nunca usamos plantillas. Cada página se diseña desde cero, adaptada a tu marca y tus clientes.",
+    a: "Diseño propio. No usamos plantillas: cada página se diseña desde cero, pensando en tu marca y en tus clientes.",
   },
   {
     q: "¿Qué pasa después de que se lanza mi página?",
-    a: "No desaparecemos. Ofrecemos soporte y acompañamiento post-lanzamiento, además de planes de mantenimiento mensual. Cuéntanos tu caso y te armamos un plan a la medida.",
+    a: "Seguimos disponibles. Damos soporte después de publicar la página y tenemos planes de mantenimiento mensual. Cuéntanos tu caso y te armamos un plan.",
   },
   {
-    q: "¿Trabajan con negocios de toda Colombia?",
-    a: "Sí. Aunque somos de Cartagena, trabajamos con clientes de todo el país de forma remota. La comunicación es directa y fluida por WhatsApp o videollamada.",
+    q: "¿Trabajan con negocios de otras ciudades o de otros países?",
+    a: "Sí. Somos de Cartagena, pero trabajamos de forma remota con clientes de cualquier ciudad de Colombia y de otros países. Hablamos por WhatsApp o videollamada, directamente con el equipo, y nos acomodamos a tu horario.",
   },
 ];

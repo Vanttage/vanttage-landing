@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import ProyectosContent from "./ProyectosContent";
 
 export const metadata: Metadata = {
-  title: "Proyectos — Vanttage · Portafolio Web Colombia",
+  title: "Proyectos: portafolio de páginas web en Colombia",
   description:
-    "Conoce los proyectos que hemos desarrollado: páginas web, tiendas virtuales, migraciones y aplicaciones a medida para empresas en Colombia.",
+    "Mira los proyectos que hemos hecho: páginas web, tiendas virtuales, migraciones y aplicaciones web a medida para empresas en Colombia y Estados Unidos.",
   alternates: { canonical: "https://vanttagetech.com/proyectos" },
   openGraph: {
-    title: "Proyectos — Vanttage · Portafolio Web Colombia",
+    title: "Proyectos: portafolio de páginas web en Colombia",
     description:
-      "Portafolio de sitios web y aplicaciones desarrolladas por Vanttage para empresas en Colombia.",
+      "Páginas web y aplicaciones web que Vanttage ha hecho para empresas en Colombia y Estados Unidos.",
     url: "https://vanttagetech.com/proyectos",
   },
 };

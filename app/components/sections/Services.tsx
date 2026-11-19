@@ -1,339 +1,350 @@
 "use client";
 
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useMotionValueEvent,
-} from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import {
-  Globe2,
-  ShoppingCart,
-  RefreshCw,
-  Wrench,
-  Search,
-  Code2,
-  ArrowRight,
-  MoveRight,
-} from "lucide-react";
+/* Servicios: lista de servicios + un proyecto real como ejemplo de cada uno.
+   Escritorio: al pasar el mouse o enfocar una fila, a la derecha se ve la
+   captura del proyecto (escritorio + celular). Móvil: acordeón con la captura dentro. */
+
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
+import { ArrowRight, ArrowUpRight, Plus } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 /* ─────────── DATA ─────────── */
 
-const services = [
+type Example = {
+  name: string;
+  url: string;
+  shot: string; // captura escritorio (1200x750)
+  shotMobile: string; // captura celular (390x844)
+};
+
+const services: {
+  title: string;
+  description: string;
+  detail: string;
+  example: Example;
+}[] = [
   {
-    icon: Globe2,
-    tag: "01",
-    color: "#1EA7FF",
-    title: "Páginas Web Profesionales",
+    title: "Páginas web profesionales",
     description:
-      "Tu negocio en internet, diseñado para generar confianza y atraer clientes.",
+      "Una web que muestra bien tu negocio y hace que los clientes te escriban.",
     detail:
-      "Creamos tu página desde cero con un diseño único y adaptado a tu marca. Rápida, segura y visible en Google desde el primer día.",
+      "Hacemos tu página desde cero, con un diseño propio que va con tu marca. Carga rápido y queda lista para aparecer en Google.",
+    example: {
+      name: "SOTEC",
+      url: "https://www.sotecse.com/",
+      shot: "/previews/sotec.webp",
+      shotMobile: "/previews/sotec-m.webp",
+    },
   },
   {
-    icon: ShoppingCart,
-    tag: "02",
-    color: "#22c55e",
-    title: "Tiendas Virtuales",
+    title: "Tiendas virtuales y marketplaces",
+    description: "Vende tus productos a cualquier hora, sin depender del local.",
+    detail:
+      "Catálogo que tú mismo actualizas, carrito, pagos en línea y un proceso de compra sencillo para el cliente.",
+    example: {
+      name: "Co-Workers Cloud",
+      url: "https://cloud.kelab.com.co/",
+      shot: "/previews/coworkers.webp",
+      shotMobile: "/previews/coworkers-m.webp",
+    },
+  },
+  {
+    title: "Rediseño de tu web actual",
+    description: "Actualiza tu página sin perder lo que ya tienes.",
+    detail:
+      "Si tu web se ve vieja o no te está trayendo clientes, la rehacemos con un diseño actual y cuidando lo que ya tienes posicionado en Google.",
+    example: {
+      name: "ALZAK Foundation",
+      url: "https://www.alzakfoundation.org/",
+      shot: "/previews/alzak.webp",
+      shotMobile: "/previews/alzak-m.webp",
+    },
+  },
+  {
+    title: "Hosting, dominio y mantenimiento",
     description:
-      "Vende tus productos las 24 horas del día, todos los días del año.",
+      "Nosotros cuidamos tu página para que no se caiga ni se quede vieja.",
     detail:
-      "Tu tienda online lista para recibir pagos, gestionar productos y ofrecer una experiencia de compra fácil y profesional a tus clientes.",
+      "Migramos tu sitio, configuramos el dominio sin tocar tu correo, sacamos copias de respaldo y mantenemos todo actualizado.",
+    example: {
+      name: "DAGAR Soluciones",
+      url: "https://www.dagarsoluciones.com.co/",
+      shot: "/previews/dagar.webp",
+      shotMobile: "/previews/dagar-m.webp",
+    },
   },
   {
-    icon: RefreshCw,
-    tag: "03",
-    color: "#f59e0b",
-    title: "Rediseño de tu Web Actual",
-    description: "Moderniza tu página sin perder lo que ya construiste.",
-    detail:
-      "Si tu web se ve anticuada o no está funcionando, la renovamos por completo. Mejor diseño, más rápida y con mejor posicionamiento en Google.",
-  },
-  {
-    icon: Wrench,
-    tag: "04",
-    color: "#a855f7",
-    title: "Mantenimiento Mensual",
-    description: "Tu página siempre al día, rápida y protegida.",
-    detail:
-      "Nos encargamos de las actualizaciones, seguridad y respaldo de tu web. Tú te dedicas a tu negocio, nosotros cuidamos tu presencia digital.",
-  },
-  {
-    icon: Search,
-    tag: "05",
-    color: "#ec4899",
     title: "Posicionamiento en Google",
     description:
       "Aparece cuando tus clientes te buscan, antes que la competencia.",
     detail:
-      "Optimizamos tu web para que Google la recomiende. Más visitas orgánicas, más clientes y menos dependencia de publicidad pagada.",
+      "Trabajamos la estructura, la velocidad y el contenido de tu web para que suba en Google sin pagar por cada clic.",
+    example: {
+      name: "R&R Kelab",
+      url: "https://www.kelab.com.co/",
+      shot: "/previews/kelab.webp",
+      shotMobile: "/previews/kelab-m.webp",
+    },
   },
   {
-    icon: Code2,
-    tag: "06",
-    color: "#06b6d4",
-    title: "Aplicaciones a Medida",
+    title: "Aplicaciones web a medida",
     description:
-      "Software personalizado para automatizar y hacer crecer tu negocio.",
+      "Software hecho para tu negocio, para que dejes de hacer a mano las tareas repetitivas.",
     detail:
-      "Sistemas de reservas, gestión, facturación o lo que necesites. Herramientas hechas exactamente para cómo trabajas tú.",
+      "Formatos digitales, reservas, inventario o facturación. Lo armamos según la forma en que ya trabaja tu equipo, y funciona en el celular.",
+    example: {
+      name: "ControlOne by SOTEC",
+      url: "https://controlone.sotecse.com/",
+      shot: "/previews/controlone.webp",
+      shotMobile: "/previews/controlone-m.webp",
+    },
   },
 ];
 
-/* ─────────── MOBILE CARD ─────────── */
+/* ─────────── VISTA DEL EJEMPLO ─────────── */
 
-function MobileCard({ s, i }: { s: (typeof services)[number]; i: number }) {
-  const Icon = s.icon;
+function ExampleShot({ ex, compact = false }: { ex: Example; compact?: boolean }) {
   return (
-    <div
-      className="snap-center shrink-0 w-[80vw] max-w-[320px] rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
-      style={{ boxShadow: `0 0 40px ${s.color}18` }}
-    >
-      <div className="mb-5 flex items-center justify-between">
-        <span
-          className="text-[11px] tracking-[0.25em] uppercase"
-          style={{ color: s.color }}
-        >
-          {s.tag}
-        </span>
-        <div
-          className="flex h-10 w-10 items-center justify-center rounded-xl"
-          style={{ background: `${s.color}20`, color: s.color }}
-        >
-          <Icon size={20} />
+    <figure>
+      <div className="relative">
+        {/* Escritorio */}
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111118]">
+          <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-white/15" />
+            <span className="h-2 w-2 rounded-full bg-white/15" />
+            <span className="h-2 w-2 rounded-full bg-white/15" />
+            <span className="ml-3 truncate text-[11px] text-white/50">
+              {ex.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+            </span>
+          </div>
+          <Image
+            src={ex.shot}
+            alt={`Página de ${ex.name}`}
+            width={1200}
+            height={750}
+            sizes="(min-width: 1024px) 560px, 100vw"
+            className="block h-auto w-full"
+          />
         </div>
+        {/* Celular */}
+        {!compact && (
+          <div className="absolute -bottom-8 -right-4 w-[26%] overflow-hidden rounded-[1.1rem] border-[3px] border-[#1c1c24] bg-black shadow-2xl">
+            <Image
+              src={ex.shotMobile}
+              alt=""
+              width={390}
+              height={844}
+              sizes="150px"
+              className="block h-auto w-full"
+            />
+          </div>
+        )}
       </div>
-      <h3 className="mb-2 text-lg font-semibold leading-snug text-white">
-        {s.title}
-      </h3>
-      <p className="text-sm leading-relaxed text-[#94A3B8]">{s.description}</p>
-      <p className="mt-3 text-xs leading-relaxed text-[#64748B]">{s.detail}</p>
-    </div>
+      <figcaption
+        className={`${compact ? "mt-3" : "mt-12"} flex items-center justify-between gap-4 text-sm`}
+      >
+        <span className="text-zinc-400">
+          Proyecto real: <span className="text-white">{ex.name}</span>
+        </span>
+        <a
+          href={ex.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-zinc-300 underline-offset-4 hover:text-white hover:underline"
+        >
+          Ver sitio <ArrowUpRight size={14} />
+          <span className="sr-only">(abre en una pestaña nueva)</span>
+        </a>
+      </figcaption>
+    </figure>
   );
 }
 
-/* ─────────── MAIN COMPONENT ─────────── */
+/* ─────────── MAIN ─────────── */
+
+/** Tiempo que se muestra cada servicio antes de pasar al siguiente */
+const SLIDE_MS = 6000;
 
 export default function Services() {
-  const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const reduce = useReducedMotion();
+  const current = services[active];
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { amount: 0.35 });
+  /** Si el usuario elige un servicio, esperamos un rato antes de seguir solos */
+  const holdNext = useRef(false);
+  const autoplay = !reduce && inView && !hovering;
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check, { passive: true });
-    return () => window.removeEventListener("resize", check);
-  }, []);
+    if (!autoplay) return;
+    const wait = holdNext.current ? 15000 : SLIDE_MS;
+    holdNext.current = false;
+    const id = setTimeout(() => setActive((a) => (a + 1) % services.length), wait);
+    return () => clearTimeout(id);
+  }, [active, autoplay]);
 
-  /* scroll-driven only on desktop */
-  const { scrollYProgress } = useScroll({ target: sectionRef });
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-83.33%"]);
+  const pick = (i: number, hold: boolean) => {
+    if (hold) holdNext.current = true;
+    setActive(i);
+  };
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (isMobile) return;
-    const next = Math.min(
-      services.length - 1,
-      Math.round(v * (services.length - 1)),
-    );
-    setActive((prev) => (prev !== next ? next : prev));
-  });
+  const goContact = () =>
+    document
+      .getElementById("contact")
+      ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
 
-  /* ── MOBILE: simple CSS snap carousel ── */
-  if (isMobile) {
-    return (
-      <section id="services" className="bg-[#020617] py-20 px-6">
-        {/* Header */}
-        <div className="mb-10">
-          <span className="mb-3 inline-block rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#94A3B8]">
-            Nuestros servicios
-          </span>
-          <h2 className="text-3xl font-semibold leading-tight text-white">
-            Todo lo que tu negocio
-            <br />
-            <span className="text-[#1EA7FF]">necesita en internet</span>
-          </h2>
-        </div>
-
-        {/* Snap carousel */}
-        <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {services.map((s, i) => (
-            <MobileCard key={i} s={s} i={i} />
-          ))}
-        </div>
-
-        {/* Dots */}
-        <div className="mt-6 flex justify-center gap-2">
-          {services.map((s, i) => (
-            <div
-              key={i}
-              className="h-1.5 rounded-full bg-white/20"
-              style={{ width: 24 }}
-            />
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  /* ── DESKTOP: scroll-driven horizontal ── */
   return (
     <section
       id="services"
       ref={sectionRef}
-      className="relative h-[400vh] bg-[#020617]"
+      aria-roledescription="carrusel"
+      className="relative bg-[#06060C] px-6 py-20 md:py-28"
     >
-      <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Progress dots + counter */}
-        <div className="absolute top-8 right-10 z-20 flex items-center gap-3">
-          <div className="flex gap-2">
-            {services.map((s, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  width: i === active ? 20 : 6,
-                  opacity: i === active ? 1 : 0.3,
-                  backgroundColor: i === active ? s.color : "#ffffff",
-                }}
-                transition={{ duration: 0.35 }}
-                className="h-[6px] rounded-full"
-              />
-            ))}
+      <div className="mx-auto max-w-6xl">
+        {/* Encabezado */}
+        <div className="mb-12 grid gap-6 md:mb-16 md:grid-cols-2 md:items-end">
+          <div>
+            <p className="mb-4 text-xs uppercase tracking-[0.2em] text-violet-300">
+              Servicios
+            </p>
+            <h2 className="text-3xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
+              Lo que hacemos, con ejemplos de verdad
+            </h2>
           </div>
-          <span className="text-xs tracking-[0.2em] text-white/30">
-            {String(active + 1).padStart(2, "0")} /{" "}
-            {String(services.length).padStart(2, "0")}
-          </span>
+          <p className="max-w-md text-base leading-relaxed text-zinc-400 md:justify-self-end">
+            Cada servicio viene con un proyecto que ya está en línea. Ábrelo y
+            mira cómo quedó.
+          </p>
         </div>
 
-        {/* Scroll hint */}
-        <motion.div
-          animate={{ opacity: active === 0 ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-          className="pointer-events-none absolute bottom-10 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/30"
-        >
-          <motion.span
-            animate={{ x: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8 }}
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          {/* Lista */}
+          <ul
+            className="border-t border-white/10"
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
           >
-            <MoveRight size={14} />
-          </motion.span>
-          Scroll para explorar
-        </motion.div>
-
-        {/* Track — will-change + transform-gpu for compositor-only paint */}
-        <motion.div
-          style={{ x }}
-          className="flex h-full w-[600vw] transform-gpu"
-        >
-          {services.map((s, i) => {
-            const Icon = s.icon;
-            const isActive = i === active;
-
-            return (
-              <div
-                key={i}
-                className="relative flex h-screen w-screen items-center justify-center px-10"
-              >
-                {/* Static glow — no animate, driven by opacity via CSS */}
-                <div
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-700"
-                  style={{
-                    background: `radial-gradient(closest-side, ${s.color}, transparent)`,
-                    opacity: isActive ? 0.16 : 0,
-                  }}
-                />
-
-                {/* Fade + scale via CSS transition (no Framer re-render) */}
-                <div
-                  className="relative z-10 w-full max-w-6xl grid lg:grid-cols-2 gap-20 items-center transition-all duration-500"
-                  style={{
-                    opacity: isActive ? 1 : 0.18,
-                    transform: isActive ? "scale(1)" : "scale(0.93)",
-                  }}
-                >
-                  {/* LEFT */}
-                  <div>
-                    <p
-                      className="mb-4 text-sm tracking-[0.35em]"
-                      style={{ color: s.color }}
+            {services.map((s, i) => {
+              const isActive = i === active;
+              return (
+                <li key={s.title} className="relative border-b border-white/10">
+                  <button
+                    type="button"
+                    onMouseEnter={() => pick(i, false)}
+                    onFocus={() => pick(i, true)}
+                    onClick={() => pick(i, true)}
+                    aria-pressed={isActive}
+                    className="group flex w-full items-center gap-5 py-5 text-left"
+                  >
+                    <span
+                      className={`w-6 text-sm tabular-nums transition-colors ${
+                        isActive ? "text-violet-300" : "text-zinc-500"
+                      }`}
                     >
-                      {s.tag}
-                    </p>
-                    <h2 className="text-5xl font-semibold leading-tight text-white md:text-6xl">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={`flex-1 text-lg font-medium tracking-tight transition-colors md:text-2xl ${
+                        isActive
+                          ? "text-white"
+                          : "text-zinc-400 group-hover:text-zinc-200"
+                      }`}
+                    >
                       {s.title}
-                    </h2>
-                    <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#94A3B8]">
-                      {s.description}
-                    </p>
-                    <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#64748B]">
-                      {s.detail}
-                    </p>
-                    <button
-                      onClick={() =>
-                        document
-                          .getElementById("contact")
-                          ?.scrollIntoView({ behavior: "smooth" })
-                      }
-                      className="mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
-                      style={{
-                        backgroundColor: s.color,
-                        boxShadow: `0 8px 30px ${s.color}38`,
-                      }}
-                    >
-                      Lo quiero
-                      <ArrowRight size={16} />
-                    </button>
-                  </div>
+                    </span>
+                    <Plus
+                      size={18}
+                      className={`shrink-0 transition-transform duration-300 lg:hidden ${
+                        isActive ? "rotate-45 text-white" : "text-zinc-500"
+                      }`}
+                    />
+                  </button>
 
-                  {/* RIGHT — rings only rendered when active to save GPU */}
-                  <div className="relative flex items-center justify-center">
-                    {isActive && (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            repeat: Infinity,
-                            duration: 40,
-                            ease: "linear",
-                          }}
-                          className="absolute h-[260px] w-[260px] rounded-full border"
-                          style={{ borderColor: `${s.color}30` }}
-                        />
-                        <motion.div
-                          animate={{ rotate: -360 }}
-                          transition={{
-                            repeat: Infinity,
-                            duration: 28,
-                            ease: "linear",
-                          }}
-                          className="absolute h-[200px] w-[200px] rounded-full border border-dashed"
-                          style={{ borderColor: `${s.color}20` }}
-                        />
-                      </>
-                    )}
-                    <div
-                      className="flex h-28 w-28 items-center justify-center rounded-2xl transition-transform duration-500"
-                      style={{
-                        background: `${s.color}20`,
-                        color: s.color,
-                        transform: isActive ? "scale(1.1)" : "scale(0.9)",
-                      }}
-                    >
-                      <Icon size={42} />
-                    </div>
-                  </div>
-                </div>
+                  {/* Progreso del autoplay */}
+                  {isActive && (
+                    <span className="pointer-events-none absolute inset-x-0 -bottom-px h-px overflow-hidden">
+                      <motion.span
+                        key={`${active}-${autoplay}`}
+                        className="block h-full origin-left bg-violet-400"
+                        initial={{ scaleX: autoplay ? 0 : 1 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: autoplay ? SLIDE_MS / 1000 : 0, ease: "linear" }}
+                      />
+                    </span>
+                  )}
 
-                {/* Ghost number */}
-                <span className="pointer-events-none absolute bottom-10 right-10 select-none text-[220px] font-black leading-none text-white/[0.03]">
-                  {s.tag}
-                </span>
-              </div>
-            );
-          })}
-        </motion.div>
+                  {/* Acordeón (móvil y tablet) */}
+                  <div className="lg:hidden">
+                    <AnimatePresence initial={false}>
+                      {isActive && (
+                        <motion.div
+                          key="panel"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pb-7 pl-11">
+                            <p className="text-base leading-relaxed text-zinc-200">
+                              {s.description}
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                              {s.detail}
+                            </p>
+                            <div className="mt-5">
+                              <ExampleShot ex={s.example} compact />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Detalle (escritorio) */}
+          <div className="hidden lg:block">
+            <div className="sticky top-28">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current.title}
+                  initial={{ opacity: 0, x: reduce ? 0 : 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: reduce ? 0 : -24 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <ExampleShot ex={current.example} />
+                  <p className="mt-6 text-lg leading-relaxed text-zinc-200">
+                    {current.description}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                    {current.detail}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="mt-16 flex flex-col items-start gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-zinc-400">
+            ¿No sabes cuál necesitas? Cuéntanos qué quieres lograr y te decimos.
+          </p>
+          <button
+            type="button"
+            onClick={goContact}
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#06060C] transition-colors hover:bg-zinc-200"
+          >
+            Cotizar mi proyecto
+            <ArrowRight size={16} />
+          </button>
+        </div>
       </div>
     </section>
   );

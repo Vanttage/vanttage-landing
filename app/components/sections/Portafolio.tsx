@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRef, useEffect, useState } from "react";
@@ -27,25 +27,111 @@ export interface Project {
 
 const projectsRaw: Project[] = [
   {
-    id: "08",
-    category: "Página Web",
-    title: "Daz Ambiental",
+    id: "12",
+    category: "Aplicación Web",
+    title: "ControlOne by SOTEC",
     description:
-      "Página web institucional para Daz Ambiental (consultorías y servicios ambientales), con sus secciones y el proyecto Misión Mapache integrado como uno de sus proyectos. Sitio propio, editable y responsive.",
+      "Plataforma que reemplaza los formatos en papel de SOTEC: reportes técnicos con fotos, permisos de trabajo, legalización de gastos, cotizaciones y cuentas de cobro. El técnico los llena desde el celular con un asistente por pasos, firma en pantalla y el documento sale en PDF con el formato aprobado. Se instala como app y funciona sin conexión.",
+    url: "https://controlone.sotecse.com/",
+    previewImage: "/previews/controlone.webp",
+    tags: ["App a la medida", "PWA", "Firmas digitales", "Supabase"],
+    accent: "#92D050",
+    year: "2026",
+    mockupGradient: "from-zinc-900 via-neutral-800 to-lime-900",
+    mockupHeaderColor: "#3F7A12",
+  },
+  {
+    id: "13",
+    category: "Aplicación Web",
+    title: "MAR · GOYN Barranquilla",
+    description:
+      "Mapa de Actores y Resultados del Colaborativo GOYN Barranquilla. Reúne en un mapa y un directorio a las organizaciones que trabajan por los jóvenes de Barranquilla y su área metropolitana, y cada una actualiza sus programas e indicadores desde su panel. GOYN revisa los cambios antes de publicarlos.",
+    url: "https://mar.goynbarranquilla.com/",
+    previewImage: "/previews/mar-goyn.webp",
+    tags: ["Plataforma Web", "Mapa interactivo", "Roles y permisos", "Supabase"],
+    accent: "#9B00FF",
+    year: "2026",
+    mockupGradient: "from-purple-900 via-violet-800 to-fuchsia-900",
+    mockupHeaderColor: "#7A00CC",
+  },
+  {
+    id: "11",
+    category: "Rediseño Web",
+    title: "SOTEC",
+    description:
+      "Nuevo sitio para SOTEC, empresa de seguridad electrónica de Cartagena. Presenta sus servicios de videovigilancia, control de acceso, telecomunicaciones, energía solar y automatización, con galería de proyectos, mapa de cobertura y contacto directo por WhatsApp.",
+    url: "https://www.sotecse.com/",
+    previewImage: "/previews/sotec.webp",
+    tags: ["Rediseño Web", "React", "WhatsApp"],
+    accent: "#3BA30E",
+    year: "2026",
+    mockupGradient: "from-green-900 via-emerald-900 to-zinc-900",
+    mockupHeaderColor: "#2C840B",
+  },
+  {
+    id: "14",
+    category: "Página Web",
+    title: "Club Hunk Cartagena",
+    description:
+      "Sitio del Club Hunk Cartagena, un grupo de moteros que sale a rodar los jueves y domingos. Muestra las rodadas, los aliados del club y el camino para entrar, con solicitud en línea. Los miembros tienen un portal con sus datos, la ficha de emergencia con QR para el casco y el historial de rodadas.",
+    url: "https://clubhunkctg.vercel.app/",
+    previewImage: "/previews/club-hunk.webp",
+    tags: ["Página Web", "Portal de miembros", "Formulario", "Comunidad"],
+    accent: "#7B50DD",
+    year: "2026",
+    mockupGradient: "from-violet-950 via-purple-900 to-zinc-950",
+    mockupHeaderColor: "#5634A7",
+  },
+  {
+    id: "09",
+    category: "Migración Web",
+    title: "DAGAR Soluciones",
+    description:
+      "Llevamos la landing de DAGAR, empresa de climatización y mantenimiento de la Costa Caribe, de un hosting compartido a Vercel con Astro y despliegue automático desde GitHub. Apuntamos el dominio sin tocar su correo corporativo y publicamos su política de calidad en PDF.",
+    url: "https://www.dagarsoluciones.com.co/",
+    previewImage: "/previews/dagar.webp",
+    tags: ["Migración", "Astro", "Dominio y DNS", "CI/CD"],
+    accent: "#1FA8FC",
+    year: "2026",
+    mockupGradient: "from-sky-900 via-blue-800 to-cyan-900",
+    mockupHeaderColor: "#2382C9",
+  },
+  {
+    id: "08",
+    category: "Experiencia Web",
+    title: "Misión Mapache · Daz Ambiental",
+    description:
+      "Misión Mapache, un juego web para Daz Ambiental, consultora de manejo de fauna silvestre en Cartagena. En tres situaciones cortas enseña cómo convivir con los mapaches de la zona. Se juega desde el celular sin instalar nada.",
     url: "https://dazambiental.com",
-    tags: ["Página Web", "Institucional", "Responsive"],
+    previewImage: "/previews/daz.webp",
+    tags: ["Juego web", "Educación ambiental", "Celular"],
     accent: "#22c55e",
     year: "2026",
     mockupGradient: "from-green-900 via-emerald-800 to-teal-900",
     mockupHeaderColor: "#16a34a",
   },
   {
+    id: "10",
+    category: "Aplicación Web",
+    title: "Transportes UP",
+    description:
+      "Aplicación interna para las bitácoras de transporte especial que Transportes UP Cartagena entrega a Salud Total EPS. Cada paciente se registra una vez, cada mes se marcan las fechas de servicio y la app arma el PDF con el formato oficial y la firma del acudiente ya anexada.",
+    url: "https://transportesup.vercel.app/",
+    previewImage: "/previews/transportesup.webp",
+    tags: ["App a la medida", "PDF oficial", "Firmas digitales", "Tiempo real"],
+    accent: "#E5177E",
+    year: "2026",
+    mockupGradient: "from-fuchsia-900 via-purple-900 to-pink-900",
+    mockupHeaderColor: "#6E2A8E",
+  },
+  {
     id: "01",
     category: "Rediseño Web",
     title: "R&R Kelab S.A.S",
     description:
-      "Rediseño completo, nueva imagen de marca y migración a tecnologías modernas para firma de consultoría en sostenibilidad y economía circular. Mejor diseño, mayor velocidad y posicionamiento optimizado en Google.",
+      "Rediseñamos el sitio de esta firma de consultoría en sostenibilidad y economía circular, con nueva imagen de marca y migración a tecnología actual. Quedó más rápido y mejor ubicado en Google.",
     url: "https://www.kelab.com.co/",
+    previewImage: "/previews/kelab.webp",
     tags: ["Rediseño Web", "Migración", "SEO", "Branding"],
     accent: "#22c55e",
     year: "2024",
@@ -57,8 +143,9 @@ const projectsRaw: Project[] = [
     category: "Diseño Web",
     title: "Andreas Adventures",
     description:
-      "Sitio web creado desde cero para alquiler de fincas privadas de lujo en Castilla La Nueva y Nilo. Diseño premium, sistema de reservas y migración a tecnología moderna.",
+      "Sitio web hecho desde cero para alquiler de fincas privadas de lujo en Castilla La Nueva y Nilo. Tiene sistema de reservas y lo pasamos a tecnología actual.",
     url: "https://www.andreasadventurescol.com/",
+    previewImage: "/previews/andreas.webp",
     tags: ["Diseño desde cero", "Reservas Online", "Migración"],
     accent: "#f59e0b",
     year: "2025",
@@ -70,11 +157,12 @@ const projectsRaw: Project[] = [
     category: "Aplicación Web",
     title: "PlaticApp",
     description:
-      "Aplicación web responsive hecha a la medida para control financiero personal: registra gastos, ingresos e inversiones hablándole a un bot de Telegram (texto, audio o foto) y visualízalo todo en un dashboard en tiempo real — patrimonio, gráficos y presupuestos.",
+      "Aplicación web a la medida para control financiero personal. Registras gastos, ingresos e inversiones escribiéndole a un bot de Telegram (texto, audio o foto) y lo ves todo en un dashboard en tiempo real: patrimonio, gráficos y presupuestos.",
     url: "https://platicapp-web.vercel.app",
+    previewImage: "/previews/platicapp.webp",
     tags: ["App a la medida", "Bot de Telegram", "Dashboard", "Tiempo real"],
     accent: "#0a84ff",
-    year: "2025",
+    year: "2026",
     mockupGradient: "from-blue-900 via-indigo-800 to-sky-900",
     mockupHeaderColor: "#0a84ff",
   },
@@ -83,11 +171,12 @@ const projectsRaw: Project[] = [
     category: "Rediseño Web",
     title: "ALZAK Foundation",
     description:
-      "Rediseño completo y nueva imagen para centro de investigación científica en salud pública del Caribe colombiano. Sitio moderno, bilingüe y alineado con su visión 2030.",
+      "Rediseño completo y nueva imagen para un centro de investigación científica en salud pública del Caribe colombiano. Sitio bilingüe, alineado con su visión 2030.",
     url: "https://www.alzakfoundation.org/",
+    previewImage: "/previews/alzak.webp",
     tags: ["Rediseño", "Nueva Imagen", "Bilingüe"],
     accent: "#a855f7",
-    year: "2025",
+    year: "2026",
     mockupGradient: "from-violet-900 via-purple-800 to-indigo-900",
     mockupHeaderColor: "#7c3aed",
   },
@@ -96,11 +185,12 @@ const projectsRaw: Project[] = [
     category: "Página Web",
     title: "EcoTruck",
     description:
-      "Landing page profesional para plataforma de recolección inteligente de residuos en Cartagena. Diseño visual de alto nivel, animaciones, stack tecnológico completo y enfoque en impacto sostenible.",
+      "Landing page para una plataforma de recolección inteligente de residuos en Cartagena. Hecha en React, con animaciones y enfocada en explicar el impacto ambiental del servicio.",
     url: "https://ecotruck-landing.vercel.app/",
+    previewImage: "/previews/ecotruck.webp",
     tags: ["Diseño Web", "React", "Sostenibilidad"],
     accent: "#22c55e",
-    year: "2024",
+    year: "2025",
     mockupGradient: "from-green-900 via-teal-800 to-emerald-900",
     mockupHeaderColor: "#16a34a",
   },
@@ -109,8 +199,9 @@ const projectsRaw: Project[] = [
     category: "Aplicación Web",
     title: "Co-Workers Cloud",
     description:
-      "Marketplace de economía circular para R&R Kelab. Plataforma que conecta productores, gestores y transformadores de residuos aprovechables en un ecosistema digital único en Colombia.",
+      "Marketplace de economía circular para R&R Kelab. Conecta a quienes producen, gestionan y transforman residuos aprovechables en una sola plataforma, única en Colombia.",
     url: "https://cloud.kelab.com.co/",
+    previewImage: "/previews/coworkers.webp",
     tags: ["Marketplace", "App Web", "Economía Circular"],
     accent: "#06b6d4",
     year: "2025",
@@ -122,8 +213,9 @@ const projectsRaw: Project[] = [
     category: "Página Web",
     title: "GIS Migration",
     description:
-      "Sitio web desarrollado desde cero para firma de asesoría migratoria en EE.UU. Diseño profesional, multilenguaje, formulario de contacto y gestión de pagos internacionales.",
+      "Sitio web hecho desde cero para una firma de asesoría migratoria en EE. UU. Está en varios idiomas, tiene formulario de contacto y recibe pagos internacionales.",
     url: "https://www.losgestores.com/",
+    previewImage: "/previews/losgestores.webp",
     tags: ["Desarrollo desde cero", "Multilenguaje", "Formularios"],
     accent: "#1EA7FF",
     year: "2025",
@@ -188,14 +280,16 @@ function BrowserPreview({ project }: { project: Project }) {
   const inView = useInView(containerRef, { once: true, margin: "300px" });
   const [scale, setScale] = useState(0.28);
   const [status, setStatus] = useState<"loading" | "live" | "fallback">(
-    project.url ? "loading" : "fallback",
+    project.url && !project.previewImage ? "loading" : "fallback",
   );
 
   /* Escala dinámica según el ancho real del contenedor */
   useEffect(() => {
     if (!containerRef.current) return;
     const ro = new ResizeObserver(([entry]) => {
-      setScale(entry.contentRect.width / IFRAME_W);
+      const w = entry.contentRect.width;
+      /* Con el contenedor oculto el ancho es 0 → no actualizar (evita height: Infinity) */
+      if (w > 0) setScale(w / IFRAME_W);
     });
     ro.observe(containerRef.current);
     return () => ro.disconnect();
@@ -225,7 +319,8 @@ function BrowserPreview({ project }: { project: Project }) {
     }
   }
 
-  const iframeH = Math.ceil(VISIBLE_H / scale);
+  /* Guardia: con scale = 0 la altura sería Infinity (error de consola) */
+  const iframeH = scale ? Math.ceil(VISIBLE_H / scale) : VISIBLE_H;
 
   return (
     <div className="overflow-hidden rounded-xl border border-white/10">
@@ -241,7 +336,7 @@ function BrowserPreview({ project }: { project: Project }) {
             className="h-1.5 w-1.5 rounded-full opacity-50"
             style={{ background: project.accent }}
           />
-          <span className="truncate text-[10px] text-white/35">
+          <span className="truncate text-[10px] text-white/60">
             {project.url
               ? project.url.replace(/^https?:\/\//, "")
               : "vanttagetech.com"}
@@ -278,7 +373,7 @@ function BrowserPreview({ project }: { project: Project }) {
         )}
 
         {/* Iframe live — solo si hay URL y la tarjeta está cerca del viewport */}
-        {project.url && inView && (
+        {project.url && !project.previewImage && inView && (
           <iframe
             src={project.url}
             title={project.title}
@@ -301,7 +396,7 @@ function BrowserPreview({ project }: { project: Project }) {
         )}
 
         {/* Fade inferior */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#020617] to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#06060C] to-transparent" />
 
         {/* Badge "En vivo" */}
         {status === "live" && (
@@ -322,37 +417,14 @@ function BrowserPreview({ project }: { project: Project }) {
 function ProjectCard({ project, i }: { project: Project; i: number }) {
   const EASE = [0.22, 1, 0.36, 1] as const;
 
-  /* Tilt 3D sutil siguiendo el cursor */
-  const cardRef = useRef<HTMLDivElement>(null);
-  const rotateX = useSpring(useMotionValue(0), { stiffness: 150, damping: 18 });
-  const rotateY = useSpring(useMotionValue(0), { stiffness: 150, damping: 18 });
-
-  function handleMove(e: React.MouseEvent<HTMLDivElement>) {
-    const el = cardRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    rotateY.set(px * 7);
-    rotateX.set(-py * 7);
-  }
-  function handleLeave() {
-    rotateX.set(0);
-    rotateY.set(0);
-  }
-
   return (
     <motion.div
-      ref={cardRef}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.55, delay: i * 0.1, ease: EASE }}
       whileHover={{ y: -6 }}
-      style={{ rotateX, rotateY, transformPerspective: 1000 }}
-      className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl"
+      className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl focus-within:ring-2 focus-within:ring-violet-400"
     >
       {/* Top accent line */}
       <div
@@ -362,15 +434,7 @@ function ProjectCard({ project, i }: { project: Project; i: number }) {
         }}
       />
 
-      {/* Hover glow */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(circle at 30% 20%, ${project.accent}18, transparent 65%)`,
-        }}
-      />
-
-      <div className="relative z-10 p-5">
+      <div className="p-5">
         {/* Browser preview */}
         <BrowserPreview project={project} />
 
@@ -387,11 +451,23 @@ function ProjectCard({ project, i }: { project: Project; i: number }) {
             >
               {project.category}
             </span>
-            <span className="text-xs text-white/20">{project.year}</span>
+            <span className="text-xs text-white/50">{project.year}</span>
           </div>
 
           <h3 className="mb-2 text-[18px] font-semibold leading-snug text-white">
-            {project.title}
+            {project.url ? (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${project.title} (abre en una pestaña nueva)`}
+                className="outline-none after:absolute after:inset-0 after:z-10 after:content-['']"
+              >
+                {project.title}
+              </a>
+            ) : (
+              project.title
+            )}
           </h3>
           <p className="text-sm leading-relaxed text-white/50">
             {project.description}
@@ -402,7 +478,7 @@ function ProjectCard({ project, i }: { project: Project; i: number }) {
             {project.tags.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-white/10 px-2.5 py-0.5 text-[11px] text-white/30"
+                className="rounded-full border border-white/10 px-2.5 py-0.5 text-[11px] text-white/60"
               >
                 {t}
               </span>
@@ -410,7 +486,7 @@ function ProjectCard({ project, i }: { project: Project; i: number }) {
           </div>
 
           {/* CTA */}
-          <div className="mt-4 flex items-center gap-1.5 text-sm text-white/30 transition-colors duration-300 group-hover:text-white">
+          <div aria-hidden className="mt-4 flex items-center gap-1.5 text-sm text-white/70 transition-colors duration-300 group-hover:text-white">
             Ver proyecto
             <ArrowUpRight
               size={14}
@@ -434,7 +510,7 @@ export default function Portfolio() {
   return (
     <section
       id="portfolio"
-      className="relative overflow-hidden bg-[#020617] py-28 px-6 text-white"
+      className="relative overflow-hidden bg-[#06060C] py-28 px-6 text-white"
     >
       {/* Background glows — CSS only, no Framer animate loop */}
       <div
@@ -456,20 +532,20 @@ export default function Portfolio() {
           className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
         >
           <div>
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-white/30">
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-white/60">
               Proyectos
             </p>
             <h2 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
-              Trabajo real,
+              Proyectos que
               <br />
               <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-                resultados comprobados
+                ya están en línea
               </span>
             </h2>
           </div>
-          <p className="max-w-xs text-sm leading-relaxed text-white/40">
-            Páginas web, tiendas y aplicaciones que generan impacto real para
-            negocios colombianos.
+          <p className="max-w-xs text-sm leading-relaxed text-white/60">
+            Páginas web, tiendas y aplicaciones que hicimos para negocios en
+            Colombia y Estados Unidos. Puedes abrirlas y verlas funcionando.
           </p>
         </motion.div>
 
@@ -497,7 +573,7 @@ export default function Portfolio() {
               <ArrowRight size={14} />
             </span>
           </Link>
-          <p className="text-xs text-white/25">
+          <p className="text-xs text-white/60">
             {allProjects.length} proyectos completados
           </p>
         </motion.div>

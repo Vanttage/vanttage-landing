@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import NosotrosContent from "./NosotrosContent";
 
 export const metadata: Metadata = {
-  title: "Nosotros — Vanttage · Agencia Web Cartagena",
+  title: "Nosotros: equipo de desarrollo web en Cartagena",
   description:
-    "Somos Vanttage, un equipo boutique en Cartagena, Colombia. Creamos páginas web profesionales con trato directo, diseño único y resultados reales para tu negocio.",
+    "Somos Vanttage, un equipo pequeño en Cartagena, Colombia. Hacemos páginas web profesionales con diseño propio, y hablas directamente con quien programa tu proyecto.",
   alternates: { canonical: "https://vanttagetech.com/nosotros" },
   openGraph: {
-    title: "Nosotros — Vanttage · Agencia Web Cartagena",
+    title: "Nosotros: equipo de desarrollo web en Cartagena",
     description:
-      "Equipo boutique en Cartagena especializado en desarrollo web y software a medida. Diseño único, trato directo, resultados reales.",
+      "Equipo pequeño en Cartagena que hace páginas web y software a medida. Hablas directamente con quien programa tu proyecto.",
     url: "https://vanttagetech.com/nosotros",
   },
 };

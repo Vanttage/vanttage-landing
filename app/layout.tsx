@@ -7,6 +7,7 @@ import Navbar from "@/app/components/layout/Navbar";
 import Footer from "@/app/components/layout/Footer";
 import JsonLd from "@/app/components/JsonLd";
 import ChatWidget from "@/app/components/ChatWidget";
+import MotionProvider from "@/app/components/MotionProvider";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -31,12 +32,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),
 
   title: {
-    default: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+    default: "Vanttage | Páginas web profesionales en Cartagena, Colombia",
     template: "%s | Vanttage",
   },
 
   description:
-    "Creamos páginas web profesionales en Cartagena, Colombia. Diseño único, rápido y optimizado para Google que genera confianza y trae más clientes a tu negocio. Cotización gratis en menos de 24h.",
+    "Hacemos páginas web profesionales desde Cartagena, Colombia, para negocios de cualquier país. Diseño propio, carga rápida y bien posicionadas en Google para que te encuentren más clientes. Cotización gratis en menos de 24 horas.",
 
   keywords: [
     // Alta intención — búsquedas de compra
@@ -62,6 +63,9 @@ export const metadata: Metadata = {
     // Local + servicios
     "agencia digital Cartagena Bolívar",
     "desarrollo web profesional Colombia",
+    "diseño web en español para empresas en el exterior",
+    "agencia de desarrollo web en Latinoamérica",
+    "desarrollo web remoto para empresas en Estados Unidos",
     "diseño web para restaurantes Colombia",
     "página web para hoteles Cartagena",
   ],
@@ -87,15 +91,15 @@ export const metadata: Metadata = {
     locale: "es_CO",
     url: DOMAIN,
     siteName: "Vanttage",
-    title: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+    title: "Vanttage | Páginas web profesionales en Cartagena, Colombia",
     description:
-      "Creamos páginas web profesionales con diseño único que generan confianza y traen más clientes a tu negocio. Cotización gratis en menos de 24h.",
+      "Hacemos páginas web profesionales para negocios en Colombia y en cualquier país, con diseño propio y pensadas para conseguir clientes. Cotización gratis en menos de 24 horas.",
     images: [
       {
         url: `${DOMAIN}/og.png`,
         width: 1200,
         height: 630,
-        alt: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+        alt: "Vanttage | Páginas web profesionales en Cartagena, Colombia",
       },
     ],
   },
@@ -104,9 +108,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@vanttage",
     creator: "@vanttage",
-    title: "Vanttage — Páginas Web Profesionales · Cartagena, Colombia",
+    title: "Vanttage | Páginas web profesionales en Cartagena, Colombia",
     description:
-      "Diseño único, código limpio y resultados reales para tu negocio en internet. Cartagena, Colombia.",
+      "Páginas web y aplicaciones web para negocios de cualquier país. Desde Cartagena, Colombia.",
     images: [`${DOMAIN}/og.png`],
   },
 
@@ -115,6 +119,12 @@ export const metadata: Metadata = {
   },
 
   category: "technology",
+
+  /* app/favicon.ico lo inyecta Next automáticamente; aquí solo los extra */
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png", sizes: "512x512" }],
+    apple: "/apple-touch-icon.png",
+  },
 
   /* Verificación Google Search Console — pega tu código cuando lo tengas */
   verification: { google: "oDFmxUPYD8bwklybjgtr1TNINNHVSlkaIlfz0LiVbuE" },
@@ -128,9 +138,6 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${syne.variable} ${dmSans.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#06060C" />
         <meta name="geo.region" content="CO-BOL" />
         <meta name="geo.placename" content="Cartagena, Colombia" />
@@ -160,10 +167,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <Navbar />
-        {children}
-        <Footer />
-        <ChatWidget />
+        <MotionProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <ChatWidget />
+        </MotionProvider>
       </body>
     </html>
   );

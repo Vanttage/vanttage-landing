@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Menu } from "lucide-react";
@@ -32,10 +32,21 @@ export default function Navbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const isPortal = pathname?.startsWith("/portal");
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
 
-  /* ── Scroll state ── */
+  /* ── Scroll: compacta la barra y la esconde al bajar (como Safari en iOS) ── */
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 20);
+      setHidden(y > 240 && y > lastY.current + 4);
+      if (y < lastY.current - 4 || y <= 240) setHidden(false);
+      lastY.current = y;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -63,20 +74,36 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
-  /* El navbar en páginas internas siempre tiene fondo blanco */
-  const forceLight = !isHome;
-  const isLight = scrolled || forceLight;
-  const textColor    = isLight ? "text-[#0A2540]" : "text-white";
-  const subTextColor = isLight ? "text-[#64748B]" : "text-white/70";
+  /* ── Menú móvil: Esc cierra, foco al botón cerrar y de vuelta a la hamburguesa ── */
+  useEffect(() => {
+    if (menuOpen) {
+      wasOpen.current = true;
+      closeRef.current?.focus();
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setMenuOpen(false);
+      };
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }
+    if (wasOpen.current) {
+      wasOpen.current = false;
+      hamburgerRef.current?.focus();
+    }
+  }, [menuOpen]);
+
+  /* Navbar siempre oscura: legible sobre secciones claras y oscuras */
+  const textColor    = "text-white";
+  const subTextColor = "text-white/70";
+
+  /* Anchors (#...) solo funcionan en el home; en otras páginas apuntan a "/#..." */
+  const resolveHref = (href: string) =>
+    href.startsWith("#") && !isHome ? `/${href}` : href;
+  const ctaHref = isHome ? "#contact" : "/contacto";
 
   function handleLinkClick(e: React.MouseEvent, href: string) {
-    if (href.startsWith("#")) {
+    if (href.startsWith("#") && isHome) {
       e.preventDefault();
-      if (isHome) {
-        scrollToAnchor(href);
-      } else {
-        window.location.href = `/${href}`;
-      }
+      scrollToAnchor(href);
     }
   }
 
@@ -84,103 +111,88 @@ export default function Navbar() {
 
   return (
     <>
-      <nav
-        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-          isLight
-            ? "bg-white/80 py-4 shadow-[0_8px_30px_rgba(2,6,23,0.06)] backdrop-blur-xl"
-            : "py-5"
-        }`}
+      <motion.nav
+        aria-label="Principal"
+        initial={false}
+        animate={{ y: hidden && !menuOpen ? -96 : 0 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        className="fixed inset-x-0 top-3 z-50 px-3 md:top-4"
       >
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 md:px-8">
-
+        <div
+          className={`mx-auto flex items-center justify-between rounded-full border border-white/10 bg-[#14141c]/75 pl-2 pr-2 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-2xl backdrop-saturate-150 transition-[max-width,padding] duration-500 ${
+            scrolled ? "max-w-[920px] py-1.5" : "max-w-[1080px] py-2"
+          }`}
+        >
           {/* ── Brand ── */}
           <Link
             href="/"
-            className={`flex items-center gap-3 ${textColor}`}
+            className={`flex items-center gap-2 rounded-full py-1 pl-1 pr-3 ${textColor}`}
           >
-            <div className="relative h-11 w-11 shrink-0">
+            <span className="relative h-8 w-8 shrink-0">
               <Image
                 src="/logo/logo.png"
-                alt="Vanttage logo"
+                alt=""
                 fill
-                sizes="44px"
+                sizes="32px"
                 className="object-contain"
                 priority
               />
-            </div>
-            <span className="text-[17px] font-semibold tracking-wide">
-              Vanttage.
             </span>
+            <span className="text-[15px] font-semibold tracking-tight">Vanttage</span>
           </Link>
 
-          {/* ── Desktop links ── */}
-          <div className={`hidden items-center gap-7 text-[14px] md:flex ${subTextColor}`}>
+          {/* ── Desktop links (control segmentado) ── */}
+          <div className={`hidden items-center rounded-full bg-white/[0.04] p-1 text-[13.5px] md:flex ${subTextColor}`}>
             {links.map((l) => {
               const isPageLink = l.href.startsWith("/");
               const isActive = isPageLink
                 ? pathname.startsWith(l.href)
-                : active === l.href.replace("#", "");
+                : isHome && active === l.href.replace("#", "");
               return (
                 <Link
                   key={l.href}
-                  href={l.href}
+                  href={resolveHref(l.href)}
                   onClick={(e) => handleLinkClick(e, l.href)}
-                  className={`relative py-1 transition-colors duration-200 ${
-                    isLight
-                      ? isActive ? "text-[#0A2540]" : "text-[#64748B] hover:text-[#0A2540]"
-                      : isActive ? "text-white"    : "text-white/60 hover:text-white"
+                  aria-current={isActive ? (isPageLink ? "page" : "location") : undefined}
+                  className={`relative rounded-full px-4 py-2 transition-colors duration-200 ${
+                    isActive ? "text-white" : "text-white/65 hover:text-white"
                   }`}
                 >
+                  {isActive && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      className="absolute inset-0 -z-10 rounded-full bg-white/[0.12] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
                   {l.label}
-
-                  {/* Underline animado */}
-                  <motion.span
-                    className="absolute inset-x-0 -bottom-0.5 h-[1.5px] rounded-full bg-violet-500"
-                    initial={false}
-                    animate={{ scaleX: isActive ? 1 : 0, opacity: isActive ? 1 : 0 }}
-                    transition={{ duration: 0.25, ease: EASE }}
-                    style={{ originX: 0 }}
-                  />
                 </Link>
               );
             })}
           </div>
 
           {/* ── Desktop CTA ── */}
-          <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/contacto"
-              className={`text-[14px] transition-colors duration-200 ${
-                isLight
-                  ? "text-[#475569] hover:text-[#0A2540]"
-                  : "text-white/70 hover:text-white"
-              }`}
-            >
-              Contacto
-            </Link>
-            <Link
-              href="/contacto"
-              className="inline-flex items-center rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-white shadow-md transition hover:scale-[1.04] hover:shadow-violet-500/30"
-            >
-              Empezar
-            </Link>
-          </div>
+          <Link
+            href={ctaHref}
+            onClick={(e) => handleLinkClick(e, ctaHref)}
+            className="hidden items-center rounded-full bg-white px-5 py-2.5 text-[13.5px] font-medium text-[#06060C] transition-colors hover:bg-zinc-200 md:inline-flex"
+          >
+            Cotizar proyecto
+          </Link>
 
           {/* ── Mobile hamburger ── */}
           <button
+            ref={hamburgerRef}
             onClick={() => setMenuOpen((v) => !v)}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg border transition-colors duration-200 md:hidden ${
-              isLight
-                ? "border-gray-200 text-[#0A2540] hover:bg-gray-50"
-                : "border-white/20 text-white hover:bg-white/10"
-            }`}
-            aria-label="Menú"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white transition-colors duration-200 hover:bg-white/10 md:hidden"
+            aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-
         </div>
-      </nav>
+      </motion.nav>
 
       {/* ── Mobile menu overlay ── */}
       <AnimatePresence>
@@ -194,56 +206,59 @@ export default function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-[55] bg-black/50 backdrop-blur-md"
             />
 
             {/* Panel */}
             <motion.div
               key="panel"
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.35, ease: EASE }}
-              className="fixed right-0 top-0 z-50 flex h-full w-[280px] flex-col bg-white shadow-2xl"
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menú de navegación"
+              initial={{ opacity: 0, y: -16, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.97 }}
+              transition={{ duration: 0.3, ease: EASE }}
+              className="fixed inset-x-3 top-3 z-[60] flex origin-top flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#14141c]/85 shadow-2xl backdrop-blur-2xl backdrop-saturate-150"
             >
               {/* Panel header */}
-              <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
-                <span className="text-[16px] font-semibold text-[#0A2540]">Vanttage.</span>
+              <div className="flex items-center justify-between py-2 pl-5 pr-2">
+                <span className="text-[15px] font-semibold text-white">Vanttage</span>
                 <button
+                  ref={closeRef}
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100"
+                  aria-label="Cerrar menú"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.06] text-white hover:bg-white/10"
                 >
                   <X size={18} />
                 </button>
               </div>
 
               {/* Nav links */}
-              <div className="flex flex-col gap-1 px-4 py-6">
+              <div className="flex flex-col gap-1 px-3 pb-3 pt-2">
                 {links.map((l, i) => {
                   const isPageLink = l.href.startsWith("/");
                   const isActive = isPageLink
                     ? pathname.startsWith(l.href)
-                    : active === l.href.replace("#", "");
+                    : isHome && active === l.href.replace("#", "");
                   return (
                     <motion.div key={l.href} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05, duration: 0.3, ease: EASE }}>
                       <Link
-                        href={l.href}
+                        href={resolveHref(l.href)}
                         onClick={(e) => {
-                          if (!isPageLink) {
-                            e.preventDefault();
-                            if (isHome) scrollToAnchor(l.href);
-                            else window.location.href = `/${l.href}`;
-                          }
+                          handleLinkClick(e, l.href);
                           setMenuOpen(false);
                         }}
-                        className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors duration-150 ${
+                        aria-current={isActive ? (isPageLink ? "page" : "location") : undefined}
+                        className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-[17px] font-medium transition-colors duration-150 ${
                           isActive
-                            ? "bg-violet-50 text-violet-600"
-                            : "text-[#475569] hover:bg-gray-50 hover:text-[#0A2540]"
+                            ? "bg-white/[0.1] text-white"
+                            : "text-white/75 hover:bg-white/[0.06] hover:text-white"
                         }`}
                       >
                         {isActive && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                          <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
                         )}
                         {l.label}
                       </Link>
@@ -253,15 +268,18 @@ export default function Navbar() {
               </div>
 
               {/* Mobile CTA */}
-              <div className="mt-auto border-t border-gray-100 px-6 py-6">
+              <div className="border-t border-white/10 px-4 py-4">
                 <Link
-                  href="/contacto"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 py-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-white shadow-lg shadow-violet-500/25"
+                  href={ctaHref}
+                  onClick={(e) => {
+                    handleLinkClick(e, ctaHref);
+                    setMenuOpen(false);
+                  }}
+                  className="flex w-full items-center justify-center rounded-full bg-white py-3.5 text-[15px] font-medium text-[#06060C]"
                 >
-                  Empezar proyecto
+                  Cotizar mi proyecto
                 </Link>
-                <p className="mt-4 text-center text-xs text-gray-400">
+                <p className="mt-3 text-center text-xs text-white/55">
                   Respuesta en menos de 24h
                 </p>
               </div>

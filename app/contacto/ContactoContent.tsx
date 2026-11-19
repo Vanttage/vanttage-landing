@@ -80,7 +80,7 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
         <CheckCircle2 size={38} className="relative text-violet-500" />
       </motion.div>
       <div>
-        <h3 className="text-2xl font-semibold text-[#0A2540]">¡Mensaje enviado!</h3>
+        <h3 className="text-2xl font-semibold text-[#0A2540]">Mensaje enviado</h3>
         <p className="mt-2 text-[#64748B]">Recibimos tu mensaje. Te respondemos en menos de 24h.</p>
       </div>
       <button
@@ -165,8 +165,8 @@ export default function ContactoContent() {
             transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
             className="mt-6 max-w-xl text-lg leading-relaxed text-white/60"
           >
-            Cuéntanos qué necesita tu negocio y te respondemos con una propuesta
-            clara en menos de 24 horas. Sin compromisos, sin tecnicismos.
+            Cuéntanos qué necesita tu negocio y en menos de 24 horas te
+            respondemos con una propuesta. Preguntar no te compromete a nada.
           </motion.p>
         </div>
       </section>
@@ -178,7 +178,7 @@ export default function ContactoContent() {
 
             {/* Columna izquierda — info */}
             <div className="space-y-4">
-              {["Respuesta real en menos de 24h.", "Te ayudamos a aterrizar la idea.", "Si no somos fit, te lo decimos claro."].map((text, i) => (
+              {["Te respondemos en menos de 24 horas.", "Te ayudamos a aterrizar la idea.", "Si no somos fit, te lo decimos claro."].map((text, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -16 }}

@@ -47,7 +47,7 @@ function BrowserPreview({ project }: { project: Project }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.28);
   const [status, setStatus] = useState<"loading" | "live" | "fallback">(
-    project.url ? "loading" : "fallback"
+    project.url && !project.previewImage ? "loading" : "fallback"
   );
 
   useEffect(() => {
@@ -105,7 +105,7 @@ function BrowserPreview({ project }: { project: Project }) {
             <GradientMockup project={project} />
           </div>
         )}
-        {project.url && (
+        {project.url && !project.previewImage && (
           <iframe
             src={project.url}
             title={project.title}
@@ -248,12 +248,12 @@ export default function ProyectosPage() {
             Proyectos que
             <br />
             <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
-              hablan por sí solos
+              puedes visitar
             </span>
           </h1>
           <p className="max-w-xl text-[16px] leading-relaxed text-white/50">
-            Cada proyecto nace de entender el negocio del cliente. Aquí mostramos
-            el resultado — diseño, funcionalidad y resultados reales.
+            Cada proyecto arranca entendiendo el negocio del cliente. Aquí puedes
+            ver cómo quedó cada uno y abrir el sitio en vivo.
           </p>
         </motion.div>
 
@@ -313,10 +313,10 @@ export default function ProyectosPage() {
             ¿Listo para empezar?
           </p>
           <h2 className="mb-4 text-3xl font-semibold text-white md:text-4xl">
-            Tu proyecto puede ser el próximo
+            Cuéntanos qué tienes en mente
           </h2>
           <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-white/40">
-            Cuéntanos qué necesitas y te decimos cómo podemos ayudarte. Sin compromisos.
+            Te decimos cómo lo haríamos y cuánto costaría. Preguntar no te compromete.
           </p>
           <Link
             href="/#contact"

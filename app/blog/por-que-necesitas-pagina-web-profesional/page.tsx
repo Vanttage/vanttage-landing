@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft, ArrowRight, CheckCircle2, TrendingUp } from "lucide-react";
+import type { ReactNode } from "react";
+import ArticleLayout from "../_components/ArticleLayout";
+import StatQuote, { type Cite } from "../_components/StatQuote";
+import BarChart from "../_components/BarChart";
+import PostFigure from "../_components/PostFigure";
+import Checklist from "../_components/Checklist";
+import Src from "../_components/InlineLink";
+import { H2, INTRO, P, STRONG } from "../_components/prose";
 
 export const metadata: Metadata = {
   title: "5 señales de que tu página web está perdiendo clientes",
   description:
-    "Si tu web tarda en cargar, no se ve bien en celular o no aparece en Google, estás perdiendo clientes cada día. 5 señales con datos reales 2024-2025 y cómo solucionarlas.",
+    "Si tu web tarda en cargar, no se ve bien en el celular o no aparece en Google, estás perdiendo clientes. 5 señales con datos verificados y su fuente, y cómo corregirlas.",
   alternates: { canonical: "https://vanttagetech.com/blog/por-que-necesitas-pagina-web-profesional" },
   openGraph: {
     title: "5 señales de que tu página web está perdiendo clientes",
     description:
-      "Checklist con datos reales 2025 para saber si tu web está saboteando tu negocio — y qué hacer al respecto.",
+      "Una lista con datos verificados para saber si tu web te está haciendo perder clientes, y qué hacer. Actualizado en 2026.",
     url: "https://vanttagetech.com/blog/por-que-necesitas-pagina-web-profesional",
+    images: [{ url: "https://vanttagetech.com/media/video/slide-web-poster.webp" }],
   },
 };
 
@@ -19,55 +26,166 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: "5 señales de que tu página web está perdiendo clientes",
-  description: "5 señales con datos reales 2024-2025 sobre webs que pierden clientes y cómo solucionarlas.",
+  description: "5 señales, con datos verificados y su fuente, de que una web está perdiendo clientes y cómo corregirlas.",
   author: { "@type": "Organization", name: "Vanttage", url: "https://vanttagetech.com" },
   publisher: { "@type": "Organization", name: "Vanttage", url: "https://vanttagetech.com" },
   datePublished: "2025-05-01",
-  dateModified: "2025-05-01",
+  dateModified: "2026-11-18",
+  image: "https://vanttagetech.com/media/video/slide-web-poster.webp",
   mainEntityOfPage: "https://vanttagetech.com/blog/por-que-necesitas-pagina-web-profesional",
 };
 
-const signals = [
+const SRC = {
+  deloitte: "https://www.deloitte.com/ie/en/services/consulting/research/milliseconds-make-millions.html",
+  statcounter: "https://gs.statcounter.com/platform-market-share/desktop-mobile-tablet/colombia",
+  datareportal: "https://datareportal.com/reports/digital-2026-colombia",
+  unbounce: "https://unbounce.com/conversion-benchmark-report/",
+  lindgaard: "https://doi.org/10.1080/01449290500330448",
+  fogg: "https://advocacy.consumerreports.org/research/how-do-people-evaluate-a-web-sites-credibility/",
+  dreamhost: "https://www.dreamhost.com/blog/dreamhost-2026-local-business-trust-index/",
+  backlinko: "https://backlinko.com/google-ctr-stats",
+  godaddy: "https://www.portafolio.co/emprendimiento/digitales-pero-con-obstaculos-asi-navegan-las-pymes-colombianas-en-el-entorno-online-631921",
+  ccce: "https://forbes.co/tecnologia/comercio-electronico-en-colombia-alcanzo-1454-billones-en-ventas-en-2025",
+} as const;
+
+const CITE = {
+  deloitte: { who: "Deloitte para Google", work: "Milliseconds Make Millions", year: "2020", href: SRC.deloitte },
+  statcounter: { who: "StatCounter", work: "Desktop vs Mobile Market Share Colombia", year: "octubre 2026", href: SRC.statcounter },
+  unbounce: { who: "Unbounce", work: "Conversion Benchmark Report", year: "2024", href: SRC.unbounce },
+  lindgaard: { who: "Lindgaard et al., Carleton University", work: "Behaviour & Information Technology", year: "2006", href: SRC.lindgaard },
+  backlinko: { who: "Backlinko", work: "Google CTR Stats, con datos de Semrush", year: "actualizado 2025", href: SRC.backlinko },
+} satisfies Record<string, Cite>;
+
+const signals: {
+  number: string;
+  title: string;
+  body: ReactNode;
+  figure: string;
+  statText: string;
+  note?: string;
+  cite: Cite;
+  extra?: ReactNode;
+  fix: string;
+}[] = [
   {
     number: "01",
     title: "Tarda más de 3 segundos en cargar",
-    body: "Parece un detalle técnico, pero tiene un impacto brutal en tu negocio. Cada segundo adicional de carga aumenta la tasa de abandono en un 32% (Google, 2024). Y cada mejora de 0.1 segundos en velocidad puede aumentar tus conversiones un 8%, según un estudio de Deloitte con tiendas de retail.",
-    stat: "32% más de abandono por cada segundo extra de carga — Google 2024",
-    source: "Google / Deloitte, 2024",
-    fix: "Una web moderna construida con tecnología actual (Next.js, por ejemplo) carga en menos de 1.5 segundos. La velocidad no es un lujo técnico — es dinero directo.",
+    body: (
+      <>
+        Parece un detalle técnico, pero pesa en las ventas. En un estudio que{" "}
+        <Src href={SRC.deloitte}>Deloitte hizo para Google (2020)</Src> con 37 marcas de Europa y Estados Unidos, mejorar 0,1 segundos la velocidad del sitio móvil en todas las páginas del recorrido subió 8,4% las conversiones en tiendas de retail y 9,2% el valor promedio del pedido.
+      </>
+    ),
+    figure: "+8,4%",
+    statText: "Subieron las conversiones en tiendas de retail cuando el sitio móvil mejoró 0,1 segundos su velocidad en todo el recorrido.",
+    note: "37 marcas de Europa y EE. UU., más de 30 millones de sesiones.",
+    cite: CITE.deloitte,
+    extra: (
+      <PostFigure
+        src="/media/img/team-developer.webp"
+        alt="Desarrollador revisando el código de una página web en su pantalla"
+        caption="La velocidad depende sobre todo de cómo está construida la página. El hosting influye menos."
+      />
+    ),
+    fix: "Una web hecha con tecnología actual (Next.js, por ejemplo) puede cargar en menos de 1,5 segundos. Cada segundo que le quitas a la carga se nota en los contactos que recibes.",
   },
   {
     number: "02",
     title: "No se ve bien en el celular",
-    body: "En Colombia, el 68% del tráfico web llega desde dispositivos móviles y el 90% de los colombianos navega desde su smartphone (DataReportal, enero 2025). Si tu página se ve rota, el texto es diminuto o los botones son difíciles de tocar, estás expulsando a 7 de cada 10 visitantes antes de que lean tu primera línea.",
-    stat: "90% de los colombianos navega desde smartphone — DataReportal 2025",
-    source: "DataReportal, enero 2025",
-    fix: "Una página responsive bien diseñada se adapta perfectamente a cualquier pantalla. No basta con que «se vea», tiene que funcionar igual de bien en móvil que en computador.",
+    body: (
+      <>
+        En octubre de 2026, el 58% del tráfico web en Colombia llegó desde teléfonos móviles, según{" "}
+        <Src href={SRC.statcounter}>StatCounter</Src>, y el país ya suma 41,7 millones de usuarios de internet (
+        <Src href={SRC.datareportal}>DataReportal, Digital 2026</Src>). Si tu página se ve rota, el texto es diminuto o los botones son difíciles de tocar, pierdes a más de la mitad de tus visitantes antes de que lean la primera línea.
+      </>
+    ),
+    figure: "58%",
+    statText: "Del tráfico web en Colombia llegó desde teléfonos móviles en octubre de 2026. En el mundo, la cifra fue de 59,9% ese mismo mes.",
+    cite: CITE.statcounter,
+    extra: (
+      <PostFigure
+        src="/media/img/product-mobile-payment.webp"
+        alt="Persona usando una tienda en línea desde su celular"
+      />
+    ),
+    fix: "Una página responsive bien hecha se adapta a cualquier pantalla. Además de verse bien, tiene que ser igual de fácil de usar en el celular que en el computador.",
   },
   {
     number: "03",
     title: "No tiene un llamado a la acción claro",
-    body: "Tu visitante llega, ve información, y luego… ¿qué hace? Si no hay un botón claro que diga «Llámanos», «Pide tu cita» o «Escríbenos», el usuario se va sin hacer nada — no porque no le interese, sino porque no le dijiste qué hacer. Las páginas con un CTA claro y visible convierten hasta 3 veces más que las que no lo tienen.",
-    stat: "Las páginas con CTA claro convierten hasta 3× más",
-    source: "HubSpot Research, 2024",
-    fix: "Cada sección debe tener un objetivo y un botón visible. El visitante no debería tener que buscar cómo contactarte — debería tropezarse con la opción en cada scroll.",
+    body: (
+      <>
+        Tu visitante llega, ve información, y luego ¿qué hace? Si no hay un botón claro que diga «Llámanos», «Pide tu cita» o «Escríbenos», se va sin hacer nada. Muchas veces sí le interesaba, pero nadie le dijo qué hacer. Como referencia, el{" "}
+        <Src href={SRC.unbounce}>Conversion Benchmark Report 2024 de Unbounce</Src>, con más de 41.000 landing pages analizadas, ubica la conversión mediana en 6,6%. Si tu web está muy por debajo, el llamado a la acción suele ser parte del problema.
+      </>
+    ),
+    figure: "6,6%",
+    statText: "Es la tasa mediana de conversión de una landing page. Úsala como punto de comparación para tu propia web.",
+    note: "Más de 41.000 landing pages y 464 millones de visitantes.",
+    cite: CITE.unbounce,
+    fix: "Cada sección debe tener un objetivo y un botón visible. El visitante no debería buscar cómo contactarte: la opción tiene que estar a la mano mientras baja por la página.",
   },
   {
     number: "04",
     title: "El diseño se ve desactualizado",
-    body: "Una web vieja manda el mensaje equivocado. Los usuarios tardan apenas 50 milisegundos en formarse una primera impresión visual de tu sitio (Universidad de Carleton, estudio Lindgaard). Y el 75% juzga la credibilidad de un negocio basándose en cómo se ve su página web (Universidad de Stanford). Un diseño del 2015 genera desconfianza — aunque tu servicio sea excelente.",
-    stat: "50 milisegundos para la primera impresión visual — Universidad de Carleton",
-    source: "Lindgaard et al. / Stanford University",
-    fix: "No se trata de estar a la moda. Se trata de transmitir profesionalismo y confianza desde el primer instante. El diseño es el traje con que tu negocio recibe a cada cliente.",
+    body: (
+      <>
+        Una web vieja manda el mensaje equivocado. Las personas se forman una impresión visual de un sitio en 50 milisegundos (
+        <Src href={SRC.lindgaard}>Lindgaard et al., Carleton University, 2006</Src>), y en un estudio de{" "}
+        <Src href={SRC.fogg}>Stanford de 2002</Src> el 46,1% de los participantes juzgó la credibilidad de un sitio en parte por su diseño. Son estudios con años encima, y una encuesta reciente apunta a lo mismo: el 69% de los adultos consultados por{" "}
+        <Src href={SRC.dreamhost}>DreamHost en Estados Unidos (2026)</Src> dice que un negocio local necesita web para ser creíble.
+      </>
+    ),
+    figure: "50 ms",
+    statText: "Bastan para que una persona se forme una impresión visual de una web, y esa impresión coincide con la que tiene después de mirarla con calma.",
+    note: "Estudio de 2006.",
+    cite: CITE.lindgaard,
+    fix: "La idea es que tu negocio se vea serio y confiable desde que la persona abre la página. El diseño es lo primero que ve tu cliente.",
   },
   {
     number: "05",
     title: "No apareces en Google cuando te buscan",
-    body: "El 91.5% de los usuarios nunca pasa de la primera página de Google (2025). Si alguien en tu ciudad busca «restaurante en Cartagena» o «abogado en Medellín» y tu página no aparece, simplemente no existes para ese cliente. Y con el 88% de los adultos colombianos comprando o buscando servicios en línea, cada día sin visibilidad en Google es un día regalando clientes a tu competencia.",
-    stat: "91.5% de usuarios nunca pasa de la primera página de Google — 2025",
-    source: "Backlinko / Reputation911, 2025",
+    body: (
+      <>
+        Según el{" "}
+        <Src href={SRC.backlinko}>estudio de CTR de Backlinko</Src> (datos de Semrush, actualizado en 2025), solo el 0,63% de las personas que buscan en Google hace clic en algo de la segunda página, y el primer resultado se lleva en promedio el 27,6% de los clics. Si alguien en tu ciudad busca «restaurante en Cartagena» o «abogado en Medellín» y tu página no aparece arriba, ese cliente nunca se entera de que existes.
+      </>
+    ),
+    figure: "0,63%",
+    statText: "De las personas que buscan en Google hace clic en algún resultado de la segunda página.",
+    cite: CITE.backlinko,
+    extra: (
+      <BarChart
+        title="Porcentaje de clics en Google"
+        bars={[
+          { label: "Primer resultado", value: 27.6, display: "27,6%", highlight: true },
+          { label: "Toda la segunda página", value: 0.63, display: "0,63%" },
+        ]}
+        max={30}
+        cite={CITE.backlinko}
+      />
+    ),
     fix: "El SEO básico bien implementado (velocidad, estructura, palabras clave locales) ya te pone por encima de la mayoría de tu competencia local. No necesitas un presupuesto enorme para empezar a aparecer.",
   },
+];
+
+const sources = [
+  { label: "Deloitte (encargado por Google): Milliseconds Make Millions, 2020", href: SRC.deloitte },
+  { label: "StatCounter: Desktop vs Mobile vs Tablet Market Share Colombia, octubre 2026", href: SRC.statcounter },
+  { label: "DataReportal: Digital 2026 Colombia (datos de octubre de 2025)", href: SRC.datareportal },
+  { label: "Unbounce: Conversion Benchmark Report 2024", href: SRC.unbounce },
+  { label: "Lindgaard, G. et al.: Attention web designers: You have 50 milliseconds to make a good first impression! Behaviour & Information Technology, 2006", href: SRC.lindgaard },
+  { label: "Fogg, B.J. et al.: How Do People Evaluate a Web Site's Credibility? Stanford y Consumer WebWatch, 2002", href: SRC.fogg },
+  { label: "DreamHost: 2026 Local Business Trust Index (1.201 adultos en EE. UU., noviembre de 2025)", href: SRC.dreamhost },
+  { label: "Backlinko: Google CTR Stats (actualizado en abril de 2025)", href: SRC.backlinko },
+  { label: "Portafolio (cifras de GoDaddy, Encuesta Global de Emprendimiento 2025), junio 2025", href: SRC.godaddy },
+  { label: "Forbes Colombia (cifras de la Cámara Colombiana de Comercio Electrónico), febrero 2026", href: SRC.ccce },
+];
+
+const toc = [
+  ...signals.map((s) => ({ id: `senal-${s.number}`, label: s.title })),
+  { id: "renovar", label: "¿Cuándo renovar tu página?" },
+  { id: "fuentes", label: "Fuentes" },
 ];
 
 export default function Post() {
@@ -77,164 +195,86 @@ export default function Post() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="min-h-screen bg-[#F8FAFC]">
+      <ArticleLayout
+        slug="por-que-necesitas-pagina-web-profesional"
+        lead="Una lista con datos verificados para saber si tu web te está ayudando a vender o te está haciendo perder clientes."
+        toc={toc}
+        cta={{
+          title: "Revisamos tu página web sin costo",
+          text: "Mándanos el enlace de tu web actual y te decimos qué está fallando y cómo lo arreglaríamos. Trabajamos desde Cartagena con clientes de cualquier país.",
+          button: "Quiero que revisen mi web",
+        }}
+      >
+        {/* Intro */}
+        <div className={INTRO}>
+          <p>
+            Tener página web ayuda, pero lo que cuenta es tener una que <strong className={STRONG}>funcione de verdad</strong>: que aparezca en Google, que se entienda rápido y que la gente termine escribiéndote.
+          </p>
+          <p>
+            Un ejemplo de lo que está en juego: en Colombia, solo el 17% de las pymes opera principalmente desde su propio sitio web (
+            <Src href={SRC.godaddy}>GoDaddy, Encuesta Global de Emprendimiento 2025</Src>), mientras los colombianos hicieron 684,6 millones de compras en línea en 2025 (
+            <Src href={SRC.ccce}>Cámara Colombiana de Comercio Electrónico</Src>). Ahí, entre los que buscan y los negocios que no aparecen, se pierden muchos clientes. Estas son las 5 señales más comunes, con datos, de que tu web te está haciendo perder ventas sin que lo notes.
+          </p>
+        </div>
 
-        {/* ── Header ── */}
-        <section className="relative overflow-hidden bg-[#061729] px-6 pb-20 pt-32">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-[10%] top-[10%] h-[420px] w-[420px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(139,92,246,0.16), transparent)" }} />
-            <div className="absolute -right-[5%] bottom-0 h-[300px] w-[300px] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(99,102,241,0.12), transparent)" }} />
-          </div>
-          <div className="relative z-10 mx-auto max-w-3xl">
-            <Link href="/blog" className="mb-8 inline-flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-white">
-              <ArrowLeft size={15} /> Volver al blog
-            </Link>
-            <span className="inline-block rounded-full bg-violet-500/15 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-violet-400">
-              Consejos &amp; Estrategia
-            </span>
-            <h1 className="mt-4 text-3xl font-semibold leading-tight text-white md:text-5xl">
-              5 señales de que tu página web está perdiendo clientes
-            </h1>
-            <p className="mt-5 text-lg leading-relaxed text-white/60">
-              Un checklist con datos reales 2025 para saber si tu web está trabajando para ti — o en tu contra.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/35">
-              <span>Mayo 2025</span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span>5 min de lectura</span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span>Por Vanttage</span>
+        {/* Señales */}
+        {signals.map((signal) => (
+          <section key={signal.number} className="space-y-6 border-t border-white/10 pt-12">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-violet-300">Señal {signal.number}</p>
+              <h2 id={`senal-${signal.number}`} className={`${H2} mt-3`}>
+                {signal.title}
+              </h2>
             </div>
-          </div>
+
+            <p className={P}>{signal.body}</p>
+
+            <StatQuote figure={signal.figure} text={signal.statText} note={signal.note} cite={signal.cite} />
+
+            {signal.extra}
+
+            <div className="border-l-2 border-violet-300/60 pl-5">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-violet-300">Cómo solucionarlo</p>
+              <p className={`${P} mt-2`}>{signal.fix}</p>
+            </div>
+          </section>
+        ))}
+
+        {/* ¿Cuándo renovar? */}
+        <section className="space-y-5 border-t border-white/10 pt-12">
+          <h2 id="renovar" className={H2}>¿Cuándo es el momento de renovar tu página?</h2>
+          <p className={P}>
+            Si reconociste 2 o más señales de esta lista, tu web actual te está costando clientes cada semana. Renovarla suele ser más rápido y más barato de lo que la gente cree.
+          </p>
+          <p className={P}>
+            Un buen rediseño te deja una web que recibe clientes a cualquier hora, también cuando estás cerrado. Y con las ventas en línea en crecimiento (en Colombia subieron 11,1% en 2025, según la{" "}
+            <Src href={SRC.ccce}>CCCE</Src>), cada mes que esperas lo aprovecha tu competencia.
+          </p>
         </section>
 
-        {/* ── Artículo ── */}
-        <article className="px-6 py-16">
-          <div className="mx-auto max-w-3xl space-y-10">
+        <Checklist
+          items={[
+            "¿Carga en menos de 3 segundos en tu celular?",
+            "¿Se ve y funciona bien en una pantalla pequeña?",
+            "¿Hay un botón o forma de contacto visible en cada sección?",
+            "¿El diseño se ve serio y da confianza?",
+            "¿Apareces en Google cuando alguien busca tu servicio en tu ciudad?",
+          ]}
+        />
 
-            {/* Intro */}
-            <div className="space-y-4 text-lg leading-relaxed text-[#475569]">
-              <p>
-                Tener una página web no es suficiente. Tener una que{" "}
-                <strong className="text-[#0A2540]">funcione de verdad</strong> — que aparezca en Google, convenza al visitante y lo lleve a contactarte — es otra historia completamente diferente.
-              </p>
-              <p>
-                En Colombia, solo el 17% de las PYMEs tiene sitio web propio (GoDaddy, 2025), mientras el 88% de los adultos colombianos ya busca y compra en línea. Esa brecha es exactamente donde se pierden los clientes. Estas son las 5 señales más comunes — con datos reales — de que tu web está saboteando tu negocio sin que lo notes.
-              </p>
-            </div>
-
-            <div className="h-px bg-gray-200" />
-
-            {/* Señales */}
-            <div className="space-y-12">
-              {signals.map((signal) => (
-                <div key={signal.number} className="space-y-4">
-
-                  {/* Número + título */}
-                  <div className="flex items-start gap-4">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-sm font-bold text-white shadow-md shadow-violet-500/25">
-                      {signal.number}
-                    </span>
-                    <h2 className="mt-1.5 text-xl font-semibold text-[#0A2540] md:text-2xl">
-                      {signal.title}
-                    </h2>
-                  </div>
-
-                  {/* Cuerpo */}
-                  <p className="leading-relaxed text-[#475569]">{signal.body}</p>
-
-                  {/* Stat — gradiente */}
-                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-4 shadow-md shadow-violet-500/20">
-                    <div className="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
-                    <div className="relative flex items-start gap-3">
-                      <TrendingUp size={16} className="mt-0.5 shrink-0 text-white/70" />
-                      <div>
-                        <p className="text-sm font-semibold text-white">{signal.stat}</p>
-                        <p className="mt-0.5 text-[11px] text-white/50">Fuente: {signal.source}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Fix */}
-                  <div className="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-5 py-4">
-                    <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-green-500" />
-                    <p className="text-sm leading-relaxed text-[#475569]">
-                      <strong className="text-[#0A2540]">Cómo solucionarlo: </strong>
-                      {signal.fix}
-                    </p>
-                  </div>
-
-                  <div className="h-px bg-gray-200" />
-                </div>
-              ))}
-            </div>
-
-            {/* ¿Cuándo renovar? */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-semibold text-[#0A2540]">¿Cuándo es el momento de renovar tu página?</h2>
-              <p className="leading-relaxed text-[#475569]">
-                Si identificaste 2 o más señales en esta lista, tu web actual te está costando clientes reales cada semana. La buena noticia: modernizarla es más rápido y accesible de lo que imaginas.
-              </p>
-              <p className="leading-relaxed text-[#475569]">
-                Un rediseño bien hecho no es solo una web nueva — es una herramienta de ventas que trabaja por ti las 24 horas del día. Y con el e-commerce colombiano creciendo un 26.7% en 2024, cada mes que esperas es mercado que se lleva la competencia.
-              </p>
-            </div>
-
-            {/* Checklist */}
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-              <div className="h-1 w-full bg-gradient-to-r from-violet-500 to-indigo-500" />
-              <div className="p-6">
-                <p className="font-semibold text-[#0A2540]">Evalúa tu web ahora mismo:</p>
-                <ul className="mt-4 space-y-3">
-                  {[
-                    "¿Carga en menos de 3 segundos en tu celular?",
-                    "¿Se ve y funciona perfectamente en pantalla pequeña?",
-                    "¿Hay un botón o forma de contacto visible en cada sección?",
-                    "¿El diseño transmite profesionalismo y confianza?",
-                    "¿Apareces en Google cuando alguien busca tu servicio en tu ciudad?",
-                  ].map((q) => (
-                    <li key={q} className="flex items-center gap-3 border-b border-gray-100 pb-3 text-sm text-[#475569] last:border-0 last:pb-0">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 border-violet-200 bg-violet-50 text-[10px] font-bold text-violet-400">
-                        ?
-                      </span>
-                      {q}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-5 rounded-xl bg-[#F8FAFC] px-4 py-3 text-sm text-[#64748B]">
-                  Si respondiste <strong className="text-[#0A2540]">NO</strong> a alguna de estas preguntas, estás perdiendo clientes hoy.
-                </p>
-              </div>
-            </div>
-
-            {/* CTA */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 p-8 text-center shadow-2xl shadow-violet-500/25">
-              <div className="pointer-events-none absolute left-1/2 top-0 h-56 w-56 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-              <div className="relative">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-white/60">Sin compromiso</p>
-                <h3 className="mt-2 text-2xl font-semibold text-white">Revisamos tu página web gratis</h3>
-                <p className="mx-auto mt-3 max-w-sm text-white/70">
-                  Cuéntanos cuál es tu web actual y te decimos exactamente qué está fallando y cómo solucionarlo.
-                </p>
-                <Link
-                  href="/contacto"
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-violet-600 shadow-lg transition hover:scale-[1.04]"
-                >
-                  Quiero que revisen mi web <ArrowRight size={14} />
-                </Link>
-              </div>
-            </div>
-
-            {/* Volver */}
-            <div className="border-t border-gray-200 pt-8">
-              <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-violet-500 transition hover:text-violet-700">
-                <ArrowLeft size={14} /> Ver todos los artículos
-              </Link>
-            </div>
-
-          </div>
-        </article>
-      </main>
+        {/* Fuentes */}
+        <section className="space-y-4 border-t border-white/10 pt-10">
+          <h2 id="fuentes" className="scroll-mt-28 text-xl font-semibold tracking-tight text-white">Fuentes</h2>
+          <ol className="list-decimal space-y-3 pl-5 text-[15px] leading-relaxed text-zinc-400 marker:text-zinc-500">
+            {sources.map((src) => (
+              <li key={src.href}>
+                <Src href={src.href}>{src.label}</Src>
+              </li>
+            ))}
+          </ol>
+          <p className="text-sm text-zinc-400">Fuentes consultadas el 18 de noviembre de 2026.</p>
+        </section>
+      </ArticleLayout>
     </>
   );
 }

@@ -6,6 +6,8 @@ import Portfolio from "@/app/components/sections/Portafolio";
 import About from "@/app/components/sections/About";
 import CTAFinal from "@/app/components/sections/CTAFinal";
 import Contact from "@/app/components/sections/Contact";
+import ClientsMap from "@/app/components/sections/ClientsMap";
+import CartagenaBand from "@/app/components/sections/CartagenaBand";
 
 export default function Home() {
   return (
@@ -16,11 +18,13 @@ export default function Home() {
       <div aria-hidden className="h-24 bg-gradient-to-b from-[#0A0A14] to-[#F8FAFC]" />
       <Problem />
       {/* fundido claro → oscuro */}
-      <div aria-hidden className="h-24 bg-gradient-to-b from-[#F8FAFC] to-[#020617]" />
+      <div aria-hidden className="h-24 bg-gradient-to-b from-[#F8FAFC] to-[#06060C]" />
       <Services />
       <Portfolio />
+      <CartagenaBand />
+      <ClientsMap />
       {/* fundido oscuro → claro */}
-      <div aria-hidden className="h-24 bg-gradient-to-b from-[#020617] to-[#F8FAFC]" />
+      <div aria-hidden className="h-24 bg-gradient-to-b from-[#06060C] to-[#F8FAFC]" />
       <About />
       <CTAFinal />
       <Contact />

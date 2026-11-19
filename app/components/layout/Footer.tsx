@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle, Lock } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone, Instagram, Linkedin, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { notifyTeam } from "@/app/lib/notify";
@@ -36,9 +36,15 @@ function scrollTo(href: string) {
 export default function Footer() {
   const pathname = usePathname();
   if (pathname?.startsWith("/portal")) return null;
+  const isHome = pathname === "/";
+  /* En el home los anchors hacen scroll suave; en otras páginas navegan a "/#..." */
+  const anchorProps = (href: string) =>
+    isHome
+      ? { href, onClick: (e: React.MouseEvent) => { e.preventDefault(); scrollTo(href); } }
+      : { href: `/${href}` };
 
   return (
-    <footer className="relative overflow-hidden bg-[#F1F5F9] px-6 pb-10 pt-24">
+    <footer className="surface-light relative overflow-hidden bg-[#F1F5F9] px-6 pb-10 pt-24">
 
       {/* Glow top */}
       <div className="pointer-events-none absolute inset-0">
@@ -71,21 +77,20 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-[18px] font-semibold leading-none text-[#0A2540]">Vanttage.</p>
-                <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#94A3B8]">Software Boutique</p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-slate-600">Software Boutique</p>
               </div>
             </div>
 
             <p className="max-w-sm text-[15px] leading-[1.8] text-[#475569]">
-              Diseñamos y construimos productos digitales con estándares altos.
-              Para empresas que entienden que su web es parte del negocio, no un accesorio.
+              Hacemos páginas web y aplicaciones web desde Cartagena.
+              Trabajamos con negocios que quieren una web que de verdad les traiga clientes.
             </p>
 
             {/* CTAs */}
             <div className="mt-7 flex flex-wrap gap-3">
               <a
-                href="#contact"
-                onClick={(e) => { e.preventDefault(); scrollTo("#contact"); }}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white shadow-md transition hover:scale-[1.04]"
+                {...anchorProps("#contact")}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white shadow-md transition hover:scale-[1.04]"
               >
                 Empezar proyecto
                 <ArrowUpRight size={13} />
@@ -112,7 +117,7 @@ export default function Footer() {
                     label === "WhatsApp" &&
                     notifyTeam({ source: "WhatsApp (footer)", once: "wa-footer" })
                   }
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-[#64748B] shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-slate-600 shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-600"
                 >
                   <Icon size={15} />
                 </a>
@@ -122,16 +127,15 @@ export default function Footer() {
 
           {/* ── Navegación ── */}
           <div>
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#94A3B8]">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600">
               Navegación
             </p>
             <nav className="flex flex-col gap-3">
               {navLinks.map((l) => (
                 <a
                   key={l.href}
-                  href={l.href}
-                  onClick={(e) => { e.preventDefault(); scrollTo(l.href); }}
-                  className="group flex items-center gap-1.5 text-[14px] text-[#64748B] transition-colors duration-200 hover:text-[#0A2540]"
+                  {...anchorProps(l.href)}
+                  className="group flex items-center gap-1.5 text-[14px] text-slate-600 transition-colors duration-200 hover:text-[#0A2540]"
                 >
                   <span className="h-[1px] w-0 bg-violet-500 transition-all duration-300 group-hover:w-3" />
                   {l.label}
@@ -142,7 +146,7 @@ export default function Footer() {
 
           {/* ── Contacto ── */}
           <div>
-            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#94A3B8]">
+            <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600">
               Contacto
             </p>
             <div className="space-y-3">
@@ -156,7 +160,7 @@ export default function Footer() {
                     <Icon size={14} />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-[#94A3B8]">{label}</p>
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-slate-600">{label}</p>
                     <p className="mt-0.5 text-[13px] text-[#0A2540]">{value}</p>
                   </div>
                 </a>
@@ -167,25 +171,15 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom bar ── */}
-        <div className="mt-16 flex flex-col items-center gap-3 border-t border-gray-200 pt-6 text-[12px] text-[#94A3B8] sm:flex-row sm:justify-between">
+        <div className="mt-16 flex flex-col items-center gap-3 border-t border-gray-200 pt-6 text-[12px] text-slate-600 sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Vanttage. Todos los derechos reservados.</p>
 
           <div className="flex items-center gap-4">
             <span className="text-[#0A2540] font-medium tracking-tight">
-              Construido con precisión.
+              Software boutique
             </span>
             <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" />
             <span>Cartagena · Colombia</span>
-            <span className="hidden h-1 w-1 rounded-full bg-gray-300 sm:block" />
-            <a
-              href="/portal"
-              aria-label="Portal interno"
-              title="Portal interno"
-              className="inline-flex items-center gap-1 text-[#CBD5E1] transition-colors hover:text-violet-500"
-            >
-              <Lock size={12} />
-              <span className="text-[11px]">Portal</span>
-            </a>
           </div>
         </div>
 

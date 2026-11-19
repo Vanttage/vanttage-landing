@@ -4,14 +4,14 @@ import { faqs } from "./faqs";
 import { faqPageSchema, breadcrumbSchema } from "@/app/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Contacto — Vanttage · Hablemos de tu Proyecto",
+  title: "Contacto: cotiza tu página web en Cartagena",
   description:
-    "¿Tienes un proyecto en mente? Escríbenos y te respondemos en menos de 24 horas con una propuesta clara. Agencia web en Cartagena, Colombia.",
+    "¿Tienes un proyecto en mente? Escríbenos y en menos de 24 horas te respondemos con una propuesta. Hacemos páginas web desde Cartagena, Colombia, para clientes de cualquier país.",
   alternates: { canonical: "https://vanttagetech.com/contacto" },
   openGraph: {
-    title: "Contacto — Vanttage · Hablemos de tu Proyecto",
+    title: "Contacto: cotiza tu página web en Cartagena",
     description:
-      "Contáctanos para tu página web. Respuesta en menos de 24h con propuesta clara. Sin compromisos.",
+      "Escríbenos sobre tu página web. Te respondemos en menos de 24 horas con una propuesta, y preguntar no te compromete.",
     url: "https://vanttagetech.com/contacto",
   },
 };

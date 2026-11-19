@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MessageCircle, X, Send, ArrowUpRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { notifyTeam, MOISES_WHATSAPP } from "@/app/lib/notify";
@@ -24,16 +24,16 @@ interface Lead {
 const WHATSAPP = `https://wa.me/${MOISES_WHATSAPP}?text=Hola%20Vanttage%2C%20me%20interesa%20una%20p%C3%A1gina%20web%20para%20mi%20negocio`;
 
 const QUICK_REPLIES = [
-  { label: "📝 Quiero una cotización", text: "Quiero una cotización para mi proyecto" },
-  { label: "🌐 Una página web", text: "Necesito una página web profesional para mi negocio" },
-  { label: "🛒 Una tienda online", text: "Quiero una tienda virtual para vender online" },
-  { label: "⚙️ Una app a la medida", text: "Necesito una aplicación web a la medida" },
+  { label: "Quiero una cotización", text: "Quiero una cotización para mi proyecto" },
+  { label: "Una página web", text: "Necesito una página web profesional para mi negocio" },
+  { label: "Una tienda online", text: "Quiero una tienda virtual para vender online" },
+  { label: "Una app a la medida", text: "Necesito una aplicación web a la medida" },
 ];
 
 const WELCOME: Message = {
   role: "assistant",
   content:
-    "¡Hola! 👋 Soy el asistente de **Vanttage**. Cuéntame qué necesitas para tu negocio y con gusto te ayudo. ¿Quieres que un asesor te prepare una **cotización sin costo**?",
+    "Hola, soy el asistente de **Vanttage**. Cuéntame qué necesitas para tu negocio. Si quieres, un asesor te prepara una **cotización sin costo**.",
 };
 
 /* Detecta y extrae la marca interna [LEAD] ... [/LEAD] que emite el asistente */
@@ -66,14 +66,19 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 /* ─────────── TYPING DOTS ─────────── */
 
 function TypingDots() {
+  const reduceMotion = useReducedMotion();
   return (
     <div className="flex items-center gap-1 px-4 py-3">
       {[0, 1, 2].map((i) => (
         <motion.span
           key={i}
           className="h-2 w-2 rounded-full bg-violet-400"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.15 }}
+          animate={reduceMotion ? undefined : { y: [0, -5, 0] }}
+          transition={
+            reduceMotion
+              ? undefined
+              : { repeat: Infinity, duration: 0.8, delay: i * 0.15 }
+          }
         />
       ))}
     </div>
@@ -111,7 +116,7 @@ function Bubble({ msg }: { msg: Message }) {
       <div
         className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
           isUser
-            ? "rounded-tr-sm bg-gradient-to-br from-violet-500 to-indigo-500 text-white"
+            ? "rounded-tr-sm bg-gradient-to-br from-violet-600 to-indigo-600 text-white"
             : "rounded-tl-sm bg-white text-[#0A2540]"
         }`}
       >
@@ -134,6 +139,19 @@ export default function ChatWidget() {
   const pathname = usePathname();
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
+  /* El FAB se oculta mientras el formulario de contacto está en pantalla */
+  const [contactVisible, setContactVisible] = useState(false);
+
+  function toggleOpen() {
+    setHasNotif(false);
+    setOpen((v) => !v);
+  }
+
+  function closeChat() {
+    setOpen(false);
+    fabRef.current?.focus();
+  }
 
   /* Cuando el asistente completa los 3 datos: avisa por correo a AMBOS socios
      y prepara el enlace de WhatsApp (a Moisés) que abrirá el visitante. */
@@ -151,7 +169,7 @@ export default function ChatWidget() {
 
     /* 2) Enlace de WhatsApp hacia Moisés con los datos prellenados */
     const texto =
-      `Hola Vanttage 👋, soy *${lead.nombre}*.\n` +
+      `Hola Vanttage, soy *${lead.nombre}*.\n` +
       `WhatsApp: ${lead.whatsapp}\n` +
       `Necesito: ${lead.necesidad}`;
     setLeadWa(
@@ -164,13 +182,43 @@ export default function ChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading, leadWa]);
 
-  /* Focus input al abrir */
+  /* Focus input al abrir — solo con puntero fino (en móvil abriría el teclado) */
   useEffect(() => {
-    if (open) {
-      setHasNotif(false);
-      setTimeout(() => inputRef.current?.focus(), 350);
-    }
+    if (!open) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 350);
+    return () => clearTimeout(t);
   }, [open]);
+
+  /* Esc cierra el chat */
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        fabRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  /* Oculta el FAB cuando #contact está en el viewport (no tapa el formulario) */
+  useEffect(() => {
+    const el = document.getElementById("contact");
+    if (!el) {
+      setContactVisible(false);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      ([entry]) => setContactVisible(entry.isIntersecting),
+      { threshold: 0.1 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [pathname]);
+
+  const fabHidden = contactVisible && !open;
 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -278,7 +326,7 @@ export default function ChatWidget() {
           {
             role: "assistant",
             content:
-              "Tuve un problemita para responder 😅. Inténtalo de nuevo o escríbenos por WhatsApp 👇",
+              "Tuve un problema para responder. Inténtalo de nuevo o escríbenos por WhatsApp.",
           },
         ]);
       }
@@ -299,11 +347,14 @@ export default function ChatWidget() {
         {open && (
           <motion.div
             key="chat-panel"
+            id="chat-panel"
+            role="dialog"
+            aria-label="Chat con Vanttage"
             initial={{ opacity: 0, y: 24, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.95 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="fixed bottom-24 right-5 z-50 flex w-[350px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#F8FAFC] shadow-2xl shadow-black/30 sm:right-6"
+            className="surface-light fixed bottom-24 right-5 z-50 flex w-[350px] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#F8FAFC] shadow-2xl shadow-black/30 sm:right-6"
             style={{ height: 520 }}
           >
             {/* Header */}
@@ -315,11 +366,12 @@ export default function ChatWidget() {
                 <p className="text-sm font-semibold text-white">Vanttage</p>
                 <div className="flex items-center gap-1.5">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
-                  <span className="text-[11px] text-white/70">En línea · Responde en segundos</span>
+                  <span className="text-[11px] text-white/90">En línea · Responde en segundos</span>
                 </div>
               </div>
               <button
-                onClick={() => setOpen(false)}
+                onClick={closeChat}
+                aria-label="Cerrar chat"
                 className="flex h-8 w-8 items-center justify-center rounded-full text-white/70 transition hover:bg-white/15 hover:text-white"
               >
                 <X size={16} />
@@ -387,13 +439,15 @@ export default function ChatWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Escribe tu pregunta..."
+                  aria-label="Escribe tu pregunta"
                   disabled={loading}
-                  className="flex-1 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-[#0A2540] outline-none placeholder:text-slate-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 disabled:opacity-50"
+                  className="flex-1 rounded-full border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-[#0A2540] outline-none placeholder:text-slate-500 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/20 disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || loading}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow transition hover:scale-105 disabled:opacity-40"
+                  aria-label="Enviar mensaje"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow transition hover:scale-105 disabled:opacity-40"
                 >
                   <Send size={15} />
                 </button>
@@ -420,11 +474,21 @@ export default function ChatWidget() {
 
       {/* ── Botón flotante ── */}
       <motion.button
-        onClick={() => setOpen((v) => !v)}
+        ref={fabRef}
+        onClick={toggleOpen}
+        initial={false}
+        animate={{ opacity: fabHidden ? 0 : 1, scale: fabHidden ? 0.8 : 1 }}
+        transition={{ duration: 0.2 }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.94 }}
-        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-xl shadow-violet-500/40 sm:right-6"
-        aria-label="Abrir chat"
+        className={`fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-xl shadow-violet-500/40 sm:right-6 ${
+          fabHidden ? "pointer-events-none" : ""
+        }`}
+        aria-label={open ? "Cerrar chat" : "Abrir chat"}
+        aria-expanded={open}
+        aria-controls="chat-panel"
+        aria-hidden={fabHidden || undefined}
+        tabIndex={fabHidden ? -1 : undefined}
       >
         <AnimatePresence mode="wait">
           {open ? (
@@ -450,15 +514,12 @@ export default function ChatWidget() {
           )}
         </AnimatePresence>
 
-        {/* Badge de notificación */}
+        {/* Indicador "en línea" (punto verde, sin número falso) */}
         {hasNotif && !open && (
-          <motion.span
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-400 text-[10px] font-bold text-white shadow"
-          >
-            1
-          </motion.span>
+          <span
+            aria-hidden
+            className="absolute right-0.5 top-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-400"
+          />
         )}
       </motion.button>
     </>

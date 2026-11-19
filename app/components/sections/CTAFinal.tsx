@@ -1,6 +1,7 @@
 "use client";
+import CountUp from "@/app/components/CountUp";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
 import { useRef } from "react";
 import { notifyTeam } from "@/app/lib/notify";
@@ -18,6 +19,7 @@ const stats = [
 export default function CTAFinal() {
   const sectionRef = useRef<HTMLElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const reduceMotion = useReducedMotion();
 
   /* Glow que sigue el cursor */
   const mouseX = useMotionValue(0);
@@ -56,7 +58,7 @@ export default function CTAFinal() {
       id="cta"
       ref={sectionRef}
       onMouseMove={handleMove}
-      className="relative overflow-hidden bg-[#F8FAFC] py-32 px-6"
+      className="surface-light relative overflow-hidden bg-[#F8FAFC] py-32 px-6"
     >
       {/* Dot grid sutil */}
       <div
@@ -105,18 +107,18 @@ export default function CTAFinal() {
           transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
           className="text-4xl font-semibold leading-[1.05] tracking-[-0.03em] text-[#0A2540] md:text-6xl"
         >
-          ¿Listo para que tu negocio
+          ¿Arrancamos con la página
           <br />
           <motion.span
             className="bg-clip-text text-transparent"
-            animate={{ backgroundPosition: ["0% 50%", "100% 50%"] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+            animate={reduceMotion ? undefined : { backgroundPosition: ["0% 50%", "100% 50%"] }}
+            transition={reduceMotion ? undefined : { duration: 5, repeat: Infinity, ease: "linear" }}
             style={{
               backgroundImage: "linear-gradient(90deg, #7c3aed, #6366f1, #3b82f6, #7c3aed)",
               backgroundSize: "200% 200%",
             }}
           >
-            brille en internet?
+            web de tu negocio?
           </motion.span>
         </motion.h2>
 
@@ -128,8 +130,8 @@ export default function CTAFinal() {
           transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
           className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-500"
         >
-          Cuéntanos qué necesitas y te decimos exactamente cómo podemos
-          ayudarte. Sin compromisos, sin tecnicismos.
+          Cuéntanos qué necesitas y te decimos cómo lo haríamos y cuánto
+          cuesta. Preguntar no te compromete a nada.
         </motion.p>
 
         {/* Stats */}
@@ -142,8 +144,8 @@ export default function CTAFinal() {
         >
           {stats.map((s) => (
             <div key={s.label} className="flex-1 px-6 text-center">
-              <div className="text-2xl font-semibold text-[#0A2540]">{s.value}</div>
-              <div className="mt-0.5 text-[11px] uppercase tracking-[0.15em] text-slate-400">{s.label}</div>
+              <div className="text-2xl font-semibold text-[#0A2540]"><CountUp value={s.value} /></div>
+              <div className="mt-0.5 text-[11px] uppercase tracking-[0.15em] text-slate-600">{s.label}</div>
             </div>
           ))}
         </motion.div>
@@ -163,9 +165,9 @@ export default function CTAFinal() {
             onMouseLeave={resetMagnet}
             onClick={() => scrollTo("contact")}
             style={{ x: magnetX, y: magnetY }}
-            className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 px-8 py-4 text-sm font-medium text-white shadow-xl shadow-violet-500/30"
+            className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-8 py-4 text-sm font-medium text-white shadow-xl shadow-violet-500/30"
           >
-            <span className="relative z-10">Quiero mi página web</span>
+            <span className="relative z-10">Cotizar mi proyecto</span>
             <ArrowRight
               size={16}
               className="relative z-10 transition-transform duration-300 group-hover:translate-x-1"
@@ -190,7 +192,7 @@ export default function CTAFinal() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-400"
+          className="mt-8 flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-[0.18em] text-slate-600"
         >
           {trust.map((item, i) => (
             <span key={item} className="flex items-center gap-2">

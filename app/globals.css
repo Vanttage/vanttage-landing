@@ -64,6 +64,11 @@ html {
   outline-offset: 2px;
 }
 
+/* En secciones de fondo claro el lila #a78bfa no contrasta: usar violeta oscuro */
+.surface-light :focus-visible {
+  outline-color: #7c3aed;
+}
+
 /* ── Tema del portal interno (dark por defecto / light con data-ptheme) ── */
 :root {
   --pbg: #06060c;
@@ -416,4 +421,21 @@ main {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* ── Franja de logos de clientes ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 45s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none !important;
+  }
 }
