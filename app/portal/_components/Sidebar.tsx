@@ -8,9 +8,9 @@ import {
   KanbanSquare,
   Users,
   FileText,
-  // FilePlus2, // (nueva cotización: oculta del menú)
+  Plus,
+  ArrowUpRight,
   // Receipt, // (cuenta de cobro: oculta, no desplegada)
-  ExternalLink,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
@@ -19,13 +19,9 @@ const nav = [
   { href: "/portal/pipeline", label: "Pipeline", icon: KanbanSquare },
   { href: "/portal/clientes", label: "Contactos", icon: Users },
   { href: "/portal/cotizaciones", label: "Cotizaciones", icon: FileText },
-  // Nueva cotización: oculta del menú. La ruta /portal/cotizador SIGUE viva porque es
-  // el editor que usan "Editar"/"Abrir" desde Cotizaciones, Dashboard y Contactos.
-  // Para devolverla al menú: descomentar el import FilePlus2 + esta línea:
-  // { href: "/portal/cotizador", label: "Nueva cotización", icon: FilePlus2 },
-  // Cuenta de cobro: oculta de lo desplegado. El código vive en app/portal/_cuenta-cobro/
-  // (carpeta privada = Next no la publica como ruta). Para reactivarla: renombrar la
-  // carpeta a "cuenta-cobro" y descomentar el import Receipt + esta línea:
+  // Cuenta de cobro: oculta del menú (la página devuelve 404 en producción, ver
+  // app/portal/cuenta-cobro/page.tsx). En local sigue disponible en /portal/cuenta-cobro.
+  // Para mostrarla: descomentar el import Receipt + esta línea:
   // { href: "/portal/cuenta-cobro", label: "Cuenta de cobro", icon: Receipt },
 ];
 
@@ -36,20 +32,45 @@ export default function Sidebar({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
+  const enCotizador = pathname.startsWith("/portal/cotizador");
 
   return (
-    <aside className="flex h-screen w-full flex-col overflow-hidden border-r border-[var(--pborder)] bg-[var(--psidebar)] px-3 py-5">
-      <Link href="/portal/dashboard" onClick={onNavigate} className="mb-6 flex items-center gap-2.5 px-2">
-        <Image src="/logo/logo.png" alt="Vanttage" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
+    <aside
+      aria-label="Menú del portal"
+      className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden border-r border-[var(--pborder)] bg-[var(--psidebar)] px-3 pb-4 pt-5"
+    >
+      {/* Marca */}
+      <Link
+        href="/portal/dashboard"
+        onClick={onNavigate}
+        className={`mb-6 flex min-h-11 items-center gap-3 rounded-xl px-2 ${collapsed ? "justify-center" : ""}`}
+        aria-label="Vanttage, ir al dashboard"
+      >
+        <Image src="/logo/logo.png" alt="" width={32} height={32} className="h-8 w-8 shrink-0 object-contain" />
         {!collapsed && (
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold leading-none">Vanttage</p>
-            <p className="mt-0.5 text-[10px] uppercase tracking-wider text-[var(--pfaint)]">Portal interno</p>
-          </div>
+          <span className="min-w-0">
+            <span className="block truncate text-[15px] font-semibold leading-tight tracking-tight">Vanttage</span>
+            <span className="block text-[10px] uppercase tracking-[0.2em] text-[var(--pfaint)]">Portal interno</span>
+          </span>
         )}
       </Link>
 
+      {/* Acción principal */}
+      <Link
+        href="/portal/cotizador"
+        onClick={onNavigate}
+        title="Nueva cotización"
+        aria-current={enCotizador ? "page" : undefined}
+        className={`mb-5 flex min-h-11 items-center gap-2.5 rounded-full bg-[var(--pbtn-bg)] text-sm font-medium text-[var(--pbtn-fg)] transition-colors hover:bg-[var(--pbtn-hover)] ${
+          collapsed ? "mx-auto w-11 justify-center" : "px-4"
+        }`}
+      >
+        <Plus size={17} className="shrink-0" aria-hidden />
+        {collapsed ? <span className="sr-only">Nueva cotización</span> : <span className="truncate">Nueva cotización</span>}
+      </Link>
+
+      {!collapsed && <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.2em] text-[var(--pfaint)]">Gestión</p>}
       <nav className="flex flex-1 flex-col gap-1">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== "/portal/dashboard" && pathname.startsWith(href));
@@ -58,33 +79,54 @@ export default function Sidebar({
               key={href}
               href={href}
               onClick={onNavigate}
-              title={label}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
-                collapsed ? "justify-center" : ""
+              title={collapsed ? label : undefined}
+              aria-current={active ? "page" : undefined}
+              className={`group flex min-h-11 items-center gap-3 rounded-full text-sm transition-colors ${
+                collapsed ? "mx-auto w-11 justify-center" : "px-3.5"
               } ${
                 active
-                  ? "bg-violet-500/15 font-medium text-violet-300"
+                  ? "bg-[var(--paccent-soft)] font-medium text-[var(--ptext)]"
                   : "text-[var(--pmuted)] hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)]"
               }`}
             >
-              <Icon size={17} className="shrink-0" />
-              {!collapsed && <span className="truncate">{label}</span>}
+              <Icon
+                size={18}
+                aria-hidden
+                className={`shrink-0 ${active ? "text-[var(--paccent)]" : "text-[var(--pfaint)] group-hover:text-[var(--ptext)]"}`}
+              />
+              {collapsed ? <span className="sr-only">{label}</span> : <span className="truncate">{label}</span>}
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-1 border-t border-[var(--pborder)] pt-2">
-        {!collapsed && <ThemeToggle />}
+      {/* Usuario y preferencias */}
+      <div className="mt-4 space-y-1 border-t border-[var(--pborder)] pt-4">
+        {!collapsed && (
+          <div className="mb-2 flex items-center gap-3 rounded-2xl px-2 py-1.5">
+            <span
+              aria-hidden
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--paccent-soft)] text-xs font-semibold text-[var(--paccent)]"
+            >
+              VT
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-medium">Equipo Vanttage</span>
+              <span className="block truncate text-xs text-[var(--pfaint)]">Administración</span>
+            </span>
+          </div>
+        )}
+        <ThemeToggle compact={collapsed} className={collapsed ? "mx-auto flex" : ""} />
         <Link
           href="/"
-          title="Ver el sitio"
           onClick={onNavigate}
-          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-[var(--pfaint)] hover:text-[var(--pmuted)] ${
-            collapsed ? "justify-center" : ""
+          title={collapsed ? "Ver el sitio" : undefined}
+          className={`flex min-h-11 items-center gap-2.5 rounded-full text-sm text-[var(--pmuted)] transition-colors hover:bg-[var(--pcardhover)] hover:text-[var(--ptext)] md:min-h-10 ${
+            collapsed ? "mx-auto w-11 justify-center md:w-10" : "px-3"
           }`}
         >
-          <ExternalLink size={14} className="shrink-0" /> {!collapsed && "Ver el sitio"}
+          <ArrowUpRight size={16} className="shrink-0" aria-hidden />
+          {collapsed ? <span className="sr-only">Ver el sitio</span> : <span>Ver el sitio</span>}
         </Link>
       </div>
     </aside>

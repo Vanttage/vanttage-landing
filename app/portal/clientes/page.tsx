@@ -1,6 +1,9 @@
+import { Users } from "lucide-react";
 import { supabaseAdmin } from "../_lib/supabase-admin";
 import PortalShell from "../_components/PortalShell";
+import { DbNotice, EmptyState, Notice } from "../_components/ui";
 import ContactosTable, { type Cliente } from "./ContactosTable";
+import NuevoContactoButton from "./NuevoContactoButton";
 
 export const dynamic = "force-dynamic";
 
@@ -8,8 +11,10 @@ export default async function ClientesPage() {
   const db = supabaseAdmin();
   let rows: Cliente[] = [];
   let error = "";
+  let sinDb = false;
 
   if (!db) {
+    sinDb = true;
     error = "La base de datos aún no está conectada.";
   } else {
     const { data, error: e } = await db
@@ -22,10 +27,16 @@ export default async function ClientesPage() {
   }
 
   return (
-    <PortalShell title="Contactos" subtitle={`${rows.length} en el CRM`}>
+    <PortalShell
+      kicker="CRM"
+      title="Contactos"
+      subtitle={error ? "Personas y empresas con las que hablamos." : `${rows.length} ${rows.length === 1 ? "contacto" : "contactos"} en el CRM.`}
+      actions={error ? undefined : <NuevoContactoButton />}
+    >
       {error ? (
-        <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          {error}
+        <div className="space-y-6">
+          {sinDb ? <DbNotice /> : <Notice tone="red" title="No se pudieron cargar los contactos" text={error} />}
+          <EmptyState icon={Users} title="Sin contactos para mostrar" text="La lista aparecerá aquí cuando la conexión funcione." />
         </div>
       ) : (
         <ContactosTable initial={rows} />

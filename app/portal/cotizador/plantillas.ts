@@ -44,6 +44,7 @@ export const HOY = new Date().toLocaleDateString("es-CO", {
   day: "2-digit",
   month: "long",
   year: "numeric",
+  timeZone: "America/Bogota",
 });
 
 const MEDIOS_PAGO =

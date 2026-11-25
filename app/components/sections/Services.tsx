@@ -200,9 +200,9 @@ export default function Services() {
       id="services"
       ref={sectionRef}
       aria-roledescription="carrusel"
-      className="relative bg-[#06060C] px-6 py-20 md:py-28"
+      className="relative overflow-hidden bg-[#06060C] px-6 py-20 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="relative mx-auto max-w-6xl">
         {/* Encabezado */}
         <div className="mb-12 grid gap-6 md:mb-16 md:grid-cols-2 md:items-end">
           <div>

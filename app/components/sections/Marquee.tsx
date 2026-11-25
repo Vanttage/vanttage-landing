@@ -15,17 +15,83 @@ type Client = {
 };
 
 const clients: Client[] = [
-  { name: "SOTEC", src: "/clients/sotec-white.png", w: 218, h: 160, size: "tall" },
-  { name: "DAGAR Soluciones", src: "/clients/dagar-white.svg", w: 419, h: 160, size: "mid" },
-  { name: "GOYN Barranquilla", src: "/clients/goyn-barranquilla-white.png", w: 657, h: 160, size: "wide" },
-  { name: "Transportes UP Cartagena", src: "/clients/transportes-up-white.png", w: 279, h: 160, size: "mid" },
-  { name: "Daz Ambiental", src: "/clients/daz-ambiental-white.png", w: 186, h: 160, size: "tall" },
-  { name: "Club Hunk Cartagena", src: "/clients/club-hunk.png", w: 200, h: 200, size: "tall" },
-  { name: "ALZAK Foundation", src: "/clients/alzak-foundation-white.png", w: 545, h: 160, size: "wide" },
-  { name: "R&R Kelab", src: "/clients/kelab-white.svg", w: 149, h: 160, size: "tall" },
-  { name: "Andreas Adventures", src: "/clients/andreas-adventures-white.svg", w: 540, h: 160, size: "wide" },
-  { name: "EcoTruck", src: "/clients/ecotruck-white.svg", w: 139, h: 160, size: "tall" },
-  { name: "Los Gestores", src: "/clients/los-gestores.png", w: 417, h: 160, size: "mid" },
+  {
+    name: "SOTEC",
+    src: "/clients/sotec-white.png",
+    w: 218,
+    h: 160,
+    size: "tall",
+  },
+  {
+    name: "DAGAR Soluciones",
+    src: "/clients/dagar-white.svg",
+    w: 419,
+    h: 160,
+    size: "mid",
+  },
+  {
+    name: "GOYN Barranquilla",
+    src: "/clients/goyn-barranquilla-white.png",
+    w: 657,
+    h: 160,
+    size: "wide",
+  },
+  {
+    name: "Transportes UP Cartagena",
+    src: "/clients/transportes-up-white.png",
+    w: 279,
+    h: 160,
+    size: "mid",
+  },
+  {
+    name: "Daz Ambiental",
+    src: "/clients/daz-ambiental-white.png",
+    w: 186,
+    h: 160,
+    size: "tall",
+  },
+  {
+    name: "Club Hunk Cartagena",
+    src: "/clients/club-hunk.png",
+    w: 200,
+    h: 200,
+    size: "tall",
+  },
+  {
+    name: "ALZAK Foundation",
+    src: "/clients/alzak-foundation-white.png",
+    w: 545,
+    h: 160,
+    size: "wide",
+  },
+  {
+    name: "R&R Kelab",
+    src: "/clients/kelab-white.svg",
+    w: 149,
+    h: 160,
+    size: "tall",
+  },
+  {
+    name: "Andreas Adventures",
+    src: "/clients/andreas-adventures-white.svg",
+    w: 540,
+    h: 160,
+    size: "wide",
+  },
+  {
+    name: "EcoTruck",
+    src: "/clients/ecotruck-white.svg",
+    w: 139,
+    h: 160,
+    size: "tall",
+  },
+  {
+    name: "Los Gestores",
+    src: "/clients/los-gestores.png",
+    w: 417,
+    h: 160,
+    size: "mid",
+  },
 ];
 
 const heightClass: Record<NonNullable<Client["size"]>, string> = {
@@ -73,9 +139,10 @@ export default function Marquee() {
       </div>
 
       {/* Bordes difuminados */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[#0A0A14] to-transparent motion-reduce:hidden md:w-32" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[#0A0A14] to-transparent motion-reduce:hidden md:w-32" />
 
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[#0A0A14] to-transparent motion-reduce:hidden md:w-32" />
+
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[#0A0A14] to-transparent motion-reduce:hidden md:w-32" />
       <div className="marquee-track flex w-max items-center motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-y-8">
         {/* Dos copias para el bucle continuo; la segunda es decorativa */}
         {[false, true].map((dup) => (

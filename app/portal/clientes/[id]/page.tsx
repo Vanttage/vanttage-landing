@@ -1,5 +1,8 @@
+import Link from "next/link";
+import { UserX } from "lucide-react";
 import { supabaseAdmin } from "../../_lib/supabase-admin";
 import PortalShell from "../../_components/PortalShell";
+import { DbNotice, EmptyState, btnSecondary } from "../../_components/ui";
 import ClienteDetalle from "./ClienteDetalle";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +13,8 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
 
   if (!db) {
     return (
-      <PortalShell title="Cliente">
-        <p className="text-sm text-amber-200">Base de datos no conectada.</p>
+      <PortalShell kicker="Ficha de cliente" title="Cliente" subtitle="Datos, cotizaciones e historial de contacto." backHref="/portal/clientes" backLabel="Contactos">
+        <DbNotice />
       </PortalShell>
     );
   }
@@ -19,8 +22,17 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
   const { data: cliente } = await db.from("clientes").select("*").eq("id", id).single();
   if (!cliente) {
     return (
-      <PortalShell title="Cliente">
-        <p className="text-sm text-[var(--pmuted)]">No se encontró el cliente.</p>
+      <PortalShell kicker="Ficha de cliente" title="Cliente" backHref="/portal/clientes" backLabel="Contactos">
+        <EmptyState
+          icon={UserX}
+          title="No encontramos este cliente"
+          text="Puede que se haya eliminado o que el enlace esté incompleto."
+          action={
+            <Link href="/portal/clientes" className={btnSecondary}>
+              Volver a Contactos
+            </Link>
+          }
+        />
       </PortalShell>
     );
   }
@@ -38,7 +50,7 @@ export default async function FichaCliente({ params }: { params: Promise<{ id: s
     .order("consecutivo", { ascending: false });
 
   return (
-    <PortalShell title={cliente.nombre} subtitle={cliente.empresa || "Ficha de cliente"} backHref="/portal/clientes" backLabel="Contactos">
+    <PortalShell kicker="Ficha de cliente" title={cliente.nombre} subtitle={cliente.empresa || "Sin empresa registrada"} backHref="/portal/clientes" backLabel="Contactos">
       <ClienteDetalle
         cliente={cliente}
         interacciones={interacciones ?? []}

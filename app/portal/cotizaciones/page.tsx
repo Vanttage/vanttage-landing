@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, FileStack } from "lucide-react";
 import { supabaseAdmin } from "../_lib/supabase-admin";
 import PortalShell from "../_components/PortalShell";
+import { btnPrimary, DbNotice, EmptyState, Notice } from "../_components/ui";
 import CotizacionesTable, { type Cot } from "./CotizacionesTable";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +11,10 @@ export default async function CotizacionesPage() {
   const db = supabaseAdmin();
   let rows: Cot[] = [];
   let error = "";
+  let sinDb = false;
 
   if (!db) {
+    sinDb = true;
     error = "La base de datos aún no está conectada.";
   } else {
     const { data, error: e } = await db
@@ -23,19 +26,26 @@ export default async function CotizacionesPage() {
     else rows = (data as Cot[]) ?? [];
   }
 
+  const nueva = (
+    <Link href="/portal/cotizador" className={btnPrimary}>
+      <Plus size={16} aria-hidden /> Nueva cotización
+    </Link>
+  );
+
   return (
-    <PortalShell title="Cotizaciones" subtitle={`${rows.length} en el historial`}>
+    <PortalShell
+      kicker="Ventas"
+      title="Cotizaciones"
+      subtitle={error ? "Historial de cotizaciones y propuestas." : `${rows.length} en el historial.`}
+      actions={nueva}
+    >
       {error ? (
-        <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          {error}
+        <div className="space-y-6">
+          {sinDb ? <DbNotice /> : <Notice tone="red" title="No se pudieron cargar las cotizaciones" text={error} />}
+          <EmptyState icon={FileStack} title="Sin historial para mostrar" text="Puedes seguir creando documentos en el cotizador y descargarlos en PDF." />
         </div>
       ) : rows.length === 0 ? (
-        <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
-          Aún no hay cotizaciones.{" "}
-          <Link href="/portal/cotizador" className="inline-flex items-center gap-1 text-violet-300">
-            <Plus size={13} /> Crear una
-          </Link>
-        </p>
+        <EmptyState icon={FileStack} title="Aún no hay cotizaciones" text="Crea la primera desde una plantilla o desde cero." action={nueva} />
       ) : (
         <CotizacionesTable initial={rows} />
       )}

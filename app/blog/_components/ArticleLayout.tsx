@@ -30,7 +30,7 @@ export default function ArticleLayout({
   const others = posts.filter((p) => p.slug !== slug);
 
   return (
-    <main className="min-h-screen bg-[#06060C] text-zinc-300">
+    <main className="min-h-screen bg-transparent text-zinc-300">
       <ReadingProgress targetId="cuerpo" />
 
       <PostCover

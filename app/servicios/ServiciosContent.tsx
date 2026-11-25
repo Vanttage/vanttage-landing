@@ -399,9 +399,9 @@ export default function ServiciosContent() {
   });
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#06060C] text-white">
+    <main className="min-h-screen overflow-x-clip bg-transparent text-white">
       {/* ── Hero tipográfico ── */}
-      <section className="px-6 pb-16 pt-32 md:pb-24 md:pt-44">
+      <section className="relative isolate overflow-hidden px-6 pb-16 pt-32 md:pb-24 md:pt-44">
         <div className="mx-auto max-w-6xl">
           <motion.p {...intro(0)} className="mb-6 text-xs uppercase tracking-[0.2em] text-violet-300">
             Servicios
@@ -553,7 +553,7 @@ export default function ServiciosContent() {
       </section>
 
       {/* ── CTA final + lo que incluye todo proyecto ── */}
-      <section aria-labelledby="cta-titulo" className="px-6 pb-24 md:pb-32">
+      <section aria-labelledby="cta-titulo" className="relative isolate overflow-hidden px-6 pb-24 md:pb-32">
         <Reveal className="mx-auto max-w-6xl border-t border-white/10 pt-16 md:pt-20">
           <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-end">
             <div>

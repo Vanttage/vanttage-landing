@@ -57,7 +57,7 @@ export async function proxy(req: NextRequest) {
   // Con sesión y en el login → al panel
   if (user && isLogin) {
     const to = req.nextUrl.clone();
-    to.pathname = "/portal/panel";
+    to.pathname = "/portal/dashboard";
     return NextResponse.redirect(to);
   }
 

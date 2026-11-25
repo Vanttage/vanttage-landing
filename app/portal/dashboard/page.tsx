@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { Users, FileText, CheckCircle2, TrendingUp } from "lucide-react";
+import { Users, FileText, CheckCircle2, TrendingUp, Plus, ArrowRight, FileStack } from "lucide-react";
 import { supabaseAdmin } from "../_lib/supabase-admin";
 import PortalShell from "../_components/PortalShell";
+import { btnPrimary, cardCls, kickerCls, DbNotice, EmptyState, EstadoBadge } from "../_components/ui";
 
 export const dynamic = "force-dynamic";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n || 0);
 const fecha = (s: string) =>
-  new Date(s).toLocaleDateString("es-CO", { day: "2-digit", month: "short" });
+  new Date(s).toLocaleDateString("es-CO", { day: "2-digit", month: "short", timeZone: "America/Bogota" });
 
 export default async function DashboardPage() {
   const db = supabaseAdmin();
@@ -34,78 +35,172 @@ export default async function DashboardPage() {
   const valorGanado = aprobadas.reduce((s, c) => s + (c.total || 0), 0);
   const valorCotizado = cots.reduce((s, c) => s + (c.total || 0), 0);
   const conversion = total ? Math.round((aprobadas.length / total) * 100) : 0;
+  const pendientes = cots.filter((c) => c.estado === "enviada").length;
 
   const kpis = [
-    { label: "Contactos", value: contactos, icon: Users, color: "#a78bfa" },
-    { label: "Cotizaciones", value: total, icon: FileText, color: "#60a5fa" },
-    { label: "Aprobadas", value: aprobadas.length, icon: CheckCircle2, color: "#34d399" },
-    { label: "Valor ganado", value: fmt(valorGanado), icon: TrendingUp, color: "#f59e0b" },
+    { label: "Contactos", value: String(contactos), icon: Users, href: "/portal/clientes" },
+    { label: "Cotizaciones", value: String(total), icon: FileText, href: "/portal/cotizaciones" },
+    { label: "Aprobadas", value: String(aprobadas.length), icon: CheckCircle2, href: "/portal/cotizaciones" },
+    { label: "Valor ganado", value: fmt(valorGanado), icon: TrendingUp, href: "/portal/cotizaciones" },
   ];
 
+  const recientes = cots.slice(0, 6);
+
   return (
-    <PortalShell title="Dashboard" subtitle="Resumen del CRM">
+    <PortalShell
+      kicker="Resumen"
+      title="Dashboard"
+      subtitle="Estado general de contactos y cotizaciones."
+      actions={
+        <Link href="/portal/cotizador" className={btnPrimary}>
+          <Plus size={16} aria-hidden /> Nueva cotización
+        </Link>
+      }
+    >
       {dbError && (
-        <div className="mb-4 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">{dbError}</div>
+        <div className="mb-6">
+          <DbNotice />
+        </div>
       )}
 
       {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Indicadores" className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {kpis.map((k) => (
-          <div key={k.label} className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
-            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl" style={{ background: `${k.color}22`, color: k.color }}>
-              <k.icon size={18} />
+          <Link
+            key={k.label}
+            href={k.href}
+            className={`${cardCls} group flex flex-col justify-between p-4 transition-colors hover:border-[var(--pborder-strong)] hover:bg-[var(--pcardhover)] md:p-5`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className={kickerCls}>{k.label}</p>
+              <k.icon size={16} className="shrink-0 text-[var(--pfaint)] transition-colors group-hover:text-[var(--paccent)]" aria-hidden />
             </div>
-            <p className="text-2xl font-semibold">{k.value}</p>
-            <p className="text-sm text-[var(--pfaint)]">{k.label}</p>
-          </div>
+            <p className="mt-5 truncate text-2xl font-semibold tracking-tight tabular-nums md:mt-6 md:text-[30px] md:leading-none">
+              {k.value}
+            </p>
+          </Link>
         ))}
-      </div>
+      </section>
 
-      {/* Segunda fila */}
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
-          <p className="text-sm text-[var(--pfaint)]">Valor total cotizado</p>
-          <p className="mt-1 text-xl font-semibold">{fmt(valorCotizado)}</p>
+      {/* Rendimiento */}
+      <section aria-label="Rendimiento" className={`${cardCls} mt-3 grid divide-y divide-[var(--pborder)] md:mt-4 md:grid-cols-3 md:divide-x md:divide-y-0`}>
+        <div className="p-4 md:p-5">
+          <p className="text-sm text-[var(--pmuted)]">Valor total cotizado</p>
+          <p className="mt-1.5 text-xl font-semibold tracking-tight tabular-nums">{fmt(valorCotizado)}</p>
         </div>
-        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
-          <p className="text-sm text-[var(--pfaint)]">Tasa de conversión</p>
-          <p className="mt-1 text-xl font-semibold">{conversion}%</p>
+        <div className="p-4 md:p-5">
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm text-[var(--pmuted)]">Tasa de conversión</p>
+            <p className="text-xl font-semibold tracking-tight tabular-nums">{conversion}%</p>
+          </div>
+          <div
+            className="mt-3 h-1.5 overflow-hidden rounded-full bg-[var(--pchip)]"
+            role="progressbar"
+            aria-label="Tasa de conversión"
+            aria-valuenow={conversion}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div className="h-full rounded-full bg-[var(--paccent)]" style={{ width: `${conversion}%` }} />
+          </div>
         </div>
-        <div className="rounded-2xl border border-[var(--pborder)] bg-[var(--pcard)] p-5">
-          <p className="text-sm text-[var(--pfaint)]">Enviadas (pendientes)</p>
-          <p className="mt-1 text-xl font-semibold">{cots.filter((c) => c.estado === "enviada").length}</p>
+        <div className="p-4 md:p-5">
+          <p className="text-sm text-[var(--pmuted)]">Enviadas sin respuesta</p>
+          <p className="mt-1.5 text-xl font-semibold tracking-tight tabular-nums">{pendientes}</p>
         </div>
-      </div>
+      </section>
 
       {/* Recientes */}
-      <div className="mt-6">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-semibold">Cotizaciones recientes</h2>
-          <Link href="/portal/cotizaciones" className="text-sm text-violet-300 hover:text-violet-200">Ver todas →</Link>
-        </div>
-        {cots.length === 0 ? (
-          <p className="rounded-xl border border-[var(--pborder)] bg-[var(--pinput)] px-4 py-8 text-center text-sm text-[var(--pmuted)]">
-            Aún no hay cotizaciones. Crea una desde “Cotizaciones”.
-          </p>
-        ) : (
-          <div className="overflow-x-auto rounded-xl border border-[var(--pborder)]">
-            <table className="w-full min-w-[560px] text-sm">
-              <tbody>
-                {cots.slice(0, 6).map((c) => (
-                  <tr key={c.id} className="border-t border-[var(--pborder)] first:border-0 hover:bg-[var(--pcardhover)]">
-                    <td className="px-4 py-3 font-medium text-violet-300">{c.numero || `#${c.consecutivo}`}</td>
-                    <td className="px-4 py-3">{c.cliente_nombre || "—"}</td>
-                    <td className="px-4 py-3 text-right">{fmt(c.total)}</td>
-                    <td className="px-4 py-3"><span className="rounded-full bg-[var(--pchip)] px-2 py-0.5 text-xs text-[var(--pmuted)]">{c.estado}</span></td>
-                    <td className="px-4 py-3 text-[var(--pfaint)]">{fecha(c.created_at)}</td>
-                    <td className="px-4 py-3 text-right"><Link href={`/portal/cotizador?id=${c.id}`} className="text-xs text-violet-300 hover:text-violet-200">Abrir</Link></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <section aria-labelledby="recientes-titulo" className="mt-10">
+        <div className="mb-4 flex items-end justify-between gap-3">
+          <div>
+            <h2 id="recientes-titulo" className="text-lg font-semibold tracking-tight">
+              Cotizaciones recientes
+            </h2>
+            <p className="text-sm text-[var(--pfaint)]">Las últimas seis por número.</p>
           </div>
+          {recientes.length > 0 && (
+            <Link
+              href="/portal/cotizaciones"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-1 text-sm font-medium text-[var(--paccent)] hover:underline md:min-h-9"
+            >
+              Ver todas <ArrowRight size={15} aria-hidden />
+            </Link>
+          )}
+        </div>
+
+        {recientes.length === 0 ? (
+          <EmptyState
+            icon={FileStack}
+            title="Aún no hay cotizaciones"
+            text={dbError ? "Cuando la base esté conectada verás aquí las últimas cotizaciones." : "Crea la primera desde una plantilla o desde cero."}
+            action={
+              !dbError && (
+                <Link href="/portal/cotizador" className={btnPrimary}>
+                  <Plus size={16} aria-hidden /> Nueva cotización
+                </Link>
+              )
+            }
+          />
+        ) : (
+          <>
+            {/* Tabla (escritorio) */}
+            <div className={`${cardCls} hidden overflow-hidden md:block`}>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--pborder)] text-left text-[11px] uppercase tracking-[0.14em] text-[var(--pfaint)]">
+                    <th scope="col" className="px-5 py-3 font-medium">N.º</th>
+                    <th scope="col" className="px-5 py-3 font-medium">Cliente</th>
+                    <th scope="col" className="px-5 py-3 text-right font-medium">Total</th>
+                    <th scope="col" className="px-5 py-3 font-medium">Estado</th>
+                    <th scope="col" className="px-5 py-3 font-medium">Fecha</th>
+                    <th scope="col" className="px-5 py-3"><span className="sr-only">Acciones</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recientes.map((c) => (
+                    <tr key={c.id} className="border-t border-[var(--pborder)] first:border-0 transition-colors hover:bg-[var(--pcardhover)]">
+                      <td className="px-5 py-3.5 font-medium tabular-nums">{c.numero || `#${c.consecutivo}`}</td>
+                      <td className="px-5 py-3.5 text-[var(--pmuted)]">{c.cliente_nombre || "Sin cliente"}</td>
+                      <td className="px-5 py-3.5 text-right tabular-nums">{fmt(c.total)}</td>
+                      <td className="px-5 py-3.5"><EstadoBadge estado={c.estado} /></td>
+                      <td className="px-5 py-3.5 text-[var(--pfaint)]">{fecha(c.created_at)}</td>
+                      <td className="px-5 py-3.5 text-right">
+                        <Link href={`/portal/cotizador?id=${c.id}`} className="text-sm font-medium text-[var(--paccent)] hover:underline">
+                          Abrir
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tarjetas (móvil) */}
+            <ul className="space-y-2 md:hidden">
+              {recientes.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    href={`/portal/cotizador?id=${c.id}`}
+                    className={`${cardCls} flex items-center justify-between gap-3 p-4 transition-colors active:bg-[var(--pcardhover)]`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">{c.cliente_nombre || "Sin cliente"}</span>
+                      <span className="mt-0.5 block text-xs text-[var(--pfaint)] tabular-nums">
+                        {c.numero || `#${c.consecutivo}`} · {fecha(c.created_at)}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 flex-col items-end gap-1.5">
+                      <span className="text-sm font-medium tabular-nums">{fmt(c.total)}</span>
+                      <EstadoBadge estado={c.estado} />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
-      </div>
+      </section>
     </PortalShell>
   );
 }

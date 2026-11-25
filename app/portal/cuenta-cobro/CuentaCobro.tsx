@@ -2,8 +2,9 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Printer, ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { Printer, Plus, Trash2 } from "lucide-react";
+import PortalShell from "../_components/PortalShell";
+import { btnPrimary } from "../_components/ui";
 
 /* ─────────── Datos de la cuenta de cobro ─────────── */
 interface LineItem {
@@ -25,7 +26,7 @@ interface Cuenta {
   notaExtra: string;
 }
 
-const HOY = new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric" });
+const HOY = new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "long", year: "numeric", timeZone: "America/Bogota" });
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n || 0);
 const soloNumero = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
@@ -104,33 +105,20 @@ export default function CuentaCobro() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b13] text-white print:min-h-0 print:bg-white">
-      {/* Toolbar */}
-      <header className="no-print flex items-center justify-between border-b border-white/10 px-5 py-3">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/portal/cotizaciones"
-            title="Volver"
-            aria-label="Volver"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
-          >
-            <ArrowLeft size={16} />
-          </Link>
-          <div>
-            <p className="text-sm font-semibold">Cuenta de cobro · Vanttage</p>
-            <p className="text-xs text-white/40">Edita los campos y descarga el PDF (una página)</p>
-          </div>
-        </div>
-        <button
-          onClick={descargarPdf}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25 sm:px-4"
-        >
-          <Printer size={14} /> <span className="hidden sm:inline">Descargar </span>PDF
+    <PortalShell
+      variant="app"
+      title="Cuenta de cobro"
+      subtitle="Edita los campos y descarga el PDF (una página)"
+      backHref="/portal/cotizaciones"
+      backLabel="Volver a Cotizaciones"
+      actions={
+        <button type="button" onClick={descargarPdf} aria-label="Descargar PDF" className={`${btnPrimary} w-11 px-0 sm:w-auto sm:px-5`}>
+          <Printer size={16} aria-hidden /> <span className="hidden sm:inline">Descargar PDF</span>
         </button>
-      </header>
-
+      }
+    >
       {/* Documento */}
-      <main className="overflow-y-auto p-3 sm:p-6 print:overflow-visible print:p-0">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[var(--pcanvas)] p-3 sm:p-6 lg:p-8 print:overflow-visible print:bg-white print:p-0">
         <div className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-5 text-[#0A2540] shadow-2xl sm:p-8 md:p-10 print:max-w-full print:rounded-none print:p-6 print:shadow-none">
           {/* Marca de agua */}
           <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
@@ -268,8 +256,8 @@ export default function CuentaCobro() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </PortalShell>
   );
 }
 

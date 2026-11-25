@@ -2,9 +2,25 @@
 
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, PanelLeftOpen, ArrowLeft, FileText, Copy, Sparkles } from "lucide-react";
-import { PLANTILLAS, plantillaVacia, DEFAULT, type Item, type Cotizacion } from "./plantillas";
+import {
+  Send, Plus, Trash2, Printer, RotateCcw, Save, PanelLeftClose, FileText, Copy, Sparkles,
+  ShoppingCart, Globe, Wrench, GraduationCap, Gamepad2, Landmark, Leaf, ListChecks, MessageSquareText, Loader2,
+  type LucideIcon,
+} from "lucide-react";
+import { PLANTILLAS, plantillaVacia, type Item, type Cotizacion } from "./plantillas";
+import PortalShell from "../_components/PortalShell";
+import { btnPrimary, btnSecondary, btnGhostIcon, cardCls, kickerCls, Skeleton } from "../_components/ui";
+
+/* Iconos de las plantillas en la pantalla de inicio (sustituyen los emojis de plantillas.ts) */
+const PLANTILLA_ICON: Record<string, LucideIcon> = {
+  ecommerce: ShoppingCart,
+  landing: Globe,
+  soporteTI: Wrench,
+  cursos: GraduationCap,
+  misionMapache: Gamepad2,
+  plataformaWeb: Landmark,
+  landingDaz: Leaf,
+};
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("es-CO", {
@@ -34,10 +50,10 @@ interface Msg {
 }
 
 const SALUDO_IA =
-  "¡Hola! 👋 Cuéntame en tus palabras qué necesitas (cliente, servicio, precios, plazos…) y lo voy armando en el documento de la derecha. Ej: “Propuesta para el Hotel Pestagua: sysadmin mensual 1.200.000, más un plan por intervención”. También puedes cambiar a modo Guiado arriba.";
+  "Cuéntame qué necesitas (cliente, servicio, precios, plazos) y lo voy armando en el documento. Ejemplo: “Propuesta para el Hotel Pestagua: sysadmin mensual 1.200.000, más un plan por intervención”. Si prefieres responder paso a paso, cambia a modo Guiado arriba.";
 
 const PREGUNTAS: Record<Stage, string> = {
-  cliente: "¡Hola! 👋 Armemos la cotización. ¿Nombre del cliente o contacto?",
+  cliente: "Armemos la cotización. ¿Cuál es el nombre del cliente o contacto?",
   empresa: "¿Nombre del negocio o empresa? (si no tiene, escribe “-”)",
   proyecto: "¿Título del proyecto? (Enter para dejar el sugerido)",
   resumen: "Describe brevemente el alcance. (Enter para dejar el sugerido)",
@@ -47,7 +63,7 @@ const PREGUNTAS: Record<Stage, string> = {
   entrega: "¿Tiempo estimado de entrega?",
   formaPago: "¿Forma de pago?",
   validez: "¿Validez de la cotización?",
-  done: "✅ ¡Listo! Revisa la plantilla a la derecha. Puedes editar cualquier campo directamente y luego descargar el PDF.",
+  done: "Listo. Revisa el documento: puedes editar cualquier campo directamente y luego descargar el PDF.",
 };
 
 export default function CotizadorPage() {
@@ -85,7 +101,7 @@ export default function CotizadorPage() {
           setEditingId(row.id);
           setElegido(true);
           setStage("done");
-          setMsgs([{ from: "bot", text: `Editando ${row.numero || "cotización"} — modifica a la derecha y pulsa Guardar.` }]);
+          setMsgs([{ from: "bot", text: `Editando ${row.numero || "cotización"}. Modifica el documento y pulsa Guardar.` }]);
         }
       } catch {
         /* ignora */
@@ -198,14 +214,14 @@ export default function CotizadorPage() {
       });
       if (!r.ok) {
         const e = await r.json().catch(() => ({}));
-        bot(e?.error?.includes("GROQ") ? "⚠️ La IA no está configurada (falta GROQ_API_KEY). Puedes usar el modo Guiado." : "⚠️ No pude procesar eso, intenta de nuevo.");
+        bot(e?.error?.includes("GROQ") ? "La IA no está configurada (falta GROQ_API_KEY). Puedes usar el modo Guiado." : "No pude procesar eso. Intenta de nuevo.");
         return;
       }
       const { reply, patch } = await r.json();
       if (patch && Object.keys(patch).length) aplicarPatch(patch);
-      bot(reply || "Listo ✓");
+      bot(reply || "Listo.");
     } catch {
-      bot("⚠️ Error de conexión. Intenta otra vez.");
+      bot("Error de conexión. Intenta otra vez.");
     } finally {
       setIaBusy(false);
     }
@@ -248,7 +264,7 @@ export default function CotizadorPage() {
         const nuevo: Item = { concepto: tmpConcepto, valor: soloNumero(val) };
         setData((d) => ({ ...d, items: [...d.items, nuevo] }));
         setTmpConcepto("");
-        bot(`Añadido: ${nuevo.concepto} — ${fmt(soloNumero(val))}`);
+        bot(`Añadido: ${nuevo.concepto}, ${fmt(soloNumero(val))}`);
         goto("itemConcepto");
         break;
       }
@@ -321,11 +337,11 @@ export default function CotizadorPage() {
       if (!res.ok) {
         setSavedMsg(json.error === "DB no configurada" ? "Falta conectar la BD" : "Error al guardar");
       } else if (editing) {
-        setSavedMsg("Actualizada ✓");
+        setSavedMsg("Cambios guardados");
       } else {
         set({ numero: json.numero });
         setEditingId(json.id);
-        setSavedMsg(`Guardada ✓ ${json.numero}`);
+        setSavedMsg(`Guardada como ${json.numero}`);
       }
     } catch {
       setSavedMsg("Error de conexión");
@@ -345,191 +361,213 @@ export default function CotizadorPage() {
   const delItem = (idx: number) =>
     setData((d) => ({ ...d, items: d.items.filter((_, i) => i !== idx) }));
 
+  const savedOk = savedMsg.startsWith("Guardada") || savedMsg.startsWith("Cambios");
+  const tituloDoc = editingId ? `Editar ${data.numero || "cotización"}` : "Nueva cotización";
+
   /* Evita el parpadeo del selector mientras se resuelve si viene ?id (edición) */
   if (!booted) {
-    return <div className="min-h-screen bg-[#0b0b13]" />;
+    return (
+      <PortalShell kicker="Cotizador" title="Nueva cotización" subtitle="Cargando" backHref="/portal/cotizaciones" backLabel="Cotizaciones">
+        <div className="grid gap-3 sm:grid-cols-2" aria-busy="true" aria-label="Cargando">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-2xl" />
+          ))}
+        </div>
+      </PortalShell>
+    );
   }
 
   /* ─────────── Pantalla de inicio: elegir punto de partida ─────────── */
   if (!elegido) {
     return (
-      <div className="min-h-screen overflow-y-auto bg-[#0b0b13] text-white">
-        <header className="flex items-center gap-3 border-b border-white/10 px-5 py-3">
-          <Link
-            href="/portal/cotizaciones"
-            title="Volver a Cotizaciones"
-            aria-label="Volver a Cotizaciones"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
-          >
-            <ArrowLeft size={16} />
-          </Link>
-          <div>
-            <p className="text-sm font-semibold">Nuevo documento · Cotizador</p>
-            <p className="text-xs text-white/40">Elige cómo empezar</p>
-          </div>
-        </header>
-
-        <div className="mx-auto max-w-4xl px-5 py-8">
+      <PortalShell
+        kicker="Cotizador"
+        title="Nueva cotización"
+        subtitle="Elige cómo empezar: en blanco, desde una plantilla o duplicando una anterior."
+        backHref="/portal/cotizaciones"
+        backLabel="Cotizaciones"
+      >
+        <div className="max-w-5xl">
           {/* Empezar de 0 */}
           <button
+            type="button"
             onClick={empezarVacio}
-            className="group mb-6 flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
+            className={`${cardCls} group mb-10 flex w-full items-center gap-4 p-5 text-left transition-colors hover:border-[var(--paccent-line)] hover:bg-[var(--pcardhover)]`}
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/70 group-hover:text-white">
-              <Sparkles size={20} />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--paccent-soft)] text-[var(--paccent)]">
+              <Sparkles size={20} aria-hidden />
             </span>
-            <span className="min-w-0">
-              <span className="block text-sm font-semibold">Empezar de 0</span>
-              <span className="block text-xs text-white/50">Documento en blanco. Ideal si lo armas con el chat de IA.</span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-medium">Empezar en blanco</span>
+              <span className="mt-0.5 block text-sm text-[var(--pmuted)]">Documento vacío. Funciona bien si lo armas con el chat de IA.</span>
             </span>
+            <Plus size={18} className="shrink-0 text-[var(--pfaint)] transition-colors group-hover:text-[var(--ptext)]" aria-hidden />
           </button>
 
           {/* Plantillas */}
-          <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/40">
-            <FileText size={13} /> Plantillas de servicios
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {PLANTILLAS.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => usarPlantilla(p.build, p.nombre)}
-                className="group flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
-              >
-                <span className="text-2xl leading-none">{p.emoji}</span>
-                <span className="min-w-0">
-                  <span className="flex items-center gap-2 text-sm font-semibold">
-                    {p.nombre}
-                    <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${p.tipo === "propuesta" ? "bg-indigo-500/20 text-indigo-300" : "bg-violet-500/20 text-violet-300"}`}>
+          <h2 className={`${kickerCls} mb-4 flex items-center gap-2`}>
+            <FileText size={13} aria-hidden /> Plantillas de servicios
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {PLANTILLAS.map((p) => {
+              const Icon = PLANTILLA_ICON[p.id] ?? FileText;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => usarPlantilla(p.build, p.nombre)}
+                  className={`${cardCls} group flex h-full flex-col items-start gap-4 p-5 text-left transition-colors hover:border-[var(--paccent-line)] hover:bg-[var(--pcardhover)]`}
+                >
+                  <span className="flex w-full items-center justify-between gap-2">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--pborder)] text-[var(--pmuted)] transition-colors group-hover:text-[var(--paccent)]">
+                      <Icon size={18} aria-hidden />
+                    </span>
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+                      style={{
+                        color: p.tipo === "propuesta" ? "var(--pt-blue)" : "var(--pt-violet)",
+                        background: `color-mix(in srgb, ${p.tipo === "propuesta" ? "var(--pt-blue)" : "var(--pt-violet)"} 12%, transparent)`,
+                      }}
+                    >
                       {p.tipo === "propuesta" ? "Propuesta" : "Cotización"}
                     </span>
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/50">{p.desc}</span>
-                </span>
-              </button>
-            ))}
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium">{p.nombre}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-[var(--pmuted)]">{p.desc}</span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Duplicar una anterior */}
           {previas.length > 0 && (
             <>
-              <p className="mb-3 mt-8 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/40">
-                <Copy size={13} /> Duplicar una anterior
-              </p>
+              <h2 className={`${kickerCls} mb-4 mt-10 flex items-center gap-2`}>
+                <Copy size={13} aria-hidden /> Duplicar una anterior
+              </h2>
               <div className="grid gap-2 sm:grid-cols-2">
                 {previas.map((c) => (
                   <button
                     key={c.id}
+                    type="button"
                     onClick={() => duplicarPrevia(c.id)}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:border-violet-400/40 hover:bg-white/[0.07]"
+                    className="flex min-h-14 items-center justify-between gap-3 rounded-xl border border-[var(--pborder)] bg-[var(--pcard)] px-4 py-3 text-left transition-colors hover:border-[var(--paccent-line)] hover:bg-[var(--pcardhover)]"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm font-medium">{c.cliente_nombre || "Sin cliente"}</span>
-                      <span className="block truncate text-xs text-white/45">{c.proyecto || "—"}</span>
+                      <span className="block truncate text-xs text-[var(--pfaint)]">{c.proyecto || "Sin título"}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-violet-300">{c.numero || "—"}</span>
+                    <span className="shrink-0 text-xs font-medium tabular-nums text-[var(--paccent)]">{c.numero || "Sin número"}</span>
                   </button>
                 ))}
               </div>
             </>
           )}
         </div>
-      </div>
+      </PortalShell>
     );
   }
 
   return (
-    <div className="flex h-screen flex-col print:block print:h-auto">
-      {/* Toolbar */}
-      <header className="no-print flex items-center justify-between border-b border-white/10 px-5 py-3">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/portal/cotizaciones"
-            title="Volver a Cotizaciones"
-            aria-label="Volver a Cotizaciones"
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 text-white/70 hover:bg-white/5"
-          >
-            <ArrowLeft size={16} />
-          </Link>
-          <div>
-            <p className="text-sm font-semibold">Cotizador · Vanttage</p>
-            <p className="text-xs text-white/40">Chat a la izquierda · plantilla editable a la derecha</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {savedMsg && <span className="w-full text-right text-xs text-emerald-400 sm:w-auto">{savedMsg}</span>}
+    <PortalShell
+      variant="app"
+      title={tituloDoc}
+      subtitle={data.cliente ? `${data.cliente}${data.empresa && data.empresa !== "-" ? ` · ${data.empresa}` : ""}` : "Chat a la izquierda, documento editable a la derecha"}
+      backHref="/portal/cotizaciones"
+      backLabel="Volver a Cotizaciones"
+      actions={
+        <>
+          {savedMsg && (
+            <span
+              role="status"
+              className="hidden max-w-[220px] truncate text-xs font-medium lg:inline"
+              style={{ color: savedOk ? "var(--pt-green)" : "var(--pt-red)" }}
+            >
+              {savedMsg}
+            </span>
+          )}
           <button
+            type="button"
             onClick={() => setChatOpen((v) => !v)}
+            aria-pressed={chatOpen}
+            aria-label={chatOpen ? "Ocultar chat" : "Mostrar chat"}
             title={chatOpen ? "Ocultar chat" : "Mostrar chat"}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
+            className={btnGhostIcon}
           >
-            {chatOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
-            <span className="hidden sm:inline">Chat</span>
+            {chatOpen ? <PanelLeftClose size={18} aria-hidden /> : <MessageSquareText size={18} aria-hidden />}
           </button>
-          <button
-            onClick={reset}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/70 hover:bg-white/5"
-          >
-            <RotateCcw size={13} /> <span className="hidden sm:inline">Reiniciar</span>
+          <button type="button" onClick={reset} aria-label="Reiniciar" title="Reiniciar" className={btnGhostIcon}>
+            <RotateCcw size={17} aria-hidden />
           </button>
-          <button
-            onClick={guardar}
-            disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 disabled:opacity-50"
-          >
-            <Save size={14} /> {saving ? "Guardando…" : <span className="hidden sm:inline">Guardar</span>}
+          <button type="button" onClick={guardar} disabled={saving} aria-label="Guardar" className={`${btnSecondary} w-11 px-0 sm:w-auto sm:px-4`}>
+            {saving ? <Loader2 size={16} className="animate-spin motion-reduce:animate-none" aria-hidden /> : <Save size={16} aria-hidden />}
+            <span className="hidden sm:inline">{saving ? "Guardando" : "Guardar"}</span>
           </button>
-          <button
-            onClick={descargarPdf}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 px-3 py-2 text-xs font-semibold text-white shadow-lg shadow-violet-500/25 sm:px-4"
-          >
-            <Printer size={14} /> <span className="hidden sm:inline">Descargar </span>PDF
+          <button type="button" onClick={descargarPdf} aria-label="Descargar PDF" className={`${btnPrimary} w-11 px-0 sm:w-auto sm:px-5`}>
+            <Printer size={16} aria-hidden /> <span className="hidden sm:inline">PDF</span>
           </button>
-        </div>
-      </header>
-
-      <div className="flex min-h-0 flex-1 print:block print:min-h-0">
+        </>
+      }
+    >
+      {savedMsg && (
+        <p
+          role="status"
+          className="no-print border-b border-[var(--pborder)] px-4 py-2 text-xs font-medium lg:hidden"
+          style={{ color: savedOk ? "var(--pt-green)" : "var(--pt-red)" }}
+        >
+          {savedMsg}
+        </p>
+      )}
+      <div className="relative flex min-h-0 flex-1 print:block print:min-h-0">
         {/* ── Backdrop (solo móvil, cuando el chat está abierto) ── */}
         {chatOpen && (
           <div
             onClick={() => setChatOpen(false)}
-            className="no-print fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
+            className="no-print fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
             aria-hidden
           />
         )}
 
-        {/* ── CHAT (izquierda) — panel fijo en escritorio, cajón deslizable en móvil ── */}
+        {/* ── CHAT (izquierda): panel fijo en escritorio, cajón deslizable en móvil ── */}
         <aside
-          className={`no-print fixed inset-y-0 left-0 z-40 flex w-[86%] max-w-[340px] flex-col border-r border-white/10 bg-[#0A0A14] transition-transform duration-300 ease-out md:static md:z-auto md:w-[360px] md:max-w-none md:shrink-0 ${
+          aria-label="Asistente de cotización"
+          className={`no-print fixed inset-y-0 left-0 z-50 flex w-[88%] max-w-[360px] flex-col border-r border-[var(--pborder)] bg-[var(--psidebar)] transition-transform duration-300 ease-out motion-reduce:transition-none md:static md:z-auto md:w-[340px] md:max-w-none md:shrink-0 xl:w-[360px] ${
             chatOpen ? "translate-x-0" : "-translate-x-full md:hidden"
           }`}
         >
-          <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3 py-2.5">
-            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs">
+          <div className="flex items-center justify-between gap-2 border-b border-[var(--pborder)] px-3 py-2.5">
+            <div role="group" aria-label="Modo del asistente" className="flex rounded-full border border-[var(--pborder)] bg-[var(--pinput)] p-1 text-sm">
               <button
+                type="button"
                 onClick={() => cambiarModo(true)}
-                className={`rounded-md px-2.5 py-1 font-medium transition ${iaMode ? "bg-gradient-to-br from-violet-500 to-indigo-500 text-white" : "text-white/50 hover:text-white/80"}`}
+                aria-pressed={iaMode}
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3.5 font-medium transition-colors ${iaMode ? "bg-[var(--pbtn-bg)] text-[var(--pbtn-fg)]" : "text-[var(--pmuted)] hover:text-[var(--ptext)]"}`}
               >
-                ✨ IA
+                <Sparkles size={14} aria-hidden /> IA
               </button>
               <button
+                type="button"
                 onClick={() => cambiarModo(false)}
-                className={`rounded-md px-2.5 py-1 font-medium transition ${!iaMode ? "bg-white/15 text-white" : "text-white/50 hover:text-white/80"}`}
+                aria-pressed={!iaMode}
+                className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3.5 font-medium transition-colors ${!iaMode ? "bg-[var(--pbtn-bg)] text-[var(--pbtn-fg)]" : "text-[var(--pmuted)] hover:text-[var(--ptext)]"}`}
               >
-                Guiado
+                <ListChecks size={14} aria-hidden /> Guiado
               </button>
             </div>
-            <button onClick={() => setChatOpen(false)} className="rounded-lg p-1 text-white/50 hover:bg-white/5 md:hidden" title="Cerrar">
-              <PanelLeftClose size={16} />
+            <button type="button" onClick={() => setChatOpen(false)} className={`${btnGhostIcon} md:hidden`} aria-label="Cerrar chat">
+              <PanelLeftClose size={18} aria-hidden />
             </button>
           </div>
-          <div className="flex-1 space-y-3 overflow-y-auto p-4">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4" aria-live="polite">
             {msgs.map((m, i) => (
               <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                     m.from === "user"
-                      ? "rounded-tr-sm bg-gradient-to-br from-violet-500 to-indigo-500 text-white"
-                      : "rounded-tl-sm bg-white/5 text-white/80"
+                      ? "rounded-br-md bg-[var(--pbtn-bg)] text-[var(--pbtn-fg)]"
+                      : "rounded-bl-md border border-[var(--pborder)] bg-[var(--pcard)] text-[var(--ptext)]"
                   }`}
                 >
                   {m.text}
@@ -537,11 +575,11 @@ export default function CotizadorPage() {
               </div>
             ))}
             {iaBusy && (
-              <div className="flex justify-start">
-                <div className="flex gap-1 rounded-2xl rounded-tl-sm bg-white/5 px-3.5 py-3">
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.3s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40 [animation-delay:-0.15s]" />
-                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/40" />
+              <div className="flex justify-start" aria-label="El asistente está escribiendo">
+                <div className="flex gap-1 rounded-2xl rounded-bl-md border border-[var(--pborder)] bg-[var(--pcard)] px-3.5 py-3">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--pfaint)] [animation-delay:-0.3s] motion-reduce:animate-none" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--pfaint)] [animation-delay:-0.15s] motion-reduce:animate-none" />
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--pfaint)] motion-reduce:animate-none" />
                 </div>
               </div>
             )}
@@ -552,9 +590,13 @@ export default function CotizadorPage() {
               e.preventDefault();
               handleSend();
             }}
-            className="flex items-center gap-2 border-t border-white/10 p-3"
+            className="flex items-center gap-2 border-t border-[var(--pborder)] p-3"
           >
+            <label htmlFor="cotizador-chat-input" className="sr-only">
+              Mensaje para el asistente
+            </label>
             <input
+              id="cotizador-chat-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={iaMode ? iaBusy : stage === "done"}
@@ -569,23 +611,24 @@ export default function CotizadorPage() {
                     ? "Pensando…"
                     : "Describe la cotización o propuesta…"
                   : stage === "done"
-                    ? "Cotización lista ✓"
-                    : "Escribe aquí..."
+                    ? "Cotización lista"
+                    : "Escribe aquí…"
               }
-              className="flex-1 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-violet-400/50 disabled:opacity-50"
+              className="min-h-11 flex-1 rounded-full border border-[var(--pborder)] bg-[var(--pinput)] px-4 text-sm text-[var(--ptext)] outline-none placeholder:text-[var(--pfaint)] focus:border-[var(--paccent-line)] disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={iaMode ? iaBusy : stage === "done"}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white disabled:opacity-40"
+              aria-label="Enviar mensaje"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--pbtn-bg)] text-[var(--pbtn-fg)] transition-colors hover:bg-[var(--pbtn-hover)] disabled:opacity-40"
             >
-              <Send size={15} />
+              <Send size={16} aria-hidden />
             </button>
           </form>
         </aside>
 
-        {/* ── PLANTILLA (derecha) ── */}
-        <main className="min-w-0 flex-1 overflow-y-auto bg-[#0f0f18] p-3 sm:p-6 print:block print:overflow-visible print:bg-white print:p-0">
+        {/* ── DOCUMENTO (derecha) ── */}
+        <div className="min-w-0 flex-1 overflow-y-auto bg-[var(--pcanvas)] p-3 sm:p-6 lg:p-8 print:block print:overflow-visible print:bg-white print:p-0">
           <div
             className="quote-paper relative mx-auto max-w-[820px] overflow-hidden rounded-2xl bg-white p-5 text-[#0A2540] shadow-2xl sm:p-8 md:p-10 print:max-w-full print:overflow-visible print:rounded-none print:p-6 print:shadow-none"
           >
@@ -738,7 +781,8 @@ export default function CotizadorPage() {
                           />
                           <button
                             onClick={() => delItem(i)}
-                            className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                            aria-label="Eliminar servicio"
+                            className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-red-500"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -819,7 +863,8 @@ export default function CotizadorPage() {
                       />
                       <button
                         onClick={() => delItem(i)}
-                        className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 hover:text-red-500"
+                        aria-label="Eliminar ítem"
+                        className="no-print text-gray-300 opacity-0 transition group-hover:opacity-100 focus-visible:opacity-100 hover:text-red-500"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -937,9 +982,9 @@ export default function CotizadorPage() {
             </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
-    </div>
+    </PortalShell>
   );
 }
 

@@ -25,7 +25,7 @@ export default function BlogIndex() {
         };
 
   return (
-    <main className="min-h-screen bg-[#06060C] text-zinc-300">
+    <main className="min-h-screen bg-transparent text-zinc-300">
       {/* ── Cabecera ── */}
       <header className="relative overflow-hidden px-4 pb-14 pt-32 sm:px-6 md:pb-20 md:pt-40">
         <div

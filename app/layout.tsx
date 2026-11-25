@@ -8,6 +8,8 @@ import Footer from "@/app/components/layout/Footer";
 import JsonLd from "@/app/components/JsonLd";
 import ChatWidget from "@/app/components/ChatWidget";
 import MotionProvider from "@/app/components/MotionProvider";
+import SiteBackground from "@/app/components/SiteBackground";
+import IntroLoader from "@/app/components/IntroLoader";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -136,7 +138,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="es" className={`${syne.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#06060C" />
         <meta name="geo.region" content="CO-BOL" />
@@ -156,7 +158,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
         {/* End Google Tag Manager */}
       </head>
-      <body className="bg-[#061729] text-[#F8FAFC] antialiased">
+      <body className="bg-[#06060C] text-[#F8FAFC] antialiased">
+        <SiteBackground />
+        <IntroLoader />
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe

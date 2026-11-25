@@ -114,7 +114,7 @@ html {
 
 body {
   min-height: 100vh;
-  background: var(--color-v-dark);
+  background: #06060C;
   color: var(--color-v-soft);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -438,4 +438,11 @@ html {
   .marquee-track {
     animation: none !important;
   }
+}
+
+/* ── Fondo global: topografía (SiteBackground) ── */
+@keyframes topo-drift { from { transform: scale(1.05) translate(0, 0); } to { transform: scale(1.05) translate(-2%, -3%); } }
+.topo-drift { animation: topo-drift 40s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) {
+  .topo-drift { animation: none !important; }
 }
